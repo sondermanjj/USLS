@@ -1,4 +1,4 @@
 function myFunction() {
-  console.log("Stupid stupid stupid nevermidn");
+  console.log("Stupid stupid stupid nevermind");
   asdkljfhasdkfj
 }
