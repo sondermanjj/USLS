@@ -5,9 +5,13 @@
 */
 function onOpen() {
     var ui = SpreadsheetApp.getUi();
+  
+    //Create a new menu
     var mainMenu = ui.createMenu("Personal Add-ons");
     mainMenu.addItem("Clean up RAW data", "startCleanUp");
     mainMenu.addSeparator();
+  
+    //Add the menu to the menu bar
     mainMenu.addToUi();
 }
 
@@ -18,12 +22,18 @@ function onOpen() {
 */
 function startCleanUp() {
    var ui = SpreadsheetApp.getUi();
-   var response = ui.prompt('Data Cleanup', 'Please enter the name of the sheet you would like to clean up.', ui.ButtonSet.OK_CANCEL);
+   //Prompt the user for a sheet name to clean
+  var response = ui.prompt('Data Cleanup', 'Please enter the name of the sheet you would like to clean up.\nNote: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
 
    // Process the user's response.
    if (response.getSelectedButton() == ui.Button.OK) {
-       var name = response.getResponseText();
-       cleanUp(name);
+       var name = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(response.getResponseText());
+       //var name = response.getResponseText();
+       if(name != null) {
+           cleanUp(name);
+       } else {
+         ui.alert("Woops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
+       }
    } else if (response.getSelectedButton() == ui.Button.CANCEL) {
        Logger.log('The user canceled.');
    } else {
@@ -35,17 +45,17 @@ function startCleanUp() {
 /**
 @desc - Takes the relevant data from the RAW file and adds it to the "Final Student Data" sheet
         Also, creates the necessary columns that are not included in the RAW file
-@param - name of the RAW data file
+@param - the RAW sheet file
 @functional - yes
 @author - hendersonam
 */
-function cleanUp(name) {
+function cleanUp(raw) {
   
     //Get active spreadsheet
     var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   
     //Get the RAW data sheet and its values
-    var raw = spreadsheet.getSheetByName(name);
+    //var raw = spreadsheet.getSheetByName(name);
   
     //Create a new sheet to write the cleaned data to (if it doesn't already exist)
     var masterList = spreadsheet.getSheetByName("Final Student Data");
@@ -57,16 +67,71 @@ function cleanUp(name) {
     
     //Remove irrelevant data
     removeIrrelevantData(raw, masterList);
+    
+    //Add the new, necessary columns
+    addColumn("Table Head", masterList);
+    addColumn("Lunch Day", masterList);
+    addColumn("Lunch Time", masterList);
+    addColumn("Lunch Table", masterList);
+    addColumn("House", masterList);
+  
+    //Populate the new columns
+    populateLunchDay(masterList);
+  
 }
 
-
-
+/**
+@desc - Populates the Lunch Day column 
+@param - sheet - given sheet with the lunch day column to populate
+@functional - IN PROGRESS
+@author - hendersonam
+*/
+function populateLunchDay(sheet) {
+  
+    //Get necessary data
+    var data = sheet.getDataRange();
+    var values = data.getValues();
+    var numRows = data.getNumRows();
+    var numColumns = data.getNumColumns();
+  
+    //Get the indices for the 'Block' and 'Lunch Day' columns
+    for (var i = 0; i <= numColumns - 1; i++) {
+        var column = values[0][i];
+        if (column == 'Block') {
+            var blockColumn = i ;
+        }
+        if (column == 'Lunch Day') {
+            var lunchDayColumn = i ;
+        }
+    }
+  
+    //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
+    for (var j = 0; j <= numRows - 1; j++) {
+      if (values[j][blockColumn] == "1" || values[j][blockColumn] == "E1") {
+        data.getCell(j+1,lunchDayColumn+1).setValue("E");
+      } else if (values[j][blockColumn] == "2" || values[j][blockColumn] == "G2") {
+       data.getCell(j+1,lunchDayColumn+1).setValue("G");
+      } else if (values[j][blockColumn] == "3" || values[j][blockColumn] == "A3") {
+        data.getCell(j+1,lunchDayColumn+1).setValue("A");
+      } else if (values[j][blockColumn] == "4" || values[j][blockColumn] == "C4") {
+      data.getCell(j+1,lunchDayColumn+1).setValue("C");
+      } else if (values[j][blockColumn] == "5" || values[j][blockColumn] == "F5") {
+        data.getCell(j+1,lunchDayColumn+1).setValue("F");
+      } else if (values[j][blockColumn] == "6" || values[j][blockColumn] == "H6") {
+       data.getCell(j+1,lunchDayColumn+1).setValue("H");
+      } else if (values[j][blockColumn] == "7" || values[j][blockColumn] == "B7") {
+        data.getCell(j+1,lunchDayColumn+1).setValue("B");
+      } else if (values[j][blockColumn] == "8" || values[j][blockColumn] == "D8") {
+        data.getCell(j+1,lunchDayColumn+1).setValue("D");
+      }
+    }
+}
 
 /**
 @desc Searches the data for the 'Block' column and deletes rows that have irrelevant 
       data (i.e they have something other than 1,2,3,4,5,6,7,8,E1,G2,A3,C4,F5,H6,B7,D8)
-@param - oldSsheet - sheet to clean up
-         newSheet - sheet to write to
+@params - oldSsheet - sheet to clean up
+          newSheet - sheet to write to
 @funtional - yes
 @author - hendersonam
 */
@@ -114,8 +179,6 @@ function removeIrrelevantData(oldSheet, newSheet) {
 
 /**
 @desc creates a new sheet (or overwrites old one) with the data involved)
-@param - data - sheet data to add to the new sheet
-         name - the name for the new sheet
 @functional - yes
 @author - sondermanjj
 */
@@ -131,4 +194,51 @@ function createNewSheet(data, name) {
   //set the target range to the values of the source data
   ts.getRange(1, 1, data.length, data[0].length).setValues(data);
 }
+
+/**
+@desc - adds a column to a given sheet
+@param - name - name of the column to add
+         sheet - sheet which needs the column
+@functional - YES
+@author - sondermanjj
+*/
+function addColumn(name, sheet) {
+ var columns = sheet.getDataRange();
+ var numColumns = sheet.getDataRange().getNumColumns();
+ var values = columns.getValues();
+ var exists = false;
+ 
+  for (var i = 0; i <= numColumns - 1; i++) {
+    var column = values[0][i];
+    if (column == name) {
+      exists = true;
+    }
+  }
+if (!exists) {
+ var row = 1
+ var newColumn = numColumns + 1;
+ var cell = sheet.getRange(row, newColumn);
+ cell.setValue(name);
+ }
+}
+
+/**
+@desc - deletes a column from a given sheet
+@param - name - name of the column to delete
+         sheet - sheet which contains the column
+@functional - YES
+@author - sondermanjj
+*/
+function deleteColumn(name, sheet) {
+  var columns = sheet.getDataRange();
+  var numColumns = columns.getNumColumns();
+  var values = columns.getValues();
+  
+  for (var i = 0; i <= numColumns - 1; i++) {
+    var column = values[0][i];
+    if (column == name) {
+      sheet.deleteColumn((parseInt(i)+1));
+    }
+  }
+};
 
