@@ -65,8 +65,8 @@ function cleanUp(name) {
 /**
 @desc Searches the data for the 'Block' column and deletes rows that have irrelevant 
       data (i.e they have something other than 1,2,3,4,5,6,7,8,E1,G2,A3,C4,F5,H6,B7,D8)
-@params - oldSsheet - sheet to clean up
-          newSheet - sheet to write to
+@param - oldSsheet - sheet to clean up
+         newSheet - sheet to write to
 @funtional - yes
 @author - hendersonam
 */
@@ -114,6 +114,8 @@ function removeIrrelevantData(oldSheet, newSheet) {
 
 /**
 @desc creates a new sheet (or overwrites old one) with the data involved)
+@param - data - sheet data to add to the new sheet
+         name - the name for the new sheet
 @functional - yes
 @author - sondermanjj
 */
