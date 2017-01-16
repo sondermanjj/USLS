@@ -13,6 +13,32 @@ function onOpen() {
   
     //Add the menu to the menu bar
     mainMenu.addToUi();
+  
+    ui.showSidebar(createUI());
+}
+
+/**
+@desc - Creates the Add-On UI
+@functional - yes
+@author - hendersonam
+*/
+function createUI() {
+    var app = UiApp.createApplication();
+    app.setTitle('Personal Add-Ons');
+
+    //Create the buttons
+    var clean = app.createButton("Clean up RAW data");
+    var handlerCleanUp = app.createServerHandler('startCleanUp');
+    clean.addClickHandler(handlerCleanUp);
+  
+    //Create the panel to add the buttons to
+    var panel = app.createVerticalPanel();
+    panel.add(clean);
+    
+    //Add the panel to the UI
+    app.add(panel);
+ 
+    return app;
 }
 
 /**
@@ -39,6 +65,7 @@ function startCleanUp() {
    } else {
        Logger.log('The user clicked the close button in the dialog\'s title bar.');
    }
+   ui.alert("Finished cleaning.");
 }
 
 
@@ -83,7 +110,7 @@ function cleanUp(raw) {
 /**
 @desc - Populates the Lunch Day column 
 @param - sheet - given sheet with the lunch day column to populate
-@functional - IN PROGRESS
+@functional - yes
 @author - hendersonam
 */
 function populateLunchDay(sheet) {
@@ -137,6 +164,7 @@ function populateLunchDay(sheet) {
 */
 function removeIrrelevantData(oldSheet, newSheet) {
     
+    
     //Get all corresponding data needed (values, number of rows, number of columns)
     var data = oldSheet.getDataRange();
     var values = data.getValues();
@@ -149,11 +177,12 @@ function removeIrrelevantData(oldSheet, newSheet) {
     //Add the column titles to the new data array
     newData.push(values[0]);
   
+    var found = false;
     //Search for the 'Block' column
     for (var i = 0; i <= numColumns - 1; i++) {
         var column = values[0][i];
         if (column == 'Block') {
-          
+            found = true;
             //Grab any relevant rows (courses that meet during lunch times)
             //and push them to the new data array
             for (var j = 0; j < numRows - 1; j++) {
@@ -169,11 +198,14 @@ function removeIrrelevantData(oldSheet, newSheet) {
                     newData.push(values[j]);
                 }
             }
-        }
+        } 
+    }
+    if (!found) {
+        SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row!");
     }
   
     //Add the cleaned data to the given sheet
-    newSheet.clearContents();
+    newSheet.clear();
     newSheet.getRange(1, 1, newData.length, newData[0].length).setValues(newData); 
 }
 
