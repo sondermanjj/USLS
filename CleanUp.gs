@@ -115,6 +115,8 @@ function cleanUp(raw) {
 */
 function populateLunchDay(sheet) {
   
+    var blockFound = false;
+    var lunchDayFound = false;
     //Get necessary data
     var data = sheet.getDataRange();
     var values = data.getValues();
@@ -125,9 +127,11 @@ function populateLunchDay(sheet) {
     for (var i = 0; i <= numColumns - 1; i++) {
         var column = values[0][i];
         if (column == 'Block') {
+            blockFound = true;
             var blockColumn = i ;
         }
         if (column == 'Lunch Day') {
+            lunchDayFound = true;
             var lunchDayColumn = i ;
         }
     }
@@ -151,6 +155,13 @@ function populateLunchDay(sheet) {
       } else if (values[j][blockColumn] == "8" || values[j][blockColumn] == "D8") {
         data.getCell(j+1,lunchDayColumn+1).setValue("D");
       }
+    }
+  
+    if (!blockFound) {
+        SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row to fill in the Lunch Days!");
+    }
+    if (!lunchDayFound) {
+        SpreadsheetApp.getUi().alert("Could not find the 'Lunch Day' column in the first row to fill in the Lunch Days!");
     }
 }
 
@@ -201,7 +212,7 @@ function removeIrrelevantData(oldSheet, newSheet) {
         } 
     }
     if (!found) {
-        SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row!");
+        SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row to remove irrelevant data!");
     }
   
     //Add the cleaned data to the given sheet
