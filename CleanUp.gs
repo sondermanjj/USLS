@@ -205,7 +205,8 @@ function removeIrrelevantData(oldSheet, newSheet) {
                        row == "E1" || row == "G2" || 
                        row == "A3" || row == "C4" || 
                        row == "F5" || row == "H6" || 
-                       row == "B7" || row == "D8") {
+                       row == "B7" || row == "D8" ||
+                       row == "Community") {
                     newData.push(values[j]);
                 }
             }
