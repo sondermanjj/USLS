@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <form>
+      <input id="Name" type="text" name="fullname" />
+      <input id="submit" type="button" onClick="formSubmit()" value="Search" /> 
+    </form>
+    <br><br>
+    <? var data = getData(); ?>
+    <table>
+      <? for (var i = 0; i < data.length; i++) { ?>
+        <tr>
+          <? for (var j = 0; j < data[i].length; j++) { ?>
+            <td><?= data[i][j] ?></td>
+          <? } ?>
+        </tr>
+      <? } ?>
+    </table>
+    <? var json = JSON.parse(getJSON()); ?>
+    <p><?= json.columns.name[3] ?></p>
+    <div id="results"></div>
+  </body>
+  <script type="text/javascript">
+    function formSubmit() {
+      google.script.run.searchName(document.forms[0]);
+    }
+  </script>
+</html>
+
+
