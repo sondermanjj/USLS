@@ -1,39 +1,29 @@
 /**
-Class dedicated to the sorting of the teachers. Plan is to create seperate list with all 
-the tables necessary for the early days. Then go through the list of people applicable to early 
-and wipe all the ones who do not apply. Once we have leftovers, first get all the DOD's and give
-them the table #1. Then get the "Fixed" entries and put them in for the tables for each week.Finally
-we'll have to move a certain number of Free Mid or Late into the early column, and assign them to the
-remaining tables
-
-TODO: Later on, could integrate having teachers with large amount of early days getting the same table,
-say any who have over 5 early days.
-
-Later could try to have a "Maximum" amount of days they want, will flesh out the form later.
-For now assume Sheet Format
-First Name	Last Name	Letter-Day	Lunch Preference	Lunch Assignment	Section
-
+@desc 
+@author sondermanjj
+@return
+@param
+@functional YES
 */
 
-function doItAll() {
-  Logger.log("Program Started");
-  populateTableList();
-  addTeachersToTableList();
-  
-}
+var numberOfTables = 19; //NUmber of tables in the early lunch
+var letterDays = ["A","B","C","D","E","F","G","H"]; //Letter days
+var earlyCount = 0; //Number of teachers for early lunch
 
-var numberOfTables = 19;
-var letterDays = ["A","B","C","D","E","F","G","H"];
-var dayNumbers = [3,7,4,8,1,5,2,6];
-var randomSeed = 33;
-var earlyCount = 0;
-
+/**
+@desc Assigns the teachers randomly to the lunch tables, filling as many as possible
+      before reporting how many tables aren't used
+@author sondermanjj
+@return NULL
+@functional YES
+*/
 function addTeachersToTableList() {
   
   Logger.log("Adding teachers begun");
   
   var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("tableList");
   var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Formatted Request Sheet")
+  
   var teacherRow;
   
   tableList.getRange(1, 1, 500).setBackground("white");
@@ -79,6 +69,8 @@ function addTeachersToTableList() {
     for (var i = 0; i < earlyCount; i++) {
       if (teacherRow[i][2]==letterDays[t] && teacherRow[i][3]=="DOD") {
         teacherList.getRange(i+1, 8).setValue((teacherList.getRange(i+1, 8).getValue())+1);
+        teacherList.getRange(i+1, 7).setValue("1");
+
         teacherRow[i][7]++;
         var teacherValues = teacherList.getRange(i+1, 1, 1, 5).getValues();
         tableList.getRange(((t * 19)+2), 1, 1, 5).setValues(teacherValues);
@@ -105,6 +97,8 @@ function addTeachersToTableList() {
       for (var z = 0; z < 19; z++) {
         if (tablesAssigned[z+startingRow] != "1") {
           teacherList.getRange(t+1, 8).setValue((teacherList.getRange(t+1, 8).getValue())+1);
+          teacherList.getRange(t+1, 7).setValue(z+1);
+
           teacherRow[t][7]++;
           var teacherValues = teacherList.getRange(t+1, 1, 1, 5).getValues();
           tableList.getRange((startingRow+z), 1, 1, 5).setValues(teacherValues);
@@ -129,27 +123,61 @@ function addTeachersToTableList() {
       emptyCount++;
       tableList.getRange(r+2, 1, 1).setBackground("red");
     }
-  }r
+  }
   
   tableList.getRange(1, 8).setValue("Empty Slots");
   tableList.getRange(2, 8).setValue(emptyCount);
-
+  
   
   Logger.log("Empty Spots marked");
-  
-  //then assign random numbers to the teachers and sort first by the day (early middle late) and then
-  //by the random number. Just start going down and assigning tables for the classes for early, each time
-  //adding in the information to table list. Will check each time if it says teaching, but will assign the 
-  //FREE and course lunches first.
 }
 
 /**
-Place the teacherData in the requested sheet (Should be 
+@desc Takes all the teacher information (After sorting) and puts it into a 2d array object to be used
+      in the primary student list, guarenteeing that the teachers have lunches too.
+@author sondermanjj
+@return returns the formatted teacher data, with all tables assigned
+@functional YES
 */
-function PlaceTeacher(sheet, teacherData) {
+function copyTeacherDataToPrimary() {
+  var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Formatted Request Sheet");
+  teacherList.sort(1);
+  teacherList.getRange(2, 11, teacherList.getLastRow(), 15).clear();
+  var teacherData = teacherList.getRange(2, 1, teacherList.getLastRow(), 6).getValues();
+  var formattedTeacherData = [[],[]];
+
+  var lastRow = teacherList.getLastRow();
+  for (var i = 0; i < lastRow; i++) {
+    formattedTeacherData[i] = [];
+    formattedTeacherData[i][1] = teacherData[i][0]; 
+    formattedTeacherData[i][10] = teacherData[i][0];
+    formattedTeacherData[i][12] = teacherData[i][0];
+    formattedTeacherData[i][11] = teacherData[i][1];
+    formattedTeacherData[i][4] = teacherData[i][5];
+    formattedTeacherData[i][13] = teacherData[i][2];
+    formattedTeacherData[i][14] = teacherData[i][6];
+    
+    formattedTeacherData[i][0] = "";
+    formattedTeacherData[i][2] = "";
+    formattedTeacherData[i][3] = "";
+    formattedTeacherData[i][5] = "";
+    formattedTeacherData[i][6] = "";
+    formattedTeacherData[i][7] = "";
+    formattedTeacherData[i][8] = "";
+    formattedTeacherData[i][9] = "";
+  }
+  
+  teacherList.getRange(2, 11, teacherList.getLastRow(), 15).setValues(formattedTeacherData);
+  return formattedTeacherData
   
 }
 
+/**
+@desc Makes (or clears) the old table list and generates it based on the number of tables.
+@author sondermanjj
+@returns True if process was succesful
+@functional YES
+*/
 function populateTableList() {
   createNewSheet(null, "tableList")
   var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("tableList")
@@ -172,15 +200,14 @@ function populateTableList() {
   for (var i = 2; i <= ((numberOfTables*8)+1); i++) {
     tableList.getRange(i, 6).setValue(((i-2)%numberOfTables)+1);
   }
-}
-
-//Handles adding a teacher to the side effect
-function addTeacher(teacherRow) {
   
+  return true;
 }
 
 /**
 @desc creates a new sheet (or overwrites old one) with the data involved)
+@param data: Data to be inserted into the sheet
+       name: Name of the sheet
 @Functional YES
 */
 function createNewSheet(data, name) {
@@ -200,6 +227,8 @@ function createNewSheet(data, name) {
 
 /**
 @desc adds a new column at the end of the sheet, with the name in first entry if it does not already exist
+@param name: Name that you want for the column
+       sheet: the google sheet you're adding it to.
 @Functional YES
 */
 function addColumn(name, sheet) {
