@@ -370,7 +370,7 @@ function assignStudentLunchDays() {
       if(lunch.time == 'mid')
         table = '';
       if(row > pfsf){
-        sheet.appendRow([fin.fName, fin.lName, fin.grade, "", "", zelm, "", "", "", "", "", "", "", "", "", lunch.day, lunch.time, table, fin.house]);
+        primary.appendRow([fin.fName, fin.lName, fin.grade, "", "", zelm, "", "", "", "", "", "", "", "", "", lunch.day, lunch.time, table, fin.house]);
       }else{
         primaryData.getCell(row+1,pSFNameColumn+1).setValue(fin.fName);
         primaryData.getCell(row+1,pSLNameColumn+1).setValue(fin.lName);
