@@ -1,7 +1,11 @@
+/**
+@desc Main application for assigning students to their lunch tables each day.
+@funtional - yes
+@author - dicksontc
+*/
 function assignStudentLunchDays() {
-  var s2 = new Date().getTime();
   var sheet = SpreadsheetApp.getActiveSheet();
-  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Primary List");
+  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
   
   var primaryData = primary.getDataRange();
@@ -73,9 +77,8 @@ function assignStudentLunchDays() {
   
   var teachers = [];
   teachers = getTeachers(tValues, tFNameColumn, tLNameColumn, tLunchTimeColumn, tLunchDayColumn, tNumRows);
-  //For every column in primary list assign student a lunch time based on the teacher
-  //they have
   
+  //For every column in primary list assign student a lunch time based on the teacher they have 
   for(var i = 1; i < pNumRows; i++){
     var day = pValues[i][pLunchDayColumn];
     var fname = pValues[i][pSFNameColumn];
@@ -103,7 +106,6 @@ function assignStudentLunchDays() {
         }
       }
     }
-    ///////
     
     if(students.length == 0){
       var lunches = [];
@@ -124,11 +126,10 @@ function assignStudentLunchDays() {
       }
     }
   }
+   
+  var nextRow = primaryData.getNumRows() + 1;
   
-  
-  var nextRow = primaryData.getNumRows();
-  
-  
+  //Checks to see if each student has a lunch for each day
   for(var i = 0; i < students.length; i++){
     var stu = students[i];
     if(stu.grade >= 9){
@@ -159,6 +160,7 @@ function assignStudentLunchDays() {
           h = true;
       }
       
+      //If a student does not have a lunch for any day, add a lunch for that day
       if(!a){
         stu.lunches.push({day: 'A', time: 'mid', zelm: true, row: nextRow, table: 0});
         a = true;
@@ -205,7 +207,7 @@ function assignStudentLunchDays() {
     }
   }
   
-  
+  //Add students with an early lunch to an array and do the table assignments for late lunch students
   var pEarlyStudents = [];
   for(var i = 0; i < students.length; i++){
     var student = students[i];
@@ -247,44 +249,78 @@ function assignStudentLunchDays() {
       H.push(pEarlyStudents[i]);
   }
   
-  var cont = false;
-  //While is for when I get picking new teachers down
-  //while(!cont){
-  if(A.length > 133 || B.length > 133 || C.length > 133 || D.length > 133 || E.length > 133 || F.length > 133 || G.length > 133 || H.length > 133){
-    //Make teacher(s) pick new lunch times
-  }else{
-    cont = true;
+  //Checks to see if there are too many students in any lunch
+  var badLunches = 0;
+  var errorMessage = "Early Lunch ";
+  if(A.length > 133){
+    errorMessage += "A ";
+    badLunches++;
   }
-  //}
-  
+  if(B.length > 133){
+    errorMessage += "B ";
+    badLunches++;
+  }
+  if(C.length > 133){
+    errorMessage += "C ";
+    badLunches++;
+  }
+  if(D.length > 133){
+    errorMessage += "D ";
+    badLunches++;
+  }
+  if(E.length > 133){
+    errorMessage += "E ";
+    badLunches++;
+  }
+  if(F.length > 133){
+    errorMessage += "F ";
+    badLunches++;
+  }
+  if(G.length > 133){
+    errorMessage += "G ";
+    badLunches++;
+  }
+  if(H.length > 133){
+    errorMessage += "H ";
+    badLunches++;
+  }
+  //If there are too many students in a lunch, alert the user to change a teacher's lunch time
+  if(badLunches > 1){
+    errorMessage += "have too many students. Please change 1 or more teacher lunch times.";
+    SpreadsheetApp.getUi().alert(errorMessage);
+    return;
+  }else if(badLunches == 1){
+    errorMessage += "has too many students. Please change 1 or more teacher lunch times.";
+    SpreadsheetApp.getUi().alert(errorMessage);
+    return;
+  }
+    
+  //Checks to see if there are too few students in each early lunch. If there are, assign students
+  //with the lowest zelm number in mid lunch to that lunch
   if(A.length < 133.0){
-    moveFromMidToEarly(A.length, 'A', students);
+    moveFromMidToEarly(A.length, 'A', students, A);
   }
   if(B.length < 133){
-    moveFromMidToEarly(B.length, 'B', students);
+    moveFromMidToEarly(B.length, 'B', students, B);
   }
   if(C.length < 133){
-    moveFromMidToEarly(C.length, 'C', students);
+    moveFromMidToEarly(C.length, 'C', students, C);
   }
   if(D.length < 133){
-    moveFromMidToEarly(D.length, 'D', students);
+    moveFromMidToEarly(D.length, 'D', students, D);
   }
   if(E.length < 133){
-    moveFromMidToEarly(E.length, 'E', students);
+    moveFromMidToEarly(E.length, 'E', students, E);
   }
   if(F.length < 133){
-    moveFromMidToEarly(F.length, 'F', students);
+    moveFromMidToEarly(F.length, 'F', students, F);
   }
   if(G.length < 133){
-    moveFromMidToEarly(G.length, 'G', students);
+    moveFromMidToEarly(G.length, 'G', students, G);
   }
   if(H.length < 133){
-    moveFromMidToEarly(H.length, 'H', students);
+    moveFromMidToEarly(H.length, 'H', students, H);
   }
-  
-  var e2 = new Date().getTime();
-  Logger.log("Time taken for assigning student lunches based on teachers: " + (e2 - s2));
-  var hi = Logger.getLog();
   
   //For Testing
   doRandomAssignment(A);
@@ -297,6 +333,7 @@ function assignStudentLunchDays() {
   doRandomAssignment(H);
   //
   
+  //If there all early lunches are full and none are overpopulated, randomly assign students to tables
   if(A.length == 133 && B.length == 133 && C.length == 133 && D.length == 133 && E.length == 133 && F.length == 133 && G.length == 133 && H.length == 133){
     doRandomAssignment(A, pTableColumn);
     doRandomAssignment(B, pTableColumn);
@@ -307,6 +344,45 @@ function assignStudentLunchDays() {
     doRandomAssignment(G, pTableColumn);
     doRandomAssignment(H, pTableColumn);
   }
+  
+  
+  //Adds lunch time and table data for every student to the sheet.
+  var maxRow = 0;
+  for(var c = 0; c < students.length; c++){
+    var s = students[c];
+    for(var l = 0; l < s.lunches.length; l++){
+      var lunch = s.lunches[l];
+      var row = lunch.row;
+      if(row > maxRow)
+        maxRow = row;
+    }
+  }
+  
+  var pfsf = primaryData.getNumRows();
+  
+  for(var post = 0; post < students.length; post++){
+    var fin = students[post];
+    for(var lun = 0; lun < fin.lunches.length; lun++){
+      var lunch = fin.lunches[lun];
+      var table = lunch.table;
+      var row = lunch.row;
+      var zelm = "z" + fin.zelm;
+      if(lunch.time == 'mid')
+        table = '';
+      if(row > pfsf){
+        sheet.appendRow([fin.fName, fin.lName, fin.grade, "", "", zelm, "", "", "", "", "", "", "", "", "", lunch.day, lunch.time, table, fin.house]);
+      }else{
+        primaryData.getCell(row+1,pSFNameColumn+1).setValue(fin.fName);
+        primaryData.getCell(row+1,pSLNameColumn+1).setValue(fin.lName);
+        primaryData.getCell(row+1,pGradeColumn+1).setValue(fin.grade);
+        primaryData.getCell(row+1,pHouseColumn+1).setValue(fin.house);
+        primaryData.getCell(row+1,pLunchDayColumn+1).setValue(lunch.day);
+        primaryData.getCell(row+1,pLunchTimeColumn+1).setValue(lunch.time);
+        primaryData.getCell(row+1,pTableColumn+1).setValue(table);
+      }
+    }
+  }
+  
 }
 
 /**
@@ -330,11 +406,11 @@ function assignZelm(stu){
 /**
 @desc Creates teacher array filled with teacher information.
 @params - tValues - the array of the teachers rows and columns
-tFNameColumn - the column index of the faculty first name
-tLNameColumn - the column index of the faculty last name
-tLunchTimeColumn - the column index of the lunch time
-tLunchDayIndex - the column index of the lunch day
-tNumRows - the number of rows in the faculty choices list
+          tFNameColumn - the column index of the faculty first name
+          tLNameColumn - the column index of the faculty last name
+          tLunchTimeColumn - the column index of the lunch time
+          tLunchDayIndex - the column index of the lunch day
+          tNumRows - the number of rows in the faculty choices list
 @funtional - yes
 @author - dicksontc
 */
@@ -371,12 +447,12 @@ function getTeachers(tValues, tFNameColumn, tLNameColumn, tLunchTimeColumn, tLun
 @desc Changes the students with the lowest zelms' lunch times to early
 for a specific day with fewer than 133 students
 @params - numStudents - the number of students currently in that lunch
-day - the day of the early lunch with fewer than 133 students
-students - the list of students
+          day - the day of the early lunch with fewer than 133 students
+          students - the list of students
 @funtional - yes
 @author - dicksontc
 */
-function moveFromMidToEarly(numStudents, day, students){
+function moveFromMidToEarly(numStudents, day, students, dayStudents){
   var needed = 133 - numStudents;
   var zelmStudents = [];
   for(var i = 0; i < students.length; i++){
@@ -400,6 +476,7 @@ function moveFromMidToEarly(numStudents, day, students){
       student.lunches[x].time = 'early';
       student.lunches[x].zelm = false;
       student.zelm += 99; // minus 1 and plus 100 for mid to early
+      dayStudents.push({stuEarly: student, lunch: x});
       zelmStudents = zelmStudents.slice(1, zelmStudents.length);
       needed--;
     }else{
@@ -476,25 +553,25 @@ function doRandomAssignment(students){
   for(var i = 0; i < gNine.length; i++){
     numIndex++;
     var student = gNine[i].stuEarly;
-    var time = student.lunches[gNine[i].lunch].day;
-    student.lunches[time].table = nums[numIndex];
+    var lunch = gNine[i].lunch;
+    student.lunches[lunch].table = nums[numIndex];
   }
   for(var i = 0; i < gTen.length; i++){
     numIndex++;
     var student = gTen[i].stuEarly;
-    var time = student.lunches[gTen[i].lunch].day;
-    student.lunches[time].table = nums[numIndex];
+    var lunch = gTen[i].lunch;
+    student.lunches[lunch].table = nums[numIndex];
   }
   for(var i = 0; i < gEleven.length; i++){
     numIndex++;
     var student = gEleven[i].stuEarly;
-    var time = student.lunches[gEleven[i].lunch].day;
-    student.lunches[time].table = nums[numIndex];
+    var lunch = gEleven[i].lunch;
+    student.lunches[lunch].table = nums[numIndex];
   }
   for(var i = 0; i < gTwelve.length; i++){
     numIndex++;
     var student = gTwelve[i].stuEarly;
-    var time = student.lunches[gTwelve[i].lunch].day;
-    student.lunches[time].table = nums[numIndex];
+    var lunch = gTwelve[i].lunch;
+    student.lunches[lunch].table = nums[numIndex];
   } 
 }

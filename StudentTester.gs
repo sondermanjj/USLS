@@ -1,6 +1,12 @@
+/**
+@desc This function sets up the necessary information for the tests as well
+      as runs the tests.
+@funtional - yes
+@author - dicksontc
+*/
 function mainTester(){
   var sheet = SpreadsheetApp.getActiveSheet();
-  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Primary List");
+  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
   
   var primaryData = primary.getDataRange();
@@ -101,8 +107,18 @@ function mainTester(){
   testForFilledEarlyLunches(students);
   testAllStudentsHaveALunchForEachDay(students);
   
+  var log = Logger.getLog();
+  var p = [];
 }
 
+/**
+@desc This function tests to see if every early lunch has 133 students
+      Passes - 133 students per early lunch
+      Fails - Less or more than 133 students in any early lunch
+@params - students - the students at USM and their relevant information
+@funtional - yes
+@author - dicksontc
+*/
 function testForFilledEarlyLunches(students) {
   var A = [];
   var B = [];
@@ -112,10 +128,44 @@ function testForFilledEarlyLunches(students) {
   var F = [];
   var G = [];
   var H = [];
-  
-  
+  for(var x = 1; x < students.length; x++){
+    var stu = students[x];
+    for(var j = 0; j < stu.lunches.length; j++){
+      if(stu.lunches[j].time = 'early'){
+        if(stu.lunches[j].day == 'A')
+          A.push(stu);
+        else if(stu.lunches[j].day == 'B')
+          B.push(stu);
+        else if(stu.lunches[j].day == 'C')
+          C.push(stu);
+        else if(stu.lunches[j].day == 'D')
+          D.push(stu);
+        else if(stu.lunches[j].day == 'E')
+          E.push(stu);
+        else if(stu.lunches[j].day == 'F')
+          F.push(stu);
+        else if(stu.lunches[j].day == 'G')
+          G.push(stu);
+        else if(stu.lunches[j].day == 'H')
+          H.push(stu);
+      }
+    }
+  }
+  if(A.length == 133 && B.length == 133 && C.length == 133 && D.length == 133 && E.length == 133 && F.length == 133 && G.length == 133 && H.length == 133){
+    Logger.log("testForFilledEarlyLunches passed!");
+  }else{
+     Logger.log("testForFilledEarlyLunches failed!");
+  }
 }
 
+/**
+@desc This function tests to see if every student has 1 lunch per day
+      Passes - All students have 1 lunch per day
+      Fails - One or more students have 0 or more than 1 lunches per day
+@params - students - the students at USM and their relevant information
+@funtional - yes
+@author - dicksontc
+*/
 function testAllStudentsHaveALunchForEachDay(students){
   var count = 0;
   for(var n = 0; n < students.length; n++){
@@ -129,7 +179,7 @@ function testAllStudentsHaveALunchForEachDay(students){
       var f = false;
       var g = false;
       var h = false;
-      for(var y = 0; y < stu.lunches.length; y++){
+      for(var j = 0; j < stu.lunches.length; j++){
         if(stu.lunches[j].day == 'A')
           a = true;
         else if(stu.lunches[j].day == 'B')
