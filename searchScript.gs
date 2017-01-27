@@ -10,6 +10,9 @@ var url = "http://gsx2json.com/api?id=" + spreadsheetID;
 // Array to contain the matching results for the name being searched
 var matchedNames = []
 
+// Integer to test method being called mutiple times
+var testCount = 0;
+
 /**
 * Tells the script how to serve the page when a GET request is made
 * @return HtmlOutput object containing the HTML to be displayed
@@ -42,28 +45,82 @@ function include(filename) {
   return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
 }
 
+// Method used to test button to see if HTML can be modified after pressing button
+function returnUselessString(){
+  var date = new Date();
+  //testCount = testCount + 3;
+  //Logger.log(testCount);
+  return "This is a string: " + date;
+}
+
+// Another method used for testing purposes 
+function returnUselessList(){
+  return searchName("Betsy Lou");
+  //return "<li>List item one</li><li>List item two</li><li>List item three</li>";
+}
+
+//Testing to make sure the string matching in the searchName function is working without needing to retrieve input from HTML form
+function testSearch(){
+  searchName("Betsy Lou");
+}
+
 /**
 * Searches the JSON data for names that match the name passed into the form
-* @param form the form to retrieve the name to search the data for
+* @param name the name of the student or faculty member being searched for
 * @return the array of names that matched the name being searched for
+* @return the HTML string containing a list of the data for the name being searched
 */
-function searchName(form) {
-  var name = form.fullname;
+function searchName(search_name){
+  //var name = form.fullname;
   var json = JSON.parse(getJSON());
-  var nameArray = json.name;
-  var htmlString;
-  for (var i=0; i<nameArray.length; i++){
-    if(nameArray[i] === str.match(new RegExp(""+name+""))){
-      htmlString += "<li> " + nameArray[i] + "</li>";
-      matchedNames.push(nameArray[i]);
+  Logger.log("JSON: " + json);
+  var rowArray = json.rows;
+  var arrayLength = json.columns.name.length;
+  Logger.log("Row Array: " + rowArray);
+  var names = "";
+  var htmlString = "";
+  for (var i=0; i<arrayLength; i++){
+    var name = rowArray[i].name;
+    if(name === search_name){
+      htmlString += "<li>Name: " + name + "</li>";
+      matchedNames.push(name);
     }
     else {
+      names += name + " ";
     }  
   }
-  Logger.log(matchedNames);
   Logger.log("HTML: " + htmlString);
-  return matchedNames;
+  Logger.log("Matched Names: " + matchedNames);
+  Logger.log("Names: " + names);
+  return htmlString;
+  //return matchedNames;
   //return SpreadsheetApp.openById(spreadsheetID).getActiveSheet().getDataRange().getValues();
+}
+
+/**
+* Same as previous function, but takes entire form in instead of just the name string
+*/
+function nameSearch(form){
+  
+  var search_name = form.fullname.value;
+  
+  var json = JSON.parse(getJSON());
+  var rowArray = json.rows;
+  var arrayLength = json.columns.name.length;
+  var names = "";
+  var htmlString = "";
+  for (var i=0; i<arrayLength; i++){
+    var name = rowArray[i].name;
+    if(name === search_name){
+      htmlString += "<li>Name: " + name + "</li>";
+      matchedNames.push(name);
+    }
+    else {
+      names += name + " ";
+    }  
+  }
+  //return htmlString;
+  return "<li>One</li><li>Two</li>";
 }
 
 /**
@@ -79,7 +136,9 @@ function getMatchedNames(){
 * @return JSON String of the sheets data
 */
 function getJSON() {
-  return UrlFetchApp.fetch(url);
+  var json = UrlFetchApp.fetch(url);
+  Logger.log(json);
+  return json.getContentText();
 }
 
 /**

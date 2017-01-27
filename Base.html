@@ -4,9 +4,79 @@
     var div = document.getElementById('content');
     div.innerHTML = html;
   }
+  
+  function onSuccess(string){
+    //var name = form.Name;
+    var div = document.getElementById('list');
+    div.innerHTML = "Random string: " + string; 
+  } 
+  
+  /**
+  * Method to be called when the Search button is pressed
+  * @param json the JSON string returned when calling getJSON from the script file
+  */
+  function formSubmit(json){
+  
+    // Variables pointing to parts of the HTML document so that their contents can be edited
+    var testDiv = document.getElementById('testMethodCallOutput');
+    var td = document.getElementById('tester');
+    var listDiv = document.getElementById('list');
+    var name = document.getElementById('Name').value.toString();
+    
+    //Parse the JSON string into an actual JSON object
+    var js = JSON.parse(json);
+    
+    var n = js.columns.name[3]
+    
+    // Start of string containing html to display matched results
+    var str = "<table><th>";
+    
+    //Determine the length of the array (how many names are in the data)
+    var arrayLength = js.columns.name.length;
+    //Array of rows, one representing each entry in the sheet
+    var rows = js.rows;
+    for(var i=0; i<arrayLength; i++){
+      if(rows[i].name === n){
+        //Add 
+        str += "<li>" + rows[i].name.toString() + "</li>";
+      }
+    }
+    str += "</ul>";
+    
+    //Set the inner HTML of the necessary components to the proper contents
+    //listDiv.innerHTML = htmlString;
+    //td.innerHTML = "NAME: " + n + "; LENGTH: " + arrayLength;
+    td.innerHTML = str;
+    //testDiv.innerHTML = "JSON: " + json;
+    
+    //var nList = google.script.run.searchName(document.getElementById("nameForm").elements["fullname"].value;
+    //var nameList = google.script.run.nameSearch(document.getElementById("nameForm"));
+    //var nameList = google.script.run.searchName("Betsy Lou");
+    //var listDiv = document.getElementById('list');
+    //listDiv.innerHTML = nameList;
+    //testDiv.innerHTML = "This method was indeed called. The string passed was: " + string;
+    //listDiv.innerHTML = string;
+    //var searchForm = document.getElementById('nameForm');
+    //var nameList = google.script.run.nameSearch(searchForm);
+    //var nameList = google.script.run.searchName(name);
+  }
+  
 </script>
-<div id="content">
-  <?!= include('Name'); ?>
+
+<div id="searchForm">
+  <form id="nameForm">
+    <input id="Name" type="text" name="fullname" />
+    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(formSubmit).getJSON()" value="Search" />    
+  </form>
+</div>
+<div id="output">
+  <div>
+    <ul id="list"></ul>
+  </div>
+</div>
+<div id="testMethodCallOutput">
+</div>
+<div id="tester">
 </div>
 
 
