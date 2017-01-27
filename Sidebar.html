@@ -4,24 +4,6 @@
     <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script>
-    // The code in this function runs when the page is loaded.
-    
-    function showThings() {
-      var sheets = SpreadsheetApp
-        .getActiveSpreadsheet()
-        .getSheets();
-    
-      var list = $('#things');
-      list.empty();
-      for (var i = 0; i < sheets.length(); i++) {
-        list.append('<option>' + sheets[i] + '</option>');
-      }
-    }
-   
-  }
-    </script>
     
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
 
@@ -61,16 +43,5 @@
   </head>
   <body>
     <button class="action" onclick="google.script.run.startCleanUp()">Clean Up</button>
-    <input type="button" value="Clean" onclick="startCleanUp();">
-    <div class="block form-group">
-  <label for="select">Select</label>
-  <select id="things">
-    
-  </select>
-</div>
-    <div class="sidebar bottom">
-      <img alt="Add-on logo" class="logo" src="http://cdn2.hubspot.net/hub/464524/file-3396240597-jpg/blog-files/msoe_logo.jpg" width="27" height="27">
-      <span class="gray branding-text" onclick="startCleanUp()">by MSOE SDL Team SCRUMptious</span>
-    </div>
   </body>
 </html>
