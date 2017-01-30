@@ -6,23 +6,30 @@
 @functional YES
 */
 
+function doItAll() {
+  addTeachersToTableList("1xzmJX3etwjNFyrPtJFTS00XHdsyKETb4qHPqkv42rXw");
+  copyTeacherDataToPrimary("1xzmJX3etwjNFyrPtJFTS00XHdsyKETb4qHPqkv42rXw");
+}
+
 var numberOfTables = 19; //NUmber of tables in the early lunch
 var letterDays = ["A","B","C","D","E","F","G","H"]; //Letter days
 var earlyCount = 0; //Number of teachers for early lunch
 
 /**
 @desc Assigns the teachers randomly to the lunch tables, filling as many as possible
-      before reporting how many tables aren't used
+before reporting how many tables aren't used
 @author sondermanjj
 @return NULL
+@param id: The sheet ID to be edited
 @functional YES
 */
-function addTeachersToTableList() {
+function addTeachersToTableList(id) {
+  
+  populateTableList(id);
   
   Logger.log("Adding teachers begun");
-  
-  var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("tableList");
-  var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Formatted Request Sheet")
+  var tableList =   SpreadsheetApp.openById(id).getSheetByName("tableList");
+  var teacherList = SpreadsheetApp.openById(id).getSheetByName("Formatted Request Sheet")
   
   var teacherRow;
   
@@ -31,7 +38,6 @@ function addTeachersToTableList() {
   Logger.log("Spreadsheets retrieved");
   
   teacherList.sort(1);
-  
   
   //Reset tables assigned to 0
   teacherList.getRange(2, 8, teacherList.getLastRow()-1, 1).setValue(0);
@@ -64,13 +70,13 @@ function addTeachersToTableList() {
   
   Logger.log("Early teachers values retrieved");
   var tablesAssigned = []; 
-
+  
   for (var t = 0; t < 8; t++) {
     for (var i = 0; i < earlyCount; i++) {
       if (teacherRow[i][2]==letterDays[t] && teacherRow[i][3]=="DOD") {
         teacherList.getRange(i+1, 8).setValue((teacherList.getRange(i+1, 8).getValue())+1);
         teacherList.getRange(i+1, 7).setValue("1");
-
+        
         teacherRow[i][7]++;
         var teacherValues = teacherList.getRange(i+1, 1, 1, 5).getValues();
         tableList.getRange(((t * 19)+2), 1, 1, 5).setValues(teacherValues);
@@ -87,18 +93,17 @@ function addTeachersToTableList() {
   for (var t = 0; t < earlyCount; t++) {
     startingRow = -5;
     if (teacherRow[t][7]=="0") {
-      Logger.log("Assigning "+teacherRow[t][0]);
       for (var i = 0; i< 8; i++) {
         if (teacherRow[t][2] == letterDays[i]) {
           startingRow = (i*19)+2;
-       //   Logger.log(teacherRow[t][2] + " : " + letterDays[i]);
+          //   Logger.log(teacherRow[t][2] + " : " + letterDays[i]);
         }
       }
       for (var z = 0; z < 19; z++) {
         if (tablesAssigned[z+startingRow] != "1") {
           teacherList.getRange(t+1, 8).setValue((teacherList.getRange(t+1, 8).getValue())+1);
           teacherList.getRange(t+1, 7).setValue(z+1);
-
+          
           teacherRow[t][7]++;
           var teacherValues = teacherList.getRange(t+1, 1, 1, 5).getValues();
           tableList.getRange((startingRow+z), 1, 1, 5).setValues(teacherValues);
@@ -119,7 +124,6 @@ function addTeachersToTableList() {
   for (var r = 0; r < tableLastRow; r++) {
     Logger.log(r + ": "+tableRows[r][0]);
     if (tableRows[r][0] == "") {
-      Logger.log("Color Found");
       emptyCount++;
       tableList.getRange(r+2, 1, 1).setBackground("red");
     }
@@ -134,28 +138,32 @@ function addTeachersToTableList() {
 
 /**
 @desc Takes all the teacher information (After sorting) and puts it into a 2d array object to be used
-      in the primary student list, guarenteeing that the teachers have lunches too.
+in the primary student list, guarenteeing that the teachers have lunches too.
 @author sondermanjj
 @return returns the formatted teacher data, with all tables assigned
 @functional YES
 */
-function copyTeacherDataToPrimary() {
-  var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Formatted Request Sheet");
+function copyTeacherDataToPrimary(id) {
+  var teacherList = SpreadsheetApp.openById(id).getSheetByName("Formatted Request Sheet");
   teacherList.sort(1);
   teacherList.getRange(2, 11, teacherList.getLastRow(), 15).clear();
   var teacherData = teacherList.getRange(2, 1, teacherList.getLastRow(), 6).getValues();
   var formattedTeacherData = [[],[]];
-
+  
   var lastRow = teacherList.getLastRow();
   for (var i = 0; i < lastRow; i++) {
     formattedTeacherData[i] = [];
     formattedTeacherData[i][1] = teacherData[i][0]; 
     formattedTeacherData[i][10] = teacherData[i][0];
-    formattedTeacherData[i][12] = teacherData[i][0];
+    if (teacherData[i][4] == "early") {
+      formattedTeacherData[i][12] = teacherData[i][0];
+    } else {
+      formattedTeacherData[i][12] = ""; 
+    }
     formattedTeacherData[i][11] = teacherData[i][1];
     formattedTeacherData[i][4] = teacherData[i][5];
     formattedTeacherData[i][13] = teacherData[i][2];
-    formattedTeacherData[i][14] = teacherData[i][6];
+    formattedTeacherData[i][14] = teacherData[i][4];
     
     formattedTeacherData[i][0] = "";
     formattedTeacherData[i][2] = "";
@@ -168,19 +176,19 @@ function copyTeacherDataToPrimary() {
   }
   
   teacherList.getRange(2, 11, teacherList.getLastRow(), 15).setValues(formattedTeacherData);
-  return formattedTeacherData
-  
+  return formattedTeacherData  
 }
 
 /**
 @desc Makes (or clears) the old table list and generates it based on the number of tables.
 @author sondermanjj
+@param id: id of the sheet to be edited
 @returns True if process was succesful
 @functional YES
 */
-function populateTableList() {
-  createNewSheet(null, "tableList")
-  var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("tableList")
+function populateTableList(id) {
+  createNewSheet(null, "tableList", id);
+  var tableList = SpreadsheetApp.openById(id).getSheetByName("tableList");
   tableList.getDataRange().getCell(1, 1).setValue("First Name");
   
   addColumn("Block", tableList);
@@ -188,7 +196,6 @@ function populateTableList() {
   addColumn("Lunch Preference", tableList);
   addColumn("Lunch", tableList);
   addColumn("Table", tableList);
-  
   
   //Then populate the tableList with the letter day and table #'s, 19 tables to each day.
   
@@ -207,11 +214,12 @@ function populateTableList() {
 /**
 @desc creates a new sheet (or overwrites old one) with the data involved)
 @param data: Data to be inserted into the sheet
-       name: Name of the sheet
+name: Name of the sheet
+id: id of the sheet to be edited.
 @Functional YES
 */
-function createNewSheet(data, name) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet();
+function createNewSheet(data, name, id) {
+  var sheet = SpreadsheetApp.openById(id);
   var ts = sheet.getSheetByName(name) //Target sheet
   if (ts == null) {
     sheet.insertSheet(name);
@@ -228,7 +236,7 @@ function createNewSheet(data, name) {
 /**
 @desc adds a new column at the end of the sheet, with the name in first entry if it does not already exist
 @param name: Name that you want for the column
-       sheet: the google sheet you're adding it to.
+sheet: the google sheet you're adding it to.
 @Functional YES
 */
 function addColumn(name, sheet) {

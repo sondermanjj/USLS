@@ -1,8 +1,6 @@
 /**
 Initial Framework taken from Daniel Bernier in http://engineering.continuity.net/test-for-google-apps-script/
 Adapted to our own use
-
-
 */
 function allTests(thisFnWrapsAllYourTests) {
   var successes = 0;
@@ -75,4 +73,5 @@ function allTests(thisFnWrapsAllYourTests) {
   
   var totalTests = successes + failures.length;
   Logger.log(successes + " of " + totalTests + " tests passed.\n" + failures.length + " failures.\n" + failures.join("\n"));
+  
 }
