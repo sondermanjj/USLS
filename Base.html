@@ -29,8 +29,22 @@
     for(var i=0; i<arrayLength; i++){
       var name = rows[i].firstname + " " + rows[i].lastname;
       if(name === n){
+        var day = rows[i].lunchday;
+        var time = rows[i].lunchtime;
+        var table = "";
+        switch(time){
+          case "early":
+            table = rows[i].lunchtable;
+            break;
+          case "mid":
+            table = "";
+            break;
+          case "late":
+            table = rows[i].house;
+            break;
+        }
         //Add each matching name to the string that will be displayed
-        strSched += "<tr><td>" + rows[i].lunchday + "</td><td>" + rows[i].lunchtime + "</td><td>" + rows[i].lunchtable + "</td></tr>";
+        strSched += "<tr><td>" + day + "</td><td>" + time + "</td><td>" + table + "</td></tr>";
       }
     }
     strSched += "</table>";
@@ -38,6 +52,7 @@
     //Set the inner HTML of the necessary components to the proper contents
     schedDiv.innerHTML = strSched;
     nameDiv.innerHTML = "<h1>" + n + "</h1>";
+    document.getElementById('loadingDiv').innerHTML = "";
   }
   
 </script>
@@ -45,12 +60,11 @@
 <div id="searchForm">
   <form id="nameForm">
     <input id="Name" type="text" name="fullname" />
-    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(formSubmit).getJSON()" value="Search" />    
+    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(formSubmit).getJSON();document.getElementById('loadingDiv').innerHTML = '<br>Loading...';" value="Search" />    
   </form>
 </div>
-<div id="nameDiv">
-</div>
-<div id="schedDiv">
-</div>
+<div id="loadingDiv"></div>
+<div id="nameDiv"></div>
+<div id="schedDiv"></div>
 
 
