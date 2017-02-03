@@ -1,0 +1,70 @@
+<?!= include('CSS'); ?>
+<script>
+  function load(html) {
+    var div = document.getElementById('content');
+    div.innerHTML = html;
+  }
+  
+  /**
+  * Method to be called when the Search button is pressed
+  * @param json the JSON string returned when calling getJSON from the script file
+  */
+  function formSubmit(json){
+  
+    // Variables pointing to parts of the HTML document so that their contents can be edited
+    var nameDiv = document.getElementById('nameDiv');
+    var schedDiv = document.getElementById('schedDiv');
+    var n = document.getElementById('Name').value.toString();
+    
+    var js = json;
+    
+    // Start of string containing html to display matched results
+    var strSched = "<table><tr><th>Lunch Day</th><th>Block</th><th>Lunch Time</th><th>Table</th></tr>";
+    
+    var length = js.length;
+
+    for(var index=0; index<length; index++){
+      var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
+      if(name === n){
+        var day = js[index].gsx$lunchday.$t;
+        var block = js[index].gsx$block.$t
+        var time = js[index].gsx$eml.$t;
+        var table = "";
+        switch(time){
+          case "early":
+            table = js[index].gsx$table.$t;
+            break;
+          case "mid":
+            table = "";
+            break;
+          case "late":
+            table = js[index].gsx$house.$t;
+            break;
+        }
+        if(day !== "I"){
+          //Add each matching name to the string that will be displayed
+          strSched += "<tr><td>" + day + "</td><td>" + block + "</td><td>"  + time + "</td><td>" + table + "</td></tr>";
+        }
+      }
+    }
+    strSched += "</table>";
+    
+    //Set the inner HTML of the necessary components to the proper contents
+    schedDiv.innerHTML = strSched;
+    nameDiv.innerHTML = "<h1>" + n + "</h1>";
+    document.getElementById('loadingDiv').innerHTML = "";
+  }
+  
+</script>
+
+<div id="searchForm">
+  <form id="nameForm">
+    <input id="Name" type="text" name="fullname" />
+    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(formSubmit).getJSON();document.getElementById('loadingDiv').innerHTML = '<br>Loading...';" value="Search" />    
+  </form>
+</div>
+<div id="loadingDiv"></div>
+<div id="nameDiv"></div>
+<div id="schedDiv"></div>
+
+
