@@ -160,8 +160,10 @@ function assignStudentLunchDays() {
   }
   
   var nextRow = primaryData.getNumRows() + 1;
+  var pEarlyStudents = [];
   
-  //Checks to see if each student has a lunch for each day
+  //Checks to see if each student has a lunch for each day, adds students with an early lunch
+  //to an array, and do the table assignments for late lunches
   for(var i = 0; i < students.length; i++){
     var stu = students[i];
     if(stu.grade >= 9){
@@ -190,6 +192,10 @@ function assignStudentLunchDays() {
           g = true;
         else if(stu.lunches[j].day == 'H')
           h = true;
+          
+        if(stu.lunches[j].time == 'early'){
+          pEarlyStudents.push({stuEarly: stu, lunch: j});
+        }
       }
       
       //If a student does not have a lunch for any day, add a lunch for that day
@@ -235,20 +241,8 @@ function assignStudentLunchDays() {
       }
       
       assignZelm(stu);
-      
+      doLateAssignment(stu);
     }
-  }
-  
-  //Add students with an early lunch to an array and do the table assignments for late lunch students
-  var pEarlyStudents = [];
-  for(var i = 0; i < students.length; i++){
-    var student = students[i];
-    for(var j = 0; j < student.lunches.length; j++){
-      if(student.lunches[j].time == 'early'){
-        pEarlyStudents.push({stuEarly: student, lunch: j});
-      }
-    }
-    doLateAssignment(student);
   }
   
   var A = [];
@@ -354,42 +348,22 @@ function assignStudentLunchDays() {
     moveFromMidToEarly(H.length, 'H', students, H);
   }
   
-  //For Testing
-  doRandomAssignment(A);
-  doRandomAssignment(B);
-  doRandomAssignment(C);
-  doRandomAssignment(D);
-  doRandomAssignment(E);
-  doRandomAssignment(F);
-  doRandomAssignment(G);
-  doRandomAssignment(H);
-  //
-  
   //If there all early lunches are full and none are overpopulated, randomly assign students to tables
   if(A.length == 133 && B.length == 133 && C.length == 133 && D.length == 133 && E.length == 133 && F.length == 133 && G.length == 133 && H.length == 133){
-    doRandomAssignment(A, pTableColumn);
-    doRandomAssignment(B, pTableColumn);
-    doRandomAssignment(C, pTableColumn);
-    doRandomAssignment(D, pTableColumn);
-    doRandomAssignment(E, pTableColumn);
-    doRandomAssignment(F, pTableColumn);
-    doRandomAssignment(G, pTableColumn);
-    doRandomAssignment(H, pTableColumn);
+    doRandomAssignment(A);
+    doRandomAssignment(B);
+    doRandomAssignment(C);
+    doRandomAssignment(D);
+    doRandomAssignment(E);
+    doRandomAssignment(F);
+    doRandomAssignment(G);
+    doRandomAssignment(H);
+  }else{
+    Logger.log("Too many or too few students in a lunch (shouldn't happen)");
   }
   
   
   //Adds lunch time and table data for every student to the sheet.
-  var maxRow = 0;
-  for(var c = 0; c < students.length; c++){
-    var s = students[c];
-    for(var l = 0; l < s.lunches.length; l++){
-      var lunch = s.lunches[l];
-      var row = lunch.row;
-      if(row > maxRow)
-        maxRow = row;
-    }
-  }
-  
   var pfsf = primaryData.getNumRows();
   var pushArray;
   var finalArray = [];
