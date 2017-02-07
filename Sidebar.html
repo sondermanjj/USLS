@@ -4,9 +4,8 @@
     <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-    
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
-
+    
     <style>
     .branding-below {
       bottom: 56px;
@@ -39,10 +38,42 @@
     .width-100 {
       width: 100%;
     }
+    
+    table {
+      border-collapse: collapse;
+      width: 80%;
+    }
+    
+    table, th, td {
+      border: 1px solid black;
+    }
+    
+    th, td {
+      text-align: center;
+      padding: 15px;
+    }
+    
     </style>
+    <script>
+    
+    /**
+      * @desc - Displays Lunch Statistics
+      */
+    function displayStats(statistics) {
+      
+      var html = document.getElementById('stats');
+      html.innerHTML = statistics;
+      
+    } 
+    
+    </script>
   </head>
-  <body>
-    <button class="action" onclick="google.script.run.startCleanUp()">Clean Up</button>
-  </body>
+    <body>
+      
+      <button class="action" onclick="google.script.run.startCleanUp()">Clean</button>
+      <button class="action" onclick="google.script.run.withSuccessHandler(displayStats).getHTMLForStatistics()">Scan</button>
+      
+      <div id="stats"></div>
+    </body>
   
 </html>

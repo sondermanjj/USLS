@@ -31,8 +31,8 @@ function showSidebar() {
 /**
  */
 function doGet(request) {
-  return HtmlService.createTemplateFromFile('Sidebar')
-    .evaluate();
+  return HtmlService.createHtmlOutputFromFile('Sidebar')
+     .setSandboxMode(HtmlService.SandboxMode.IFRAME)
 }
 
 /**
