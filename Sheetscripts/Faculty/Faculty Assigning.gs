@@ -7,8 +7,7 @@
 */
 
 function doItAll() {
-  addTeachersToTableList("1xzmJX3etwjNFyrPtJFTS00XHdsyKETb4qHPqkv42rXw");
-  copyTeacherDataToPrimary("1xzmJX3etwjNFyrPtJFTS00XHdsyKETb4qHPqkv42rXw");
+  addTeachersToTableList("1VhLMO_Rp2ladp1XdrPvxHnRW7gBjjP3Ggxhlh5Tm-BQ");
 }
 
 var numberOfTables = 19; //NUmber of tables in the early lunch
@@ -29,7 +28,8 @@ function addTeachersToTableList(id) {
   
   Logger.log("Adding teachers begun");
   var tableList =   SpreadsheetApp.openById(id).getSheetByName("tableList");
-  var teacherList = SpreadsheetApp.openById(id).getSheetByName("Formatted Request Sheet")
+  var teacherList = SpreadsheetApp.openById(id).getSheetByName("Faculty Choices")
+  var dodListsheet = SpreadsheetApp.openById(id).getSheetByName("DOD List");
   
   var teacherRow;
   
@@ -70,16 +70,17 @@ function addTeachersToTableList(id) {
   
   Logger.log("Early teachers values retrieved");
   var tablesAssigned = []; 
+  var dodList = dodListsheet.getRange(1,1, 8, 8).getValues();
+  Logger.log(dodList[0][5]);
   
   for (var t = 0; t < 8; t++) {
     for (var i = 0; i < earlyCount; i++) {
-      if (teacherRow[i][2]==letterDays[t] && teacherRow[i][3]=="DOD") {
-        teacherList.getRange(i+1, 8).setValue((teacherList.getRange(i+1, 8).getValue())+1);
-        teacherList.getRange(i+1, 7).setValue("1");
-        
+      if (teacherRow[i][2]==dodList[t][4] && teacherRow[i][1]==dodList[t][2]) {  
+        teacherRow[i][5] = 1;
         teacherRow[i][7]++;
-        var teacherValues = teacherList.getRange(i+1, 1, 1, 5).getValues();
-        tableList.getRange(((t * 19)+2), 1, 1, 5).setValues(teacherValues);
+        var teacherValues = [teacherRow[i]];
+        tableList.getRange(((t * 19)+2), 1, 1, 8).setValues(teacherValues);
+        teacherList.getRange((i+1), 1, 1, 8).setValues(teacherValues);
         tablesAssigned[(t * 19)+2] = 1;
       }
     }
@@ -89,7 +90,6 @@ function addTeachersToTableList(id) {
   //reset values as we've changed some values
   
   var startingRow = 0;
-  
   for (var t = 0; t < earlyCount; t++) {
     startingRow = -5;
     if (teacherRow[t][7]=="0") {
@@ -101,12 +101,19 @@ function addTeachersToTableList(id) {
       }
       for (var z = 0; z < 19; z++) {
         if (tablesAssigned[z+startingRow] != "1") {
-          teacherList.getRange(t+1, 8).setValue((teacherList.getRange(t+1, 8).getValue())+1);
-          teacherList.getRange(t+1, 7).setValue(z+1);
-          
+          /*
+          teacherRow[i][5] = 1;
+          teacherRow[i][7]++;
+          var teacherValues = [teacherRow[i]];
+          tableList.getRange(((t * 19)+2), 1, 1, 8).setValues(teacherValues);
+          tablesAssigned[(t * 19)+2] = 1;
+          */
+          teacherRow[t][5] = z+1;
           teacherRow[t][7]++;
-          var teacherValues = teacherList.getRange(t+1, 1, 1, 5).getValues();
-          tableList.getRange((startingRow+z), 1, 1, 5).setValues(teacherValues);
+          var teacherValues = [teacherRow[t]];
+          tableList.getRange((startingRow+z), 1, 1, 8).setValues(teacherValues);
+          teacherList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
+          
           tablesAssigned[startingRow+z] = 1;
           z = 25;
         }
@@ -115,17 +122,21 @@ function addTeachersToTableList(id) {
   }
   
   Logger.log("Other teachers sorted into place");
+ 
+  //Now clear up the useless rows in tablelist and teacherlist
+  teacherList.getRange(1, 8, teacherList.getLastRow(), 2).clear();
+  tableList.getRange(1, 8, teacherList.getLastRow(), 2).clear();
   
   //Then highlight any empty spaces and count em up.
   var tableLastRow = tableList.getLastRow();
   Logger.log("TableRows: "+ tableLastRow);
   var emptyCount = 0;
-  var tableRows = tableList.getRange(2, 1, tableLastRow).getValues();
-  for (var r = 0; r < tableLastRow; r++) {
+  var tableRows = tableList.getRange(2, 2, tableLastRow).getValues();
+  for (var r = 0; r < tableLastRow-1; r++) {
     Logger.log(r + ": "+tableRows[r][0]);
     if (tableRows[r][0] == "") {
       emptyCount++;
-      tableList.getRange(r+2, 1, 1).setBackground("red");
+      tableList.getRange(r+2, 1, 1, 6).setBackground("red");
     }
   }
   
@@ -144,7 +155,7 @@ in the primary student list, guarenteeing that the teachers have lunches too.
 @functional YES
 */
 function copyTeacherDataToPrimary(id) {
-  var teacherList = SpreadsheetApp.openById(id).getSheetByName("Formatted Request Sheet");
+  var teacherList = SpreadsheetApp.openById(id).getSheetByName("Faculty Choices");
   teacherList.sort(1);
   teacherList.getRange(2, 11, teacherList.getLastRow(), 15).clear();
   var teacherData = teacherList.getRange(2, 1, teacherList.getLastRow(), 6).getValues();
@@ -189,13 +200,9 @@ function copyTeacherDataToPrimary(id) {
 function populateTableList(id) {
   createNewSheet(null, "tableList", id);
   var tableList = SpreadsheetApp.openById(id).getSheetByName("tableList");
-  tableList.getDataRange().getCell(1, 1).setValue("First Name");
+  var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
   
-  addColumn("Block", tableList);
-  addColumn("Letter Day", tableList);
-  addColumn("Lunch Preference", tableList);
-  addColumn("Lunch", tableList);
-  addColumn("Table", tableList);
+  tableList.getRange("A1:F1").setValues(headerList);
   
   //Then populate the tableList with the letter day and table #'s, 19 tables to each day.
   
@@ -226,35 +233,10 @@ function createNewSheet(data, name, id) {
     ts = sheet.getSheetByName(name); //Target sheet
   }
   ts.clearContents()
+  ts.getRange(1, 1, ts.getMaxRows(), ts.getMaxColumns()).setBackground("white"); 
   
   //set the target range to the values of the source data
   if (data != null) {
     ts.getRange(1, 1, data.length, data[0].length).setValues(data);
-  }
-}
-
-/**
-@desc adds a new column at the end of the sheet, with the name in first entry if it does not already exist
-@param name: Name that you want for the column
-sheet: the google sheet you're adding it to.
-@Functional YES
-*/
-function addColumn(name, sheet) {
-  var columns = sheet.getDataRange();
-  var numColumns = sheet.getDataRange().getNumColumns();
-  var values = columns.getValues();
-  var exists = false;
-  
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == name) {
-      exists = true;
-    }
-  }
-  if (!exists) {
-    var row = 1
-    var newColumn = numColumns + 1;
-    var cell = sheet.getRange(row, newColumn);
-    cell.setValue(name);
   }
 }
