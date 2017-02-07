@@ -18,13 +18,23 @@ function assignStudentLunchDays() {
   var pNumColumns = primaryData.getNumColumns();
   var tNumRows = teacherData.getNumRows();
   var tNumColumns = teacherData.getNumColumns();
-  
+
   var pLunchTimeColumn;
   var pLunchDayColumn;
   var pSFNameColumn;
   var pSLNameColumn;
   var pTFNameColumn;
   var pTLNameColumn;
+  var pAdvisorColumn;
+  var pGenderColumn;
+  var pCourseTitleColumn;
+  var pCourseCodeColumn;
+  var pCourseLengthColumn;
+  var pCourseIDColumn;
+  var pSectionIDColumn;
+  var pBlockColumn;
+  var pDOBColumn;
+  var pTableHeadColumn;
   var pTableColumn;
   var pGradeColumn;
   var pHouseColumn;
@@ -56,9 +66,31 @@ function assignStudentLunchDays() {
       pHouseColumn = i;
     }else if(column == 'Grade Level'){
       pGradeColumn = i;
+    }else if(column == "Advisor"){
+      pAdvisorColumn = i;
+    }else if(column == "Gender"){
+      pGenderColumn = i;
+    }else if(column == "Course Title"){
+      pCourseTitleColumn = i;
+    }else if(column == "Course Code"){
+      pCourseCodeColumn = i;
+    }else if(column == "Course ID"){
+      pCourseIDColumn = i;
+    }else if(column == "Section Identifier"){
+      pSectionIDColumn = i;
+    }else if(column == "Block"){
+      pBlockColumn = i;
+    }else if(column == "Date of Birth"){
+      pDOBColumn = i;
+    }else if(column == "Table Head"){
+      pTableHeadColumn = i;
+    }else if(column == "Advisor"){
+      pAdvisorColumn = i;
+    }else if(column == "Course Length"){
+      pCourseLengthColumn = i;
     }
   }
-  
+
   //Set needed variables in Faculty Choices
   for(var i = 0; i < tNumColumns; i++){
     var column = tValues[0][i];
@@ -126,7 +158,7 @@ function assignStudentLunchDays() {
       }
     }
   }
-   
+  
   var nextRow = primaryData.getNumRows() + 1;
   
   //Checks to see if each student has a lunch for each day
@@ -294,7 +326,7 @@ function assignStudentLunchDays() {
     SpreadsheetApp.getUi().alert(errorMessage);
     return;
   }
-    
+  
   //Checks to see if there are too few students in each early lunch. If there are, assign students
   //with the lowest zelm number in mid lunch to that lunch
   if(A.length < 133.0){
@@ -359,10 +391,14 @@ function assignStudentLunchDays() {
   }
   
   var pfsf = primaryData.getNumRows();
+  var pushArray;
+  var finalArray = [];
+  var count = 0;
   
   for(var post = 0; post < students.length; post++){
     var fin = students[post];
     for(var lun = 0; lun < fin.lunches.length; lun++){
+      count++;
       var lunch = fin.lunches[lun];
       var table = lunch.table;
       var row = lunch.row;
@@ -370,19 +406,36 @@ function assignStudentLunchDays() {
       if(lunch.time == 'mid')
         table = '';
       if(row > pfsf){
-        primary.appendRow([fin.fName, fin.lName, fin.grade, "", "", zelm, "", "", "", "", "", "", "", "", "", lunch.day, lunch.time, table, fin.house]);
+        finalArray.push([fin.fName, fin.lName, fin.grade, "", "", zelm, "", "", "", "", "", "", "", "", "", lunch.day, lunch.time, table, fin.house]);
       }else{
-        primaryData.getCell(row+1,pSFNameColumn+1).setValue(fin.fName);
-        primaryData.getCell(row+1,pSLNameColumn+1).setValue(fin.lName);
-        primaryData.getCell(row+1,pGradeColumn+1).setValue(fin.grade);
-        primaryData.getCell(row+1,pHouseColumn+1).setValue(fin.house);
-        primaryData.getCell(row+1,pLunchDayColumn+1).setValue(lunch.day);
-        primaryData.getCell(row+1,pLunchTimeColumn+1).setValue(lunch.time);
-        primaryData.getCell(row+1,pTableColumn+1).setValue(table);
+        pushArray = new Array(19);
+        pushArray[pSFNameColumn] = fin.fName;
+        pushArray[pSLNameColumn] = fin.lName;
+        pushArray[pGradeColumn] = fin.grade;
+        pushArray[pHouseColumn] = fin.house;
+        pushArray[pLunchDayColumn] = lunch.day;
+        pushArray[pLunchTimeColumn] = lunch.time;
+        pushArray[pTableColumn] = table;
+        
+        pushArray[pGenderColumn] = pValues[row][pGenderColumn];
+        pushArray[pCourseTitleColumn] =  pValues[row][pCourseTitleColumn];
+        pushArray[pAdvisorColumn] =  pValues[row][pAdvisorColumn];
+        pushArray[pCourseCodeColumn] =  pValues[row][pCourseCodeColumn];
+        pushArray[pCourseLengthColumn] =  pValues[row][pCourseLengthColumn];
+        pushArray[pCourseIDColumn] =  pValues[row][pCourseIDColumn];
+        pushArray[pSectionIDColumn] = pValues[row][pSectionIDColumn];
+        pushArray[pTFNameColumn] = pValues[row][pTFNameColumn];
+        pushArray[pTLNameColumn] = pValues[row][pTLNameColumn];
+        pushArray[pBlockColumn] = pValues[row][pBlockColumn];
+        pushArray[pDOBColumn] = pValues[row][pDOBColumn];
+        pushArray[pTableHeadColumn] = pValues[row][pTableHeadColumn];
+        pushArray[pCourseLengthColumn] = pValues[row][pCourseLengthColumn];
+        finalArray.push(pushArray);
       }
     }
   }
-  
+  var sheetRange = primary.getRange(2, 1, count, 19);
+  sheetRange.setValues(finalArray);
 }
 
 /**
@@ -406,11 +459,11 @@ function assignZelm(stu){
 /**
 @desc Creates teacher array filled with teacher information.
 @params - tValues - the array of the teachers rows and columns
-          tFNameColumn - the column index of the faculty first name
-          tLNameColumn - the column index of the faculty last name
-          tLunchTimeColumn - the column index of the lunch time
-          tLunchDayIndex - the column index of the lunch day
-          tNumRows - the number of rows in the faculty choices list
+tFNameColumn - the column index of the faculty first name
+tLNameColumn - the column index of the faculty last name
+tLunchTimeColumn - the column index of the lunch time
+tLunchDayIndex - the column index of the lunch day
+tNumRows - the number of rows in the faculty choices list
 @funtional - yes
 @author - dicksontc
 */
@@ -447,8 +500,8 @@ function getTeachers(tValues, tFNameColumn, tLNameColumn, tLunchTimeColumn, tLun
 @desc Changes the students with the lowest zelms' lunch times to early
 for a specific day with fewer than 133 students
 @params - numStudents - the number of students currently in that lunch
-          day - the day of the early lunch with fewer than 133 students
-          students - the list of students
+day - the day of the early lunch with fewer than 133 students
+students - the list of students
 @funtional - yes
 @author - dicksontc
 */
@@ -516,7 +569,7 @@ function shuffleArray(array) {
 
 /**
 @desc Randomly assignes a lunch table to the students who have
-      early lunches
+early lunches
 @params - students - the students in early lunch on a particular day
 @funtional - yes
 @author - dicksontc
