@@ -382,7 +382,58 @@ function assignStudentLunchDays() {
       }
     }
   }
-  
+  colorBackgrounds(pLunchTimeColumn);
+  colorBackgrounds(pTableColumn);
+}
+
+/**
+@desc Changes the background colors and/or fonts of certain cells in a given column
+@params - column - the column in which the cells need to be colored
+@funtional - yes
+@author - dicksontc
+*/
+function colorBackgrounds(column){
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var stuData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+  var ran = stuData.getRange(1, column + 1, stuData.getDataRange().getNumRows());
+  var vals = ran.getValues();
+  var col = ran.getNumColumns();
+  var ro = ran.getNumRows();
+  var rowColors = [];
+  if(vals[0] == "Lunch Time"){
+    for(var i = 0; i < ro; i++){
+      rowColors[i] = [];
+      if(vals[i] == "early")
+        rowColors[i].push("YELLOW");
+      else if(vals[i] == "late")
+        rowColors[i].push("#8db4e2");
+      else
+        rowColors[i].push("WHITE");
+    }
+    ran.setBackgrounds(rowColors);
+  }else if(vals[0] == "Lunch Table"){
+    var fonts = [];
+    for(var i = 0; i < ro; i++){
+      rowColors[i] = [];
+      fonts[i] = [];
+      if(vals[i] == "Ledger"){
+        rowColors[i].push("#660066");
+        fonts[i].push("YELLOW");
+      }else{
+        if(vals[i] == "Academy")
+          fonts[i].push("#3366ff");
+        else if(vals[i] == "Arrow")
+          fonts[i].push("#008000");
+        else if(vals[i] == "Crest")
+          fonts[i].push("#ff0000");
+        else
+          fonts[i].push("BLACK");
+        rowColors[i].push("WHITE");
+      }
+    }
+    ran.setFontColors(fonts);
+    ran.setBackgrounds(rowColors);
+  }
 }
 
 /**
