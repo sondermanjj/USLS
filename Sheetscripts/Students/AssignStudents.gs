@@ -122,12 +122,15 @@ function assignStudentLunchDays() {
     var teacherLName = pValues[i][pTLNameColumn];
     
     var val;
+    var zCheck = false;
+
     
     for(var j = 0; j < teachers.length; j++){
       var teach = teachers[j];
       if(teacherFName == '' && teacherLName == ''){
         val = 'mid';
         j = teachers.length;
+        zCheck = true;
       }else if(teach.fName == teacherFName && teach.lName == teacherLName){
         for(var k = 0; k < teach.lunches.length; k++){
           if(teach.lunches[k].day == day){
@@ -141,17 +144,17 @@ function assignStudentLunchDays() {
     
     if(students.length == 0){
       var lunches = [];
-      lunches.push({day: day, time: val, zelm: false, row: i, table: 0});
+      lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
       students.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
     }else{
       for(var j = 0; j < students.length; j++){
         if(students[j].fName == fname && students[j].lName == lname){
-          students[j].lunches.push({day: day, time: val, zelm: false, row: i, table: 0});
+          students[j].lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
           j = students.length;
         }
         if(j == students.length - 1){
           var lunches = [];
-          lunches.push({day: day, time: val, zelm: false, row: i, table: 0});
+          lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
           students.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
           j = students.length;
         }
