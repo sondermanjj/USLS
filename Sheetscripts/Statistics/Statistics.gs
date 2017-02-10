@@ -1,49 +1,89 @@
-
 /**
- * @desc- Returns statistics for how many students are in each lunch on each day
- * @return - String - statistics in html format to be displayed in a table
+ * @desc - Returns the statistics for the students and teachers
+ * @return - String - HTML for 2 tables, one for student statistics and one for teacher statistics
  * @author - hendersonam
  */
-function getHTMLForStatistics() {
+function getStatistics() {
+  var html = "Number of Students:\n" + getStudentStatistics();
+  html += "Number of Teachers:\n" + getTeacherStatistics();
+  return html;
+}
+
+/**
+ * @desc - Returns an html table with current student statistics
+ * @return - An html table with the number of students in each lunch on each day
+ */
+function getStudentStatistics() {
   var time = ["Early", "Mid", "Late"];
   var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var values = getFinalStudentDataValues();
+  var tableValues = statistics(true);
   
-  var html = "Data pulled from Final Student Data:\n<table>";
+  return getHTMLTable(time, day, tableValues);
+  
+}
+
+/**
+ * @desc - Returns an html table with current teacher statistics
+ * @return - An html table with the number of teachers in each lunch on each day
+ */
+function getTeacherStatistics() {
+  var time = ["Early", "Mid", "Late"];
+  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
+  var tableValues = statistics(false);
+  
+  return getHTMLTable(time, day, tableValues);
+}
+
+/**
+ * @desc- Returns an html table with the given data
+ * @param - Array[] - An array with the name of each column
+ *          Array[] - An array with the name of each row
+ *          Array[row][column] - An array with the data for each cell in the table
+ * @return - String - table in html format to be displayed in the UI
+ * @author - hendersonam
+ */
+function getHTMLTable(columns, rows, values) {
+  
+  var html = "<table>";
   html += "<tr>\n<th></th>\n";
-  for(var numTimes = 0; numTimes < time.length; numTimes++){
-     html += "<th>" + time[numTimes] + "</th>\n";
+  for(var column = 0; column < columns.length; column++){
+     html += "<th>" + columns[column] + "</th>\n";
   }
   html += "</tr>\n";
   
-  for ( var numDays = 0; numDays < day.length ; numDays++ ) {
-    html += "<tr><td>" + day[numDays] + "</td>";
-    for ( var numTime = 0; numTime < time.length ; numTime++ ) {
-      html += "<td>" + statsFor(time[numTime], day[numDays], values) + "</td>";
+  for ( var row = 0; row < rows.length ; row++ ) {
+    html += "<tr><td>" + rows[row] + "</td>";
+    for ( column = 0; column < columns.length ; column++ ) {
+      html += "<td>" + values[row][column] + "</td>";
     }
     html += "</tr>\n";
   }
   html += "</table>\n";
   
-  Logger.log(html);
   return html;
       
 }
 
 
 /**
- * @desc - Counts the number of students in the given lunch time on the given lunch day
- * @param - String - The lunch time
- *          String - The lunch day
- *          Object[][] - the array of values from the sheet to search through
- * @return - int - the number of students
+ * @desc - Counts the number of students in each lunch on each day
+ * @param - Boolean - true if getting student statistics, false for teacher statistics
+ * @return - Array[row][column] - the number of students for each lunch
+ * @author - hendersonam
  */
-function statsFor(time, day, values) {
+function statistics(students) {
+
+  var time = ["Early", "Mid", "Late"];
+  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
+  var values = getFinalStudentDataValues();
+  var stats = new Array();
   
-  var lunchTimeColumn, lunchDayColumn, gradeColumn;
-  var numberOfStudents = 0;
+  var lunchTimeColumn,
+    lunchDayColumn,
+    gradeColumn,
+    count;
   
-  for (var i = 0; i <= values[0].length - 1; i++) {
+  for (var i = 0; i <= values[0].length; i++) {
     var column = values[0][i];
     if (column == 'Lunch Time') {
       lunchTimeColumn = i ;
@@ -56,13 +96,28 @@ function statsFor(time, day, values) {
     }
   }
   
-  for(var j = 0; j < values.length - 1; j++) {
-    if(values[j][lunchTimeColumn] == time.toString().toLowerCase() && values[j][lunchDayColumn] == day && gradeColumn != "") {
-      numberOfStudents++;
+  for( i = 0; i < day.length; i++) {
+    stats[i] = new Array();
+    for( var j = 0;  j < time.length; j++) {
+      count =0;
+      for( var k = 0; k < values.length; k++) {
+        if(values[k][lunchTimeColumn] == time[j].toString().toLowerCase() && values[k][lunchDayColumn] == day[i]) {
+          if(students) {
+            if(values[k][gradeColumn] != "") {
+              count++;
+            }
+          } else {
+            if(values[k][gradeColumn] == "") {
+              count++;
+            }
+          }
+        }
+      }
+      stats[i][j] = count;
     }
   }
-  
-  return numberOfStudents.toString();
+
+  return stats;
 }
 
 /**
@@ -71,7 +126,6 @@ function statsFor(time, day, values) {
  * @author - hendersonam
  */
 function getFinalStudentDataValues() {
-  
   return SpreadsheetApp
     .getActiveSpreadsheet()
     .getSheetByName("Final Student Data")
