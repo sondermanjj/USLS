@@ -6,8 +6,8 @@
 @functional YES
 */
 
-function doItAll() {
-  addTeachersToTableList("1VhLMO_Rp2ladp1XdrPvxHnRW7gBjjP3Ggxhlh5Tm-BQ");
+function addFacultyTables() {
+  addTeachersToTableList(SpreadsheetApp.getActiveSpreadsheet().getId());
 }
 
 var numberOfTables = 19; //NUmber of tables in the early lunch
@@ -24,6 +24,8 @@ before reporting how many tables aren't used
 */
 function addTeachersToTableList(id) {
   
+  Logger.clear();
+  
   populateTableList(id);
   
   Logger.log("Adding teachers begun");
@@ -37,11 +39,11 @@ function addTeachersToTableList(id) {
   
   Logger.log("Spreadsheets retrieved");
   
-  teacherList.sort(1);
+  teacherList.sort(5);
   
   //Reset tables assigned to 0
-  teacherList.getRange(2, 8, teacherList.getLastRow()-1, 1).setValue(0);
-  teacherList.getRange(2, 9, teacherList.getLastRow()-1, 1).setValue(null);
+  teacherList.getRange(1, 8, teacherList.getLastRow()-1, 1).setValue(0);
+  teacherList.getRange(1, 9, teacherList.getLastRow()-1, 1).setValue(null);
   
   Logger.log("Spreadsheet 0 values assigned");
   
@@ -49,7 +51,7 @@ function addTeachersToTableList(id) {
   var earlyTeachersRows = [];
   //Assign random numbers to all the early teachers
   var lastRow = teacherList.getLastRow();
-  for (var i = 1; i <= lastRow; i++) {
+  for (var i = 0; i <= lastRow; i++) {
     if (allTeachersLunch[i] == "early") {
       earlyTeachersRows.push(i+1);
       earlyCount++;
@@ -57,8 +59,8 @@ function addTeachersToTableList(id) {
   }
   
   Logger.log("All early teachers row numbers collected");
-  
-  for (var i = 0; i < earlyTeachersRows.length;i++) {
+  var length = earlyTeachersRows.length;
+  for (var i = 0; i < length;i++) {
     teacherList.getRange(earlyTeachersRows[i], 9).setValue(Math.random()*100);
   }  
   
@@ -71,7 +73,6 @@ function addTeachersToTableList(id) {
   Logger.log("Early teachers values retrieved");
   var tablesAssigned = []; 
   var dodList = dodListsheet.getRange(1,1, 8, 8).getValues();
-  Logger.log(dodList[0][5]);
   
   for (var t = 0; t < 8; t++) {
     for (var i = 0; i < earlyCount; i++) {
@@ -96,23 +97,15 @@ function addTeachersToTableList(id) {
       for (var i = 0; i< 8; i++) {
         if (teacherRow[t][2] == letterDays[i]) {
           startingRow = (i*19)+2;
-          //   Logger.log(teacherRow[t][2] + " : " + letterDays[i]);
         }
       }
       for (var z = 0; z < 19; z++) {
         if (tablesAssigned[z+startingRow] != "1") {
-          /*
-          teacherRow[i][5] = 1;
-          teacherRow[i][7]++;
-          var teacherValues = [teacherRow[i]];
-          tableList.getRange(((t * 19)+2), 1, 1, 8).setValues(teacherValues);
-          tablesAssigned[(t * 19)+2] = 1;
-          */
           teacherRow[t][5] = z+1;
           teacherRow[t][7]++;
           var teacherValues = [teacherRow[t]];
-          tableList.getRange((startingRow+z), 1, 1, 8).setValues(teacherValues);
-          teacherList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
+          tableList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
+          teacherList.getRange((t+1), 1, 1, 8).setValues(teacherValues);
           
           tablesAssigned[startingRow+z] = 1;
           z = 25;
@@ -133,7 +126,6 @@ function addTeachersToTableList(id) {
   var emptyCount = 0;
   var tableRows = tableList.getRange(2, 2, tableLastRow).getValues();
   for (var r = 0; r < tableLastRow-1; r++) {
-    Logger.log(r + ": "+tableRows[r][0]);
     if (tableRows[r][0] == "") {
       emptyCount++;
       tableList.getRange(r+2, 1, 1, 6).setBackground("red");
@@ -145,6 +137,11 @@ function addTeachersToTableList(id) {
   
   
   Logger.log("Empty Spots marked");
+  
+  //Notify that the task is done
+  var ui = SpreadsheetApp.getUi();
+  ui.alert("Faculty assigned with "+emptyCount+" empty slots");
+  
 }
 
 /**

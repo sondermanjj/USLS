@@ -8,7 +8,7 @@ function onOpen() {
     var ui = SpreadsheetApp
       .getUi()
       .createMenu("Personal Add-ons")
-      .addItem("Start", "showSidebar");
+      .addItem("Show UI", "showSidebar");
       
     ui.addToUi();
 }
