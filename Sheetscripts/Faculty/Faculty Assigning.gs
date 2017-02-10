@@ -27,7 +27,7 @@ function addTeachersToTableList(id) {
   populateTableList(id);
   
   Logger.log("Adding teachers begun");
-  var tableList =   SpreadsheetApp.openById(id).getSheetByName("tableList");
+  var tableList =   SpreadsheetApp.openById(id).getSheetByName("Faculty Table List");
   var teacherList = SpreadsheetApp.openById(id).getSheetByName("Faculty Choices")
   var dodListsheet = SpreadsheetApp.openById(id).getSheetByName("DOD List");
   
@@ -198,8 +198,8 @@ function copyTeacherDataToPrimary(id) {
 @functional YES
 */
 function populateTableList(id) {
-  createNewSheet(null, "tableList", id);
-  var tableList = SpreadsheetApp.openById(id).getSheetByName("tableList");
+  createNewSheet(null, "Faculty Table List", id);
+  var tableList = SpreadsheetApp.openById(id).getSheetByName("Faculty Table List");
   var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
   
   tableList.getRange("A1:F1").setValues(headerList);
