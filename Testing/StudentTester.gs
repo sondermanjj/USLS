@@ -102,112 +102,229 @@ function mainTester(){
       }
     }
   }
-    
-    
-  testForFilledEarlyLunches(students);
-  testAllStudentsHaveALunchForEachDay(students);
   
-  var log = Logger.getLog();
-  var p = [];
+  var messages = [];  
+  messages[0] = testForFilledEarlyLunches(students);
+  messages[1] = testAllStudentsHaveALunchForEachDay(students);
+  messages[2] = testColorByTime(pLunchTimeColumn);
+  messages[3] = testColorByTable(pTableColumn);
+  
+  return messages;
+}
+
+/**
+@desc This function tests to see if the backgrounds for the lunch time column
+      are of the correct color
+Passes - All background colors are correct
+Fails - Any background colors are incorrect
+@params - column - the column of which the lunch times are in
+@funtional - yes
+@author - dicksontc
+*/
+function testColorByTime(column){
+  return allTests(function(t) {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+    var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
+    var vals = range.getValues();
+    var check = 0;
+    var backgrounds = range.getBackgrounds();
+    if(vals[0] == "Lunch Time"){
+      for(var i = 1; i < vals.length; i++){
+        if(vals[i] == "early"){
+          if(backgrounds[i] != "YELLOW"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }else if(vals[i] == "late"){
+          if(backgrounds[i] != "#8db4e2"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }else{
+          if(backgrounds[i] != "WHITE"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }
+      }
+    }else{
+      t.errorSpot("Wrong Column", false);
+      check++;
+    }
+    if(check == 0){
+      t.errorSpot("testColorByTime has passed!", true);
+    }else{
+      t.errorSpot("testColorByTime has failed!", false);
+    }
+  });
+}
+
+/**
+@desc This function tests to see if the backgrounds and font colors
+      for the lunch tables column are of the correct colors
+Passes - All background and font colors are correct
+Fails - Any background or font colors are incorrect
+@params - column - the column of which the lunch tables are in
+@funtional - yes
+@author - dicksontc
+*/
+function testColorByTable(column){
+  return allTests(function(t) {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+    var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
+    var vals = range.getValues();
+    var check = 0;
+    var backgrounds = range.getBackgrounds();
+    var fonts = range.getFontColors();
+    if(vals[0] == "Lunch Table"){
+      for(var i = 1; i < vals.length; i++){
+        if(vals[i] == "Ledger"){
+          if(backgrounds[i] != "#660066" || fonts[i] != "YELLOW"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }else if(backgrounds[i] != "WHITE"){
+          if(vals[i] == "Crest"){
+            if(fonts[i] != "#ff0000"){
+              t.errorSpot("Colors are not correct!", false);
+            check++;
+            }
+          }else if(vals[i] == "Arrow"){
+            if(fonts[i] != "#008000"){
+              t.errorSpot("Colors are not correct!", false);
+            check++;
+            }
+          }else if(vals[i] == "Academy"){
+            if(fonts[i] != "#3366ff"){
+              t.errorSpot("Colors are not correct!", false);
+              check++;
+            }
+          }else{
+            if(fonts[i] != "BLACK"){
+              t.errorSpot("Colors are not correct!", false);
+              check++;
+            }
+          }
+        }else{
+          t.errorSpot("Colors are not correct!", false);
+          check++;
+        }
+      }
+    }else{
+      t.errorSpot("Wrong Column", false);
+      check++;
+    }
+    if(check == 0){
+      t.errorSpot("testColorByTable has passed!", true);
+    }else{
+      t.errorSpot("testColorByTable has failed!", false);
+    }
+  });
 }
 
 /**
 @desc This function tests to see if every early lunch has 133 students
-      Passes - 133 students per early lunch
-      Fails - Less or more than 133 students in any early lunch
+Passes - 133 students per early lunch
+Fails - Less or more than 133 students in any early lunch
 @params - students - the students at USM and their relevant information
 @funtional - yes
 @author - dicksontc
 */
 function testForFilledEarlyLunches(students) {
-  var A = [];
-  var B = [];
-  var C = [];
-  var D = [];
-  var E = [];
-  var F = [];
-  var G = [];
-  var H = [];
-  for(var x = 1; x < students.length; x++){
-    var stu = students[x];
-    for(var j = 0; j < stu.lunches.length; j++){
-      if(stu.lunches[j].time = 'early'){
-        if(stu.lunches[j].day == 'A')
-          A.push(stu);
-        else if(stu.lunches[j].day == 'B')
-          B.push(stu);
-        else if(stu.lunches[j].day == 'C')
-          C.push(stu);
-        else if(stu.lunches[j].day == 'D')
-          D.push(stu);
-        else if(stu.lunches[j].day == 'E')
-          E.push(stu);
-        else if(stu.lunches[j].day == 'F')
-          F.push(stu);
-        else if(stu.lunches[j].day == 'G')
-          G.push(stu);
-        else if(stu.lunches[j].day == 'H')
-          H.push(stu);
+  
+  return allTests(function(t) {
+    
+    var A = [];
+    var B = [];
+    var C = [];
+    var D = [];
+    var E = [];
+    var F = [];
+    var G = [];
+    var H = [];
+    for(var x = 1; x < students.length; x++){
+      var stu = students[x];
+      for(var j = 0; j < stu.lunches.length; j++){
+        if(stu.lunches[j].time = 'early'){
+          if(stu.lunches[j].day == 'A')
+            A.push(stu);
+          else if(stu.lunches[j].day == 'B')
+            B.push(stu);
+          else if(stu.lunches[j].day == 'C')
+            C.push(stu);
+          else if(stu.lunches[j].day == 'D')
+            D.push(stu);
+          else if(stu.lunches[j].day == 'E')
+            E.push(stu);
+          else if(stu.lunches[j].day == 'F')
+            F.push(stu);
+          else if(stu.lunches[j].day == 'G')
+            G.push(stu);
+          else if(stu.lunches[j].day == 'H')
+            H.push(stu);
+        }
       }
     }
-  }
-  if(A.length == 133 && B.length == 133 && C.length == 133 && D.length == 133 && E.length == 133 && F.length == 133 && G.length == 133 && H.length == 133){
-    Logger.log("testForFilledEarlyLunches passed!");
-  }else{
-     Logger.log("testForFilledEarlyLunches failed!");
-  }
+    if(A.length == 133 && B.length == 133 && C.length == 133 && D.length == 133 && E.length == 133 && F.length == 133 && G.length == 133 && H.length == 133){
+      t.errorSpot("All lunch numbers ok!", true);
+    }else{
+      t.errorSpot("testForFilledEarlyLunches failed!", false);
+    }
+  });
 }
 
 /**
 @desc This function tests to see if every student has 1 lunch per day
-      Passes - All students have 1 lunch per day
-      Fails - One or more students have 0 or more than 1 lunches per day
+Passes - All students have 1 lunch per day
+Fails - One or more students have 0 or more than 1 lunches per day
 @params - students - the students at USM and their relevant information
 @funtional - yes
 @author - dicksontc
 */
 function testAllStudentsHaveALunchForEachDay(students){
-  var count = 0;
-  for(var n = 0; n < students.length; n++){
-    var stu = students[n];
-    if(stu.lunches.length == 8){
-      var a = false;
-      var b = false;
-      var c = false;
-      var d = false;
-      var e = false;
-      var f = false;
-      var g = false;
-      var h = false;
-      for(var j = 0; j < stu.lunches.length; j++){
-        if(stu.lunches[j].day == 'A')
-          a = true;
-        else if(stu.lunches[j].day == 'B')
-          b = true;
-        else if(stu.lunches[j].day == 'C')
-          c = true;
-        else if(stu.lunches[j].day == 'D')
-          d = true;
-        else if(stu.lunches[j].day == 'E')
-          e = true;
-        else if(stu.lunches[j].day == 'F')
-          f = true;
-        else if(stu.lunches[j].day == 'G')
-          g = true;
-        else if(stu.lunches[j].day == 'H')
-          h = true;
-      }
-      if(!(a && b && c && d && e && f && g && h)){
-        Logger.log("Student " + stu.fName + " " + stu.lName + " has 8 lunches, but does not have a lunch for every day!");
+  
+  return allTests(function(t) {
+    
+    var count = 0;
+    for(var n = 0; n < students.length; n++){
+      var stu = students[n];
+      if(stu.lunches.length == 8){
+        var a = false;
+        var b = false;
+        var c = false;
+        var d = false;
+        var e = false;
+        var f = false;
+        var g = false;
+        var h = false;
+        for(var j = 0; j < stu.lunches.length; j++){
+          if(stu.lunches[j].day == 'A')
+            a = true;
+          else if(stu.lunches[j].day == 'B')
+            b = true;
+          else if(stu.lunches[j].day == 'C')
+            c = true;
+          else if(stu.lunches[j].day == 'D')
+            d = true;
+          else if(stu.lunches[j].day == 'E')
+            e = true;
+          else if(stu.lunches[j].day == 'F')
+            f = true;
+          else if(stu.lunches[j].day == 'G')
+            g = true;
+          else if(stu.lunches[j].day == 'H')
+            h = true;
+        }
+        if(!(a && b && c && d && e && f && g && h)){
+          t.errorSpot("Student " + stu.fName + " " + stu.lName + " has 8 lunches, but does not have a lunch for every day!", false);
+          count++;
+        }
+      }else{
+        t.errorSpot("Student " + stu.fName + " " + stu.lName + " has " + stu.lunches.length + " lunches!", false);
         count++;
       }
-    }else{
-      Logger.log("Student " + stu.fName + " " + stu.lName + " has " + stu.lunches.length + " lunches!");
-      count++;
     }
-  }
-  if(count > 0){
-     Logger.log("testAllStudentsHaveALunchForEachDay failed!");
-  }else
-     Logger.log("testAllStudentsHaveALunchForEachDay passed!");
+  });
 }
