@@ -3,9 +3,13 @@ function getScheduleChanges() {
   var changes = scheduleChanges();
   if(changes.length == 0) {
     html += "<br> No Schedule changes to display.";
-  } else {
+  }  else {
     for ( i = 0; i < changes.length; i++) {
-      html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " to " + changes[i][5] + " on " + changes[i][4] + " days.";
+      if (changes[i].length < 5) {
+        html += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
+      } else {
+        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " to " + changes[i][5] + " on " + changes[i][4] + " days.";
+      }
     }
   }
   return html;
@@ -78,12 +82,27 @@ function findChanges(oldValues, newValues, changesSheet) {
   }
   
 
+  if ( oldValues.length != newValues.length) {
+    var count = oldValues.length;
+    for( count ; count < newValues.length; count++) {
+      oldValues.push(newValues[count]);
+      changes.push( [newValues[count][newFirstNameColumn],
+                     newValues[count][newLastNameColumn],
+                     newValues[count][newLunchDayColumn],
+                     newValues[count][newLunchTimeColumn]]);
+    }
+  
+  }
   oldValues.sort();
   newValues.sort();
   
-  
   for ( i = 0; i < newValues.length; i++) {
-    if( !newValues[i].toString().equals(oldValues[i].toString())) {
+    if(oldValues[i] == null) {
+      changes.push( [newValues[i][newFirstNameColumn],
+                     newValues[i][newLastNameColumn],
+                     newValues[i][newLunchDayColumn],
+                     newValues[i][newLunchTimeColumn]]);
+    } else if ( !newValues[i].toString().equals(oldValues[i].toString())) {
       changesSheet.appendRow(oldValues[i]);
       changes.push( [newValues[i][newFirstNameColumn],
                      newValues[i][newLastNameColumn],
