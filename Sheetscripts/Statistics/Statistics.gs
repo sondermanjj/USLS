@@ -17,7 +17,7 @@ function getStatistics() {
 function getStudentStatistics() {
   var time = ["Early", "Mid", "Late"];
   var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var tableValues = statistics(true);
+  var tableValues = statistics(time, day, getFinalStudentDataValues(), true);
   
   return getHTMLTable(time, day, tableValues);
   
@@ -31,7 +31,7 @@ function getStudentStatistics() {
 function getTeacherStatistics() {
   var time = ["Early", "Mid", "Late"];
   var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var tableValues = statistics(false);
+  var tableValues = statistics(time, day, getFinalStudentDataValues(), false);
   
   return getHTMLTable(time, day, tableValues);
 }
@@ -73,11 +73,8 @@ function getHTMLTable(columns, rows, values) {
  * @return - Array[row][column] - the number of students for each lunch
  * @author - hendersonam
  */
-function statistics(students) {
+function statistics(time, day, values, students) {
 
-  var time = ["Early", "Mid", "Late"];
-  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var values = getFinalStudentDataValues();
   var stats = new Array();
   
   var lunchTimeColumn,
