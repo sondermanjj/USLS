@@ -1,3 +1,8 @@
+/**
+ * @desc - Gets the html for the schedule updates
+ * @return - A list of schedule updates in html
+ * @author - hendersonam
+ */
 function getScheduleChanges() {
   var html = "<br>Student Lunch Changes:";
   var changes = scheduleChanges();
@@ -15,6 +20,12 @@ function getScheduleChanges() {
   return html;
 }
 
+/**
+ * @desc - Creates/Updates the Scanned Data and Student Schedule Changes sheets and returns the differences
+ *         between the Final Student Data and Scanned Data to be displayed in the UI as schedule changes
+ * @return - An array of the schedule changes from the previously scanned data to the current data
+ * @author - hendersonam
+ */
 function scheduleChanges() {
   
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -43,6 +54,14 @@ function scheduleChanges() {
   return changes;
 }
 
+/**
+ * @desc - Finds the differences between the 2 arrays given and adds them to the given sheet
+ * @param - Object[][] - the oldValues that were previously saved
+ *          Object[][] - the newValues that have schedule changes
+ *          Sheet - The changes sheet to save schedule changes to as records
+ * @return - The differences between the 2 arrays
+ * @author - hendersonam
+ */
 function findChanges(oldValues, newValues, changesSheet) {
   
   var oldFirstNameColumn, 

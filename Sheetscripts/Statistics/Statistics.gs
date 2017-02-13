@@ -12,6 +12,7 @@ function getStatistics() {
 /**
  * @desc - Returns an html table with current student statistics
  * @return - An html table with the number of students in each lunch on each day
+ * @author - hendersonam
  */
 function getStudentStatistics() {
   var time = ["Early", "Mid", "Late"];
@@ -25,6 +26,7 @@ function getStudentStatistics() {
 /**
  * @desc - Returns an html table with current teacher statistics
  * @return - An html table with the number of teachers in each lunch on each day
+ * @author - hendersonam
  */
 function getTeacherStatistics() {
   var time = ["Early", "Mid", "Late"];

@@ -57,7 +57,18 @@
     <script>
     
     /**
+      * @desc - Scans the data for statistics
+      * @author - hendersonam
+      */
+    function scanData() {
+    console.log("Hello");
+    google.script.run.withSuccessHandler(displayScheduleChanges).getScheduleChanges();
+    google.script.run.withSuccessHandler(displayStats).getStatistics();
+    }
+    
+    /**
       * @desc - Displays Lunch Statistics
+      * @author - hendersonam
       */
     function displayStats(statistics) {
       
@@ -67,7 +78,8 @@
     } 
     
     /**
-      * @desc - Displays Lunch Statistics
+      * @desc - Displays Schedule Changes
+      * @author - hendersonam
       */
     function displayScheduleChanges(changes) {
       
@@ -81,8 +93,7 @@
     <body>
       
       <button class="action" onclick="google.script.run.startCleanUp()">Clean</button>
-      <button class="action" onclick="google.script.run.withSuccessHandler(displayStats).getStatistics()">Scan</button>
-      <button class="action" onclick="google.script.run.withSuccessHandler(displayScheduleChanges).getScheduleChanges()">Scan</button>
+      <button class="action" onclick="scanData()">Scan</button>
       
       <div id="changes"></div>
       <div id="stats"></div>
