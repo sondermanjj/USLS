@@ -1,4 +1,12 @@
 
+function startTableAssigning() {
+  
+  startCleanUp();
+  assignStudentLunchDays();
+  addFacultyTables();
+  
+}
+
 /**
  * @desc - Prompts the user to enter the name of the sheet they would like to clean
  * @functional - yes
