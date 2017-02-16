@@ -106,13 +106,126 @@ function studentTester(){
       }
     }
   }
+  
   var messages = [];  
   messages[0] = testForFilledEarlyLunches(students);
   messages[1] = testAllStudentsHaveALunchForEachDay(students);
+  messages[2] = testColorByTime(pLunchTimeColumn);
+  messages[3] = testColorByTable(pTableColumn);
   
-  var log = Logger.getLog();
-  var p = [];
   return messages;
+}
+
+/**
+@desc This function tests to see if the backgrounds for the lunch time column
+      are of the correct color
+Passes - All background colors are correct
+Fails - Any background colors are incorrect
+@params - column - the column of which the lunch times are in
+@funtional - yes
+@author - dicksontc
+*/
+function testColorByTime(column){
+  return allTests(function(t) {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+    var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
+    var vals = range.getValues();
+    var check = 0;
+    var backgrounds = range.getBackgrounds();
+    if(vals[0] == "Lunch Time"){
+      for(var i = 1; i < vals.length; i++){
+        if(vals[i] == "early"){
+          if(backgrounds[i] != "YELLOW"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }else if(vals[i] == "late"){
+          if(backgrounds[i] != "#8db4e2"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }else{
+          if(backgrounds[i] != "WHITE"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }
+      }
+    }else{
+      t.errorSpot("Wrong Column", false);
+      check++;
+    }
+    if(check == 0){
+      t.errorSpot("testColorByTime has passed!", true);
+    }else{
+      t.errorSpot("testColorByTime has failed!", false);
+    }
+  });
+}
+
+/**
+@desc This function tests to see if the backgrounds and font colors
+      for the lunch tables column are of the correct colors
+Passes - All background and font colors are correct
+Fails - Any background or font colors are incorrect
+@params - column - the column of which the lunch tables are in
+@funtional - yes
+@author - dicksontc
+*/
+function testColorByTable(column){
+  return allTests(function(t) {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+    var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
+    var vals = range.getValues();
+    var check = 0;
+    var backgrounds = range.getBackgrounds();
+    var fonts = range.getFontColors();
+    if(vals[0] == "Lunch Table"){
+      for(var i = 1; i < vals.length; i++){
+        if(vals[i] == "Ledger"){
+          if(backgrounds[i] != "#660066" || fonts[i] != "YELLOW"){
+            t.errorSpot("Colors are not correct!", false);
+            check++;
+          }
+        }else if(backgrounds[i] != "WHITE"){
+          if(vals[i] == "Crest"){
+            if(fonts[i] != "#ff0000"){
+              t.errorSpot("Colors are not correct!", false);
+            check++;
+            }
+          }else if(vals[i] == "Arrow"){
+            if(fonts[i] != "#008000"){
+              t.errorSpot("Colors are not correct!", false);
+            check++;
+            }
+          }else if(vals[i] == "Academy"){
+            if(fonts[i] != "#3366ff"){
+              t.errorSpot("Colors are not correct!", false);
+              check++;
+            }
+          }else{
+            if(fonts[i] != "BLACK"){
+              t.errorSpot("Colors are not correct!", false);
+              check++;
+            }
+          }
+        }else{
+          t.errorSpot("Colors are not correct!", false);
+          check++;
+        }
+      }
+    }else{
+      t.errorSpot("Wrong Column", false);
+      check++;
+    }
+    if(check == 0){
+      t.errorSpot("testColorByTable has passed!", true);
+    }else{
+      t.errorSpot("testColorByTable has failed!", false);
+    }
+  });
 }
 
 /**
@@ -218,5 +331,4 @@ function testAllStudentsHaveALunchForEachDay(students){
       }
     }
   });
-  
 }
