@@ -115,7 +115,7 @@ function addTeachersToTableList(id) {
   }
   
   Logger.log("Other teachers sorted into place");
- 
+  
   //Now clear up the useless rows in tablelist and teacherlist
   teacherList.getRange(1, 8, teacherList.getLastRow(), 2).clear();
   tableList.getRange(1, 8, teacherList.getLastRow(), 2).clear();
@@ -195,7 +195,7 @@ function copyTeacherDataToPrimary(id) {
 @functional YES
 */
 function populateTableList(id) {
-  createNewSheet(null, "Faculty Table List", id);
+  createNewSheets(null, "Faculty Table List", id);
   var tableList = SpreadsheetApp.openById(id).getSheetByName("Faculty Table List");
   var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
   
@@ -222,15 +222,15 @@ name: Name of the sheet
 id: id of the sheet to be edited.
 @Functional YES
 */
-function createNewSheet(data, name, id) {
+function createNewSheets(data, name, id) {
   var sheet = SpreadsheetApp.openById(id);
   var ts = sheet.getSheetByName(name) //Target sheet
+ ts.getRange(1, 1, ts.getMaxRows(), ts.getMaxColumns()).setBackground("white"); 
   if (ts == null) {
     sheet.insertSheet(name);
     ts = sheet.getSheetByName(name); //Target sheet
   }
   ts.clearContents()
-  ts.getRange(1, 1, ts.getMaxRows(), ts.getMaxColumns()).setBackground("white"); 
   
   //set the target range to the values of the source data
   if (data != null) {
