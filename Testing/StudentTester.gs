@@ -1,10 +1,14 @@
 /**
 @desc This function sets up the necessary information for the tests as well
-      as runs the tests.
+as runs the tests.
 @funtional - yes
 @author - dicksontc
 */
-function mainTester(){
+function studentTester(){
+  
+  assignStudentLunchDays();
+  
+  
   var sheet = SpreadsheetApp.getActiveSheet();
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
