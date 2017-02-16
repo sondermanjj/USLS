@@ -61,7 +61,7 @@
       * @author - hendersonam
       */
     function scanData() {
-    console.log("Hello");
+    
     google.script.run.withSuccessHandler(displayScheduleChanges).getScheduleChanges();
     google.script.run.withSuccessHandler(displayStats).getStatistics();
     }
@@ -88,12 +88,27 @@
       
     }
     
+    /**
+     * @desc - If the enter key is pressed, hideValues that do not contain the string in the text box
+     * @param - event - the button that is pressed
+     * @author - hendersonam
+     */
+    function mySearch(e) {
+      var key= e.keyCode || e.which;
+      if (key==13){
+        var filter = document.getElementById('filter').value.toLowerCase();
+        google.script.run.hideValues(filter);
+      }
+    }
+    
     </script>
   </head>
     <body>
       
       <button class="action" onclick="google.script.run.startCleanUp()">Clean</button>
       <button class="action" onclick="scanData()">Scan</button>
+      <button class="action" onclick="google.script.run.showAllValues()">Show</button>
+      <input type="text" id="filter" onkeypress="mySearch(event)" placeholder="Search for names..">
       
       <div id="changes"></div>
       <div id="stats"></div>

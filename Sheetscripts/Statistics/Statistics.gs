@@ -77,23 +77,11 @@ function statistics(time, day, values, students) {
 
   var stats = new Array();
   
-  var lunchTimeColumn,
-    lunchDayColumn,
-    gradeColumn,
-    count;
+  var count;
   
-  for (var i = 0; i <= values[0].length; i++) {
-    var column = values[0][i];
-    if (column == 'Lunch Time') {
-      lunchTimeColumn = i ;
-    }
-    if (column == 'Lunch Day') {
-      lunchDayColumn = i ;
-    }
-    if (column == 'Grade') {
-      gradeColumn = i;
-    }
-  }
+  var lunchDayColumn = getColumnIndex(values, "Lunch Day");
+  var gradeColumn = getColumnIndex(values, "Grade");
+  var lunchTimeColumn = getColumnIndex(values, "Lunch Time");
   
   for( i = 0; i < day.length; i++) {
     stats[i] = new Array();
@@ -119,17 +107,4 @@ function statistics(time, day, values, students) {
   return stats;
 }
 
-/**
- * @desc - Returns the data values from the Final Student Data sheet
- * @return Object[][] - the data values
- * @author - hendersonam
- */
-function getFinalStudentDataValues() {
-  return SpreadsheetApp
-    .getActiveSpreadsheet()
-    .getSheetByName("Final Student Data")
-    .getDataRange()
-    .getValues();
-  
-}
 

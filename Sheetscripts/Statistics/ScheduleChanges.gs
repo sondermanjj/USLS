@@ -10,10 +10,16 @@ function getScheduleChanges() {
     html += "<br> No Schedule changes to display.";
   }  else {
     for ( i = 0; i < changes.length; i++) {
-      if (changes[i].length < 5) {
+      if (changes[i].length < 6) {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
+      } else if (changes[i][3] == 'mid' && changes[i][5] == 'mid') {
+        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+      } else if (changes[i][3] == 'mid') {
+        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+      } else if (changes[i][5] == 'mid') {
+        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
       } else {
-        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " to " + changes[i][5] + " on " + changes[i][4] + " days.";
+        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
       }
     }
   }
@@ -29,8 +35,7 @@ function getScheduleChanges() {
 function scheduleChanges() {
   
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var studentDataSheet = spreadsheet.getSheetByName("Final Student Data");
-  var currentValues = studentDataSheet.getDataRange().getValues();
+  var currentValues = getFinalStudentDataValues();
   
   var scannedSheet = spreadsheet.getSheetByName("Scanned Data");
   if (scannedSheet == null) {
@@ -64,77 +69,92 @@ function scheduleChanges() {
  */
 function findChanges(oldValues, newValues, changesSheet) {
   
-  var oldFirstNameColumn, 
-      newFirstNameColumn, 
-      newLastNameColumn, 
-      newLunchTimeColumn, 
-      newLunchDayColumn;
+  var firstNameColumn = getColumnIndex(newValues, "First Name");
+  var lastNameColumn = getColumnIndex(newValues, "Last Name");
+  var newLunchTimeColumn = getColumnIndex(newValues, "Lunch Time");
+  var newLunchDayColumn = getColumnIndex(newValues, "Lunch Day");
+  var newTableColumn = getColumnIndex(newValues, "Table");
+  
+  var oldLunchTimeColumn = getColumnIndex(oldValues, "Lunch Time");
+  var oldLunchDayColumn = getColumnIndex(oldValues, "Lunch Day");
+  var oldTableColumn = getColumnIndex(oldValues, "Table");
   
   var changes = new Array();
-  
-  for( j = 0; j < oldValues.length; j++) {
-    for ( i = 0; i < oldValues[j].length - 1; i++) {
-      if (oldValues[j][i] == 'Lunch Time') {
-        var oldLunchTimeColumn = i ;
-      }
-      if (oldValues[j][i] == 'Lunch Day') {
-        var oldLunchDayColumn = i ;
-      }
-    }
-  }
-  
-  for( j = 0; j < oldValues.length; j++) {
-    for ( i = 0; i < newValues[j].length - 1; i++) {
-      if (newValues[j][i] == 'First Name') {
-        var newFirstNameColumn = i ;
-      }
-      if (newValues[j][i] == 'Last Name') {
-        var newLastNameColumn = i ;
-      }
-      if (newValues[j][i] == 'Lunch Time') {
-        var newLunchTimeColumn = i ;
-      }
-      if (newValues[j][i] == 'Lunch Day') {
-        var newLunchDayColumn = i ;
-      }
-    }
-  }
-  
 
   if ( oldValues.length != newValues.length) {
     var count = oldValues.length;
     for( count ; count < newValues.length; count++) {
+      
       oldValues.push(newValues[count]);
-      changes.push( [newValues[count][newFirstNameColumn],
-                     newValues[count][newLastNameColumn],
+      
+      changes.push( [newValues[count][firstNameColumn],
+                     newValues[count][lastNameColumn],
                      newValues[count][newLunchDayColumn],
                      newValues[count][newLunchTimeColumn]]);
     }
-  
   }
+  
   oldValues.sort();
   newValues.sort();
   
   for ( i = 0; i < newValues.length; i++) {
+    
     if(oldValues[i] == null) {
-      changes.push( [newValues[i][newFirstNameColumn],
-                     newValues[i][newLastNameColumn],
+      changes.push( [newValues[i][firstNameColumn],
+                     newValues[i][lastNameColumn],
                      newValues[i][newLunchDayColumn],
-                     newValues[i][newLunchTimeColumn]]);
+                     newValues[i][newLunchTimeColumn],
+                     newValues[i][newTableColumn]]);
+      
     } else if ( !newValues[i].toString().equals(oldValues[i].toString())) {
+      
       changesSheet.appendRow(oldValues[i]);
-      changes.push( [newValues[i][newFirstNameColumn],
-                     newValues[i][newLastNameColumn],
+      
+      changes.push( [newValues[i][firstNameColumn],
+                     newValues[i][lastNameColumn],
                      oldValues[i][oldLunchDayColumn],
                      oldValues[i][oldLunchTimeColumn],
                      newValues[i][newLunchDayColumn],
-                     newValues[i][newLunchTimeColumn]]);
+                     newValues[i][newLunchTimeColumn],
+                     oldValues[i][oldTableColumn],
+                     newValues[i][newTableColumn]]);
     }
   }
   
-  
   return changes;
 }
+
+function adjustOtherSchedules() {
+  
+  var time = ["Early", "Mid", "Late"];
+  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
+  var flags = [0,0,0,0,0,0,0,0];
+  var values = getFinalStudentDataValues();
+  
+  var firstNameColumn = getColumnIndex(values, "First Name");
+  var lastNameColumn = getColumnIndex(values, "Last Name");
+  var lunchTimeColumn = getColumnIndex(values, "Lunch Time");
+  var lunchDayColumn = getColumnIndex(values, "Lunch Day");
+  var tableColumn = getColumnIndex(values, "Table");
+  
+  var stats = statistics(time, day, values, true);
+  
+  for (var i = 0; i < stats.length; i++) {
+    if(stats[i][0] > 133) {
+      flags[i] = stats[i][0] - 133;
+    }
+  }
+  
+  for ( i = 0; i < flags.length; i++) {
+    if(flags[i] > 0) {
+      for ( j = 0; j < values.length; j++) {
+        
+      
+      }
+    }
+  }   
+}
+
 
 
 

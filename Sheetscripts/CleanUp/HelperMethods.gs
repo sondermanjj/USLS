@@ -1,85 +1,74 @@
 /**
- * @desc - Gets a list of all the sheets in the current Spreadsheet
- * @return - html code to list all the sheets as options for a drop down
- * @functional - IN PROEGSS
+ * @desc - Searches the Final Student Data and hides all rows that do not contain the filter string
+ * @param - String - String to search for
  * @author - hendersonam
  */
-function getSheetList(){
-  var sheets = SpreadsheetApp
-    .getActiveSpreadsheet()
-    .getSheets();
+function hideValues(filter) {
+  
+  var values = getFinalStudentDataValues();
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+  var count = 0;
+  var index = 0;    
+  var i;
     
-  var sheetList = '';
-  var length = sheets.length();
-  for (var i = 0; i < length; i++) {
-    sheetList += "<option value=" + sheets[i].getName() + ">" + sheets[i].getName() + "</option>";
-    return sheetList;    
-  }            
+  for ( i = 2; i <= values.length; i++) {
+      
+    while ( i <= values.length && values[i-1].toString().toLowerCase().search(filter) == -1 ) {
+      if ( count == 0) {
+        index = i;
+      }
+      count++;
+      i++;
+    }
+    if ( count > 0) {
+    sheet.hideRows(index, count);
+    count = 0;
+    }
+  }
 }
 
 /**
- * @desc creates a new sheet (or overwrites old one) with the data involved)
- * @param - array[][] - data from a sheet
- *          string - name of the new sheet
- * @functional - yes
- * @author - sondermanjj
+ * @desc - Shows all rows in case some are currently hidden
+ * @author - hendersonam
  */
-function createNewSheet(data, name) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet();
-  var ts = sheet.getSheetByName(name) //Target sheet
-	if (ts == null) {
-      sheet.insertSheet(name);
-      ts = sheet.getSheetByName(name); //Target sheet
-    }
-  ts.clearContents()
+function showAllValues() {
+  var values = getFinalStudentDataValues();
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+
+  sheet.showRows(1, values.length);
+}
+
+/**
+ * @desc - Returns the data values from the Final Student Data sheet
+ * @return Object[][] - the data values
+ * @author - hendersonam
+ */
+function getFinalStudentDataValues() {
+  return SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getSheetByName("Final Student Data")
+    .getDataRange()
+    .getValues();
   
-  //set the target range to the values of the source data
-  ts.getRange(1, 1, data.length, data[0].length).setValues(data);
 }
 
-/**
- * @desc - adds a column to a given sheet
- * @param - string - name of the column to add
- *          sheet - sheet which needs the column
- * @functional - YES
- * @author - sondermanjj
- */
-function addColumn(name, sheet) {
-  var columns = sheet.getDataRange();
-  var numColumns = sheet.getDataRange().getNumColumns();
-  var values = columns.getValues();
-  var exists = false;
- 
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == name) {
-      exists = true;
-    }
-  }
-  if (!exists) {
-  var row = 1
-    var newColumn = numColumns + 1;
-    var cell = sheet.getRange(row, newColumn);
-    cell.setValue(name);
-  }
-}
 
 /**
- * @desc - deletes a column from a given sheet
- * @param - string - name of the column to delete
- *          sheet - sheet which contains the column
- * @functional - YES
- * @author - sondermanjj
- */
-function deleteColumn(name, sheet) {
-  var columns = sheet.getDataRange();
-  var numColumns = columns.getNumColumns();
-  var values = columns.getValues();
-  
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == name) {
-      sheet.deleteColumn((parseInt(i)+1));
+  * @desc - Gets the index of the column in the given data
+  * @param - Object[][] - Values to search through
+  *          String - Name of the column
+  * @return - Int - Index of the column in the given Array
+  * @author - hendersonam
+  */
+function getColumnIndex(values, name) {
+  var index;
+  for( var j = 0; j < values.length; j++) {
+    for ( var i = 0; i < values[j].length - 1; i++) {
+      if (values[j][i].toString().toLowerCase() == name.toString().toLowerCase()) {
+        index = i ;
+      }
     }
   }
+  if(index == null ) { SpreadsheetApp.getUi().alert(name + " column does not exist!");}
+  return index;
 }
