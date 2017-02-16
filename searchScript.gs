@@ -1,14 +1,9 @@
 //ID of the Google spreadsheet being accessed
-var spreadsheetID = "1k3At6EDIUBB7_x7smZwrx7K5gXJOHTpNYD4NzvgS1vE&sheet=2";
-var springScheduleSheetID = "1NYBlGkok313R3Fblj4F3L2_g2ZAqDnCVw68yb8lB7RE&sheet=1";
-var sampleID = "1qqXWrHK0ncoQJowURzii-rIVPh-hzPKHNuIdSDEaeQY";
 var currentSpringID = "11RbAtFD0i9X0xNG1TNhdeBODukXBb9prOYKamrJCnS4";
-
-// URL for retrieving sheets data as JSON using an external site to convert the data to JSON
-//var url = "http://gsx2json.com/api?id=" + springScheduleSheetID;
+var tab = "1";
 
 //URL for retrieving data from sheets directly as JSON
-var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/1/public/values?alt=json";
+var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" + tab + "/public/values?alt=json";
 
 /**
 * Tells the script how to serve the page when a GET request is made
@@ -49,21 +44,6 @@ function getJSON() {
 */
 function getData() {
   return SpreadsheetApp.openById(spreadsheetID).getActiveSheet().getDataRange().getValues();
-}
-
-/**
-* Test functions below used solely during development for testing other methods
-*/
-
-// Method used to test button to see if HTML can be modified after pressing button
-function returnUselessString(){
-  var date = new Date();
-  return "This is a string: " + date;
-}
-
-//Testing to make sure the string matching in the searchName function is working without needing to retrieve input from HTML form
-function testSearch(){
-  searchName("Betsy Lou");
 }
 
   

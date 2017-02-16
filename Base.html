@@ -6,26 +6,41 @@
   */
   function formSubmit(json){
   
+    /**
+    * Takes in a string and capitalizes each word in the string
+    * @param string the string to capitalize
+    * @return the capitalized version of the string
+    */
+    function capitalize(string){
+    
+      var stringArray = string.split(" ");
+      var newString = "";
+      
+      for(var i=0; i<stringArray.length; i++){
+        newString += stringArray[i].charAt(0).toUpperCase() + stringArray[i].slice(1) + " ";
+      }
+      
+      return newString.trim();
+    }
+  
     // Variables pointing to parts of the HTML document so that their contents can be edited
     var nameDiv = document.getElementById('nameDiv');
     var schedDiv = document.getElementById('schedDiv');
     var subHeadingDiv = document.getElementById('subHeadingDiv');
-    var nameEntered = document.getElementById('Name').value.toString();
-    var houseEntered = document.getElementById('House').value.toString().trim();
+    var nameEntered = capitalize(document.getElementById('Name').value.toString());
+    var houseEntered = capitalize(document.getElementById('House').value.toString().trim());
     var tableEntered = document.getElementById('Table').value.toString().trim();
     var dayEntered = document.getElementById('Day').value.toString().trim().toUpperCase();
     var timeEntered = document.getElementById('Time').value.toString().trim();
     var heading = "";
     var subHeading = "";
     
-    var js = json;
-    
     var resultsArray = [];
     
     // Start of string containing html to display matched results
     var strSched;
     
-    var length = js.length;
+    var length = json.length;
     
     //Search for house and day and time
     if(nameEntered === "" && timeEntered !== "" && houseEntered !== "" && dayEntered !== ""){
@@ -36,22 +51,22 @@
           
       for(var index=0; index<length; index++){
           
-        var day = js[index].gsx$lunchday.$t;
-        var house = js[index].gsx$house.$t;
-        var time = js[index].gsx$eml.$t;
+        var day = json[index].gsx$lunchday.$t;
+        var house = json[index].gsx$house.$t;
+        var time = json[index].gsx$eml.$t;
           
         if(dayEntered === day && houseEntered === house && timeEntered === time){
           var dayArray = [];
-          var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-          var block = js[index].gsx$block.$t;
+          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+          var block = json[index].gsx$block.$t;
           var table = "";
             
           switch(time){
             case "early":
-              table = js[index].gsx$table.$t;
+              table = json[index].gsx$table.$t;
               break;
             case "late":
-              table = js[index].gsx$house.$t;
+              table = json[index].gsx$house.$t;
               break;
             }
             dayArray.push(name);
@@ -66,7 +81,7 @@
     //Search for Lunch Period / Time
     else if(nameEntered === "" && timeEntered !== ""){
     
-      heading = timeEntered;
+      heading = capitalize(timeEntered);
       
       // Search day and time
       if(dayEntered !== ""){
@@ -75,23 +90,21 @@
         strSched = "<table><tr><th>Name</th><th>Block</th><th>Table</th></tr>";
         for(var index=0; index<length; index++){
         
-          var time = js[index].gsx$eml.$t;
-          var day = js[index].gsx$lunchday.$t;
+          var time = json[index].gsx$eml.$t;
+          var day = json[index].gsx$lunchday.$t;
           
           if(timeEntered === time && dayEntered === day){
             var dayArray = [];
-            var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-            var block = js[index].gsx$block.$t;
+            var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+            var block = json[index].gsx$block.$t;
             var table = "";
           
             switch(timeEntered){
               case "early":
-                table = js[index].gsx$table.$t;
-                break;
-              case "mid":
+                table = json[index].gsx$table.$t;
                 break;
               case "late":
-                table = js[index].gsx$house.$t;
+                table = json[index].gsx$house.$t;
                 break;
             }
             dayArray.push(name);
@@ -104,28 +117,26 @@
         }
       }
       
-      // Search just by time
+      //Search just by time
       else{
         strSched = "<table><tr><th>Name</th><th>Lunch Day</th><th>Block</th><th>Table</th></tr>";
         for(var index=0; index<length; index++){
 
-          var time = js[index].gsx$eml.$t;
+          var time = json[index].gsx$eml.$t;
             
           if(timeEntered === time){
             var dayArray = [];
-            var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-            var day = js[index].gsx$lunchday.$t;
-            var block = js[index].gsx$block.$t;
+            var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+            var day = json[index].gsx$lunchday.$t;
+            var block = json[index].gsx$block.$t;
             var table = "";
           
             switch(timeEntered){
               case "early":
-                table = js[index].gsx$table.$t;
-                break;
-              case "mid":
+                table = json[index].gsx$table.$t;
                 break;
               case "late":
-                table = js[index].gsx$house.$t;
+                table = json[index].gsx$house.$t;
                 break;
             }
             dayArray.push(name);
@@ -153,14 +164,14 @@
         
         for(var index=0; index<length; index++){
           
-          var day = js[index].gsx$lunchday.$t;
-          var table = js[index].gsx$table.$t;
+          var day = json[index].gsx$lunchday.$t;
+          var table = json[index].gsx$table.$t;
           
           if(dayEntered === day && tableEntered === table){
             var dayArray = [];
-            var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-            var time = js[index].gsx$eml.$t;
-            var block = js[index].gsx$block.$t;
+            var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+            var time = json[index].gsx$eml.$t;
+            var block = json[index].gsx$block.$t;
             
             dayArray.push(name);
             dayArray.push(time);
@@ -182,22 +193,22 @@
           
           for(var index=0; index<length; index++){
           
-            var day = js[index].gsx$lunchday.$t;
-            var house = js[index].gsx$house.$t;
-            var time = js[index].gsx$eml.$t;
+            var day = json[index].gsx$lunchday.$t;
+            var house = json[index].gsx$house.$t;
+            var time = json[index].gsx$eml.$t;
           
             if(dayEntered === day && houseEntered === house && timeEntered === time){
               var dayArray = [];
-              var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-              var block = js[index].gsx$block.$t;
+              var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+              var block = json[index].gsx$block.$t;
               var table = "";
             
               switch(time){
                 case "early":
-                  table = js[index].gsx$table.$t;
+                  table = json[index].gsx$table.$t;
                   break;
                 case "late":
-                  table = js[index].gsx$house.$t;
+                  table = json[index].gsx$house.$t;
                   break;
               }
               dayArray.push(name);
@@ -210,28 +221,29 @@
           }
         }
         
+        //Search for just day and house
         else{
           subHeading = houseEntered;
           strSched = "<table><tr><th>Name</th><th>Lunch Time</th><th>Block</th><th>Table</th></tr>";
         
           for(var index=0; index<length; index++){
           
-            var day = js[index].gsx$lunchday.$t;
-            var house = js[index].gsx$house.$t;
+            var day = json[index].gsx$lunchday.$t;
+            var house = json[index].gsx$house.$t;
           
             if(dayEntered === day && houseEntered === house){
               var dayArray = [];
-              var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-              var time = js[index].gsx$eml.$t;
-              var block = js[index].gsx$block.$t;
+              var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+              var time = json[index].gsx$eml.$t;
+              var block = json[index].gsx$block.$t;
               var table = "";
             
               switch(time){
                 case "early":
-                  table = js[index].gsx$table.$t;
+                  table = json[index].gsx$table.$t;
                   break;
                 case "late":
-                  table = js[index].gsx$house.$t;
+                  table = json[index].gsx$house.$t;
                   break;
               }
               dayArray.push(name);
@@ -249,23 +261,21 @@
         strSched = "<table><tr><th>Name</th><th>Lunch Time</th><th>Block</th><th>Table</th></tr>";
         for(var index=0; index<length; index++){
       
-          var day = js[index].gsx$lunchday.$t;
+          var day = json[index].gsx$lunchday.$t;
         
           if(dayEntered === day){
             var dayArray = [];
-            var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-            var time = js[index].gsx$eml.$t;
-            var block = js[index].gsx$block.$t;
+            var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+            var time = json[index].gsx$eml.$t;
+            var block = json[index].gsx$block.$t;
             var table = "";
           
             switch(time){
               case "early":
-                table = js[index].gsx$table.$t;
-                break;
-              case "mid":
+                table = json[index].gsx$table.$t;
                 break;
               case "late":
-                table = js[index].gsx$house.$t;
+                table = json[index].gsx$house.$t;
                 break;
             }
             dayArray.push(name);
@@ -287,24 +297,22 @@
       strSched = "<table><tr><th>Name</th><th>Lunch Day</th><th>Block</th><th>Lunch Time</th><th>Table</th></tr>";
       for(var index=0; index<length; index++){
       
-        var house = js[index].gsx$house.$t;
+        var house = json[index].gsx$house.$t;
         
         if(houseEntered === house){
         var dayArray = [];
-          var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-          var time = js[index].gsx$eml.$t;
-          var block = js[index].gsx$block.$t;
-          var day = js[index].gsx$lunchday.$t;
+          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+          var time = json[index].gsx$eml.$t;
+          var block = json[index].gsx$block.$t;
+          var day = json[index].gsx$lunchday.$t;
           var table = "";
           
           switch(time){
             case "early":
-              table = js[index].gsx$table.$t;
-              break;
-            case "mid":
+              table = json[index].gsx$table.$t;
               break;
             case "late":
-              table = js[index].gsx$house.$t;
+              table = json[index].gsx$house.$t;
               break;
           }
           dayArray.push(name);
@@ -325,23 +333,21 @@
       strSched = "<table><tr><th>Lunch Day</th><th>Name</th><th>Block</th><th>Lunch Time</th></tr>";
       for(var index=0; index<length; index++){
       
-        var table = js[index].gsx$table.$t;
+        var table = json[index].gsx$table.$t;
         
         if(tableEntered === table){
         var dayArray = [];
-          var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-          var time = js[index].gsx$eml.$t;
-          var block = js[index].gsx$block.$t;
-          var day = js[index].gsx$lunchday.$t;
+          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+          var time = json[index].gsx$eml.$t;
+          var block = json[index].gsx$block.$t;
+          var day = json[index].gsx$lunchday.$t;
           
           switch(time){
             case "early":
-              table = js[index].gsx$table.$t;
-              break;
-            case "mid":
+              table = json[index].gsx$table.$t;
               break;
             case "late":
-              table = js[index].gsx$house.$t;
+              table = json[index].gsx$house.$t;
               break;
           }
           
@@ -369,23 +375,20 @@
       
         for(var index=0; index<length; index++){
         
-          var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
-          var day = js[index].gsx$lunchday.$t;
+          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+          var day = json[index].gsx$lunchday.$t;
           
           if(day === dayEntered && name === nameEntered){
             var dayArray = [];
-            var block = js[index].gsx$block.$t
-            var time = js[index].gsx$eml.$t;
+            var block = json[index].gsx$block.$t
+            var time = json[index].gsx$eml.$t;
             var table = "";
             switch(time){
               case "early":
-                table = js[index].gsx$table.$t;
-                break;
-              case "mid":
-                table = "";
+                table = json[index].gsx$table.$t;
                 break;
               case "late":
-                table = js[index].gsx$house.$t;
+                table = json[index].gsx$house.$t;
                 break;
             }
             dayArray.push(block);
@@ -402,29 +405,51 @@
       else if(timeEntered !== ""){
       
         strSched = "<table><tr><th>Lunch Day</th><th>Block</th><th>Table</th></tr>";
-        subHeading = timeEntered;
+        subHeading = capitalize(timeEntered);
       
         for(var index=0; index<length; index++){
         
-          var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,''); 
-          var time = js[index].gsx$eml.$t;
+          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,''); 
+          var time = json[index].gsx$eml.$t;
           
           if(time === timeEntered && name === nameEntered){
             var dayArray = [];
-            var block = js[index].gsx$block.$t
-            var day = js[index].gsx$lunchday.$t;
+            var block = json[index].gsx$block.$t
+            var day = json[index].gsx$lunchday.$t;
             var table = "";
             switch(time){
               case "early":
-                table = js[index].gsx$table.$t;
-                break;
-              case "mid":
-                table = "";
+                table = json[index].gsx$table.$t;
                 break;
               case "late":
-                table = js[index].gsx$house.$t;
+                table = json[index].gsx$house.$t;
                 break;
             }
+            dayArray.push(day);
+            dayArray.push(block);
+            dayArray.push(table);
+            if(day !== "I"){
+              resultsArray.push(dayArray);
+            }
+          }
+        }
+      }
+      
+      //Name filtered by Table
+      else if(tableEntered !== ""){
+      
+        strSched = "<table><tr><th>Lunch Day</th><th>Block</th><th>Table</th></tr>";
+        subHeading = "Table " + tableEntered;
+      
+        for(var index=0; index<length; index++){
+        
+          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,''); 
+          var table = json[index].gsx$table.$t;
+          
+          if(table === tableEntered && name === nameEntered){
+            var dayArray = [];
+            var block = json[index].gsx$block.$t
+            var day = json[index].gsx$lunchday.$t;
             dayArray.push(day);
             dayArray.push(block);
             dayArray.push(table);
@@ -439,23 +464,20 @@
       else{
         strSched = "<table><tr><th>Lunch Day</th><th>Block</th><th>Lunch Time</th><th>Table</th></tr>";
         for(var index=0; index<length; index++){
-          var name = js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,'');
+          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
       
           if(name === nameEntered){
             var dayArray = [];
-            var day = js[index].gsx$lunchday.$t;
-            var block = js[index].gsx$block.$t
-            var time = js[index].gsx$eml.$t;
+            var day = json[index].gsx$lunchday.$t;
+            var block = json[index].gsx$block.$t
+            var time = json[index].gsx$eml.$t;
             var table = "";
             switch(time){
               case "early":
-                table = js[index].gsx$table.$t;
-                break;
-              case "mid":
-                table = "";
+                table = json[index].gsx$table.$t;
                 break;
               case "late":
-                table = js[index].gsx$house.$t;
+                table = json[index].gsx$house.$t;
                 break;
             }
             dayArray.push(day);
