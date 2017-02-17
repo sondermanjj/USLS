@@ -7,8 +7,15 @@ function runCleanUpTests() {
   var dataSheet = SpreadsheetApp.getActive().getSheetByName("Raw Data");
   cleanUp(dataSheet);
   
-  runCorrectBlockDataTest();
-  runCorrectLunchDayDataTest();
+  var cleanUpMessages = [];
+  
+  cleanUpMessages[0] = "CorrectBlockDataTest: " + runCorrectBlockDataTest();
+  cleanUpMessages[1] = "CorrectLunchDayDataTest: "+ runCorrectLunchDayDataTest();
+
+  Logger.log(cleanUpMessages[0]);
+  Logger.log(cleanUpMessages[1]);
+  
+  return cleanUpMessages;
   
 }
 

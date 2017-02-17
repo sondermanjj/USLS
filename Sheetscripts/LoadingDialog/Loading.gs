@@ -5,7 +5,6 @@ function showDialog() {
   .setHeight(60)
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
   .showModelessDialog(html, ' ');    
-
 }
 
 function doGet() {

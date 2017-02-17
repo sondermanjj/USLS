@@ -140,7 +140,7 @@ function addTeachersToTableList(id) {
   
   //Notify that the task is done
   var ui = SpreadsheetApp.getUi();
-  ui.alert("Faculty assigned with "+emptyCount+" empty slots");
+  //ui.alert("Faculty assigned with "+emptyCount+" empty slots");
   
 }
 

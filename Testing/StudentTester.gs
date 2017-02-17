@@ -8,7 +8,6 @@ function studentTester(){
   
   assignStudentLunchDays();
   
-  
   var sheet = SpreadsheetApp.getActiveSheet();
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
@@ -107,11 +106,14 @@ function studentTester(){
     }
   }
   
+  
   var messages = [];  
-  messages[0] = testForFilledEarlyLunches(students);
-  messages[1] = testAllStudentsHaveALunchForEachDay(students);
-  messages[2] = testColorByTime(pLunchTimeColumn);
-  messages[3] = testColorByTable(pTableColumn);
+  messages[0] = "TestForFilledEarlyLunches: " + testForFilledEarlyLunches(students);
+  messages[1] = "TestAllStudentsHaveLunchForEachDay: " + testAllStudentsHaveALunchForEachDay(students);
+  messages[2] = "TestColorByTime: " +testColorByTime(pLunchTimeColumn);
+  //messages[3] = "TestColorByTable: " +testColorByTable(pTableColumn);
+  
+  Logger.log(messages[2]);
   
   return messages;
 }
@@ -131,24 +133,31 @@ function testColorByTime(column){
     var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
     var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
     var vals = range.getValues();
+    
     var check = 0;
     var backgrounds = range.getBackgrounds();
     if(vals[0] == "Lunch Time"){
       for(var i = 1; i < vals.length; i++){
-        if(vals[i] == "early"){
-          if(backgrounds[i] != "YELLOW"){
-            t.errorSpot("Colors are not correct!", false);
+        if(vals[i][0] == "early"){
+          if(backgrounds[i] != "#ffff00"){
+            t.errorSpot("Early Colors are not correct!", false);
             check++;
+          } else {
+           t.errorSpot("Color is good", true); 
           }
-        }else if(vals[i] == "late"){
+        }else if(vals[i][0] == "late"){
           if(backgrounds[i] != "#8db4e2"){
-            t.errorSpot("Colors are not correct!", false);
+            t.errorSpot("Late Colors are not correct!", false);
             check++;
+          } else {
+           t.errorSpot("Color is good", true); 
           }
-        }else{
-          if(backgrounds[i] != "WHITE"){
-            t.errorSpot("Colors are not correct!", false);
+        }else{          
+          if(backgrounds[i] != "#ffffff"){
+            t.errorSpot("Blank Colors are not correct!", false);
             check++;
+          } else {
+           t.errorSpot("Color is good", true); 
           }
         }
       }

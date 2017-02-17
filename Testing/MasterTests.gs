@@ -1,19 +1,25 @@
 function runTestingSuite() {
   
   var testingMessages = [];
-  
-  testingMessages[0] = ("FacultyTests: " + runFacultyTests());
-  
-  var dataSheet = SpreadsheetApp.getActive().getSheetByName("Raw Data");
-  cleanUp(dataSheet);
-  
-  testingMessages[1] = ("BLockDataTests: " + runCorrectBlockDataTest());
-  testingMessages[2] = ("LunchDataTests: " + runCorrectLunchDayDataTest());
-  
+  var i = 0;
+
+  var cleanUpMessages = runCleanUpTests();
   var studentMessages = studentTester();
-  testingMessages[3] = ("FilledLunchDataTests: " + studentMessages[0]);
-  testingMessages[4] = ("testAllStudentsHaveALunchForEachDay: " + studentMessages[1]);
+
   
+  for (var v = 0; v < cleanUpMessages.length; v++) {
+   testingMessages[i] = cleanUpMessages[v]+ "\n";
+    i++;
+  }
+  
+  for (var v = 0; v< studentMessages.length; v++) {
+   testingMessages[i] = studentMessages[v] + "\n"; 
+    i++;
+  }
+  
+  testingMessages[i] = ("FacultyTests: " + runFacultyTests()+ "\n");
+  i++
+    
   var d = new Date();
   var arrayLength = testingMessages.length;
   
