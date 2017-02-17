@@ -39,6 +39,7 @@ function addTeachersToTableList(id) {
   
   Logger.log("Spreadsheets retrieved");
   
+
   teacherList.sort(5);
   
   //Reset tables assigned to 0
@@ -51,6 +52,7 @@ function addTeachersToTableList(id) {
   var earlyTeachersRows = [];
   //Assign random numbers to all the early teachers
   var lastRow = teacherList.getLastRow();
+
   for (var i = 0; i <= lastRow; i++) {
     if (allTeachersLunch[i] == "early") {
       earlyTeachersRows.push(i+1);
@@ -59,6 +61,7 @@ function addTeachersToTableList(id) {
   }
   
   Logger.log("All early teachers row numbers collected");
+
   var length = earlyTeachersRows.length;
   for (var i = 0; i < length;i++) {
     teacherList.getRange(earlyTeachersRows[i], 9).setValue(Math.random()*100);
@@ -91,6 +94,7 @@ function addTeachersToTableList(id) {
   //reset values as we've changed some values
   
   var startingRow = 0;
+
   for (var t = 0; t < earlyCount; t++) {
     startingRow = -5;
     if (teacherRow[t][7]=="0") {
@@ -106,7 +110,6 @@ function addTeachersToTableList(id) {
           var teacherValues = [teacherRow[t]];
           tableList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
           teacherList.getRange((t+1), 1, 1, 8).setValues(teacherValues);
-          
           tablesAssigned[startingRow+z] = 1;
           z = 25;
         }
@@ -116,6 +119,7 @@ function addTeachersToTableList(id) {
   
   Logger.log("Other teachers sorted into place");
   
+
   //Now clear up the useless rows in tablelist and teacherlist
   teacherList.getRange(1, 8, teacherList.getLastRow(), 2).clear();
   tableList.getRange(1, 8, teacherList.getLastRow(), 2).clear();

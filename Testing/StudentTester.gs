@@ -239,8 +239,8 @@ function testColorByTable(column){
 
 /**
 @desc This function tests to see if every early lunch has 133 students
-Passes - 133 students per early lunch
-Fails - Less or more than 133 students in any early lunch
+      Passes - 133 students per early lunch
+      Fails - Less or more than 133 students in any early lunch
 @params - students - the students at USM and their relevant information
 @funtional - yes
 @author - dicksontc

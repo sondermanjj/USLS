@@ -80,6 +80,5 @@ function allTests(thisFnWrapsAllYourTests) {
   var totalTests = successes + failures.length;
   var message = (successes + " of " + totalTests + " tests passed.\n" + failures.length + " failures.\n" + failures.join("\n"));
   Logger.log(message);
-  return message;
-  
+  return message;  
 }

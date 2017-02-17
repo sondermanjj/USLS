@@ -25,6 +25,7 @@ function startCleanUp() {
       cleaned = true;
       cleanUp(sheet);
       if(cleaned) {
+        ui.alert("Finished cleaning.");
       }
     } else {
       ui.alert("Woops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
@@ -55,7 +56,7 @@ function cleanUp(raw) {
   
   var rawValues = raw.getDataRange().getValues();
   var newValues = masterList.getDataRange().getValues();
-  
+   
   //Remove irrelevant data
   newValues = removeIrrelevantData(rawValues, newValues);
  
