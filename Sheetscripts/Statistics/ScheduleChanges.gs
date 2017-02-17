@@ -69,15 +69,17 @@ function scheduleChanges() {
  */
 function findChanges(oldValues, newValues, changesSheet) {
   
-  var firstNameColumn = getColumnIndex(newValues, "First Name");
-  var lastNameColumn = getColumnIndex(newValues, "Last Name");
-  var newLunchTimeColumn = getColumnIndex(newValues, "Lunch Time");
-  var newLunchDayColumn = getColumnIndex(newValues, "Lunch Day");
-  var newTableColumn = getColumnIndex(newValues, "Table");
+  var newColumnList = getListOfColumns(newValues);
+  var firstNameColumn = getColumnIndex(newColumnList, "First Name");
+  var lastNameColumn = getColumnIndex(newColumnList, "Last Name");
+  var newLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
+  var newLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
+  var newTableColumn = getColumnIndex(newColumnList, "Table");
   
-  var oldLunchTimeColumn = getColumnIndex(oldValues, "Lunch Time");
-  var oldLunchDayColumn = getColumnIndex(oldValues, "Lunch Day");
-  var oldTableColumn = getColumnIndex(oldValues, "Table");
+  var oldColumnList = getListOfColumns(oldValues);
+  var oldLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
+  var oldLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
+  var oldTableColumn = getColumnIndex(newColumnList, "Table");
   
   var changes = new Array();
 
@@ -124,36 +126,6 @@ function findChanges(oldValues, newValues, changesSheet) {
   return changes;
 }
 
-function adjustOtherSchedules() {
-  
-  var time = ["Early", "Mid", "Late"];
-  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var flags = [0,0,0,0,0,0,0,0];
-  var values = getFinalStudentDataValues();
-  
-  var firstNameColumn = getColumnIndex(values, "First Name");
-  var lastNameColumn = getColumnIndex(values, "Last Name");
-  var lunchTimeColumn = getColumnIndex(values, "Lunch Time");
-  var lunchDayColumn = getColumnIndex(values, "Lunch Day");
-  var tableColumn = getColumnIndex(values, "Table");
-  
-  var stats = statistics(time, day, values, true);
-  
-  for (var i = 0; i < stats.length; i++) {
-    if(stats[i][0] > 133) {
-      flags[i] = stats[i][0] - 133;
-    }
-  }
-  
-  for ( i = 0; i < flags.length; i++) {
-    if(flags[i] > 0) {
-      for ( j = 0; j < values.length; j++) {
-        
-      
-      }
-    }
-  }   
-}
 
 
 

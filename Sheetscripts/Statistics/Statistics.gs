@@ -68,7 +68,7 @@ function getHTMLTable(columns, rows, values) {
 
 
 /**
- * @desc - Counts the number of students in each lunch on each day
+ * @desc - Counts the number of people in each lunch on each day
  * @param - Boolean - true if getting student statistics, false for teacher statistics
  * @return - Array[row][column] - the number of students for each lunch
  * @author - hendersonam
@@ -76,34 +76,178 @@ function getHTMLTable(columns, rows, values) {
 function statistics(time, day, values, students) {
 
   var stats = new Array();
-  
-  var count;
-  
-  var lunchDayColumn = getColumnIndex(values, "Lunch Day");
-  var gradeColumn = getColumnIndex(values, "Grade");
-  var lunchTimeColumn = getColumnIndex(values, "Lunch Time");
-  
-  for( i = 0; i < day.length; i++) {
+  for (var i = 0; i < day.length; i++) {
     stats[i] = new Array();
-    for( var j = 0;  j < time.length; j++) {
-      count =0;
-      for( var k = 0; k < values.length; k++) {
-        if(values[k][lunchTimeColumn] == time[j].toString().toLowerCase() && values[k][lunchDayColumn] == day[i]) {
-          if(students) {
-            if(values[k][gradeColumn] != "") {
-              count++;
-            }
-          } else {
-            if(values[k][gradeColumn] == "") {
-              count++;
-            }
-          }
-        }
-      }
-      stats[i][j] = count;
+  }
+  for (var i = 0; i < day.length; i++) {
+    for( var j = 0; j < time.length; j++) { 
+      stats[i][j] = 0;
     }
   }
-
+  
+  
+  var listOfColumns = getListOfColumns(values);
+  var lunchDayColumn = getColumnIndex(listOfColumns, "Lunch Day");
+  var gradeColumn = getColumnIndex(listOfColumns, "Grade");
+  var lunchTimeColumn = getColumnIndex(listOfColumns, "Lunch Time");
+  var flag;
+  var lunchDay;
+  var lunchTime;
+  
+  for( var k = 1; k < values.length; k++) {
+  
+    lunchDay = values[k][lunchDayColumn].toString().toUpperCase();
+    lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
+    
+    if( (values[k][gradeColumn] != "") == students) {
+    
+      switch (lunchDay) {
+      
+        case 'A':
+          lunchDay = 0;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        case 'B':
+            lunchDay = 1;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        case 'C':
+            lunchDay = 2;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        case 'D':
+            lunchDay = 3;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        case 'E':
+            lunchDay = 4;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        case 'F':
+            lunchDay = 5;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        case 'G':
+            lunchDay = 6;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        case 'H':
+            lunchDay = 7;
+          switch (lunchTime) {
+            case 'early':
+              lunchTime = 0;
+              break;
+            case 'mid':
+              lunchTime = 1;
+              break;
+            case 'late':
+              lunchTime = 2;
+              break;
+            default:
+              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
+              break;
+          }
+          break;
+        default:
+          //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch day");
+          break;  
+      }
+      if (!isNaN(lunchDay) && !isNaN(lunchTime)) { 
+        stats[lunchDay][lunchTime] += 1;
+      }
+    }
+  }
   return stats;
 }
 
