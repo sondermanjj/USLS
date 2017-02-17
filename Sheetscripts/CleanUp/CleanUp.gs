@@ -1,4 +1,12 @@
 
+function startTableAssigning() {
+  
+  startCleanUp();
+  assignStudentLunchDays();
+  addFacultyTables();
+  
+}
+
 /**
  * @desc - Prompts the user to enter the name of the sheet they would like to clean
  * @functional - yes
@@ -35,25 +43,31 @@ function startCleanUp() {
  */
 function cleanUp(raw) {
   
+  //Get active spreadsheet
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   
+  //Create a new sheet to write the cleaned data to (if it doesn't already exist)
   var masterList = spreadsheet.getSheetByName("Final Student Data");
   if (masterList == null) {
+    var values = raw.getDataRange().getValues();
     spreadsheet.insertSheet("Final Student Data");
     masterList = spreadsheet.getSheetByName("Final Student Data");
   }
   
   var rawValues = raw.getDataRange().getValues();
   var newValues = masterList.getDataRange().getValues();
-  
+   
+  //Remove irrelevant data
   newValues = removeIrrelevantData(rawValues, newValues);
  
+  //Add New Columns
   newValues = addColumnName(newValues, "Table Head");
   newValues = addColumnName(newValues, "Lunch Day");
   newValues = addColumnName(newValues, "Lunch Time");
   newValues = addColumnName(newValues, "Lunch Table");
   newValues = addColumnName(newValues, "House");
 
+  //Populate the Lunch Day Table
   newValues = populateLunchDay(newValues);
 
   masterList.clearContents();
@@ -75,16 +89,21 @@ function removeIrrelevantData(oldValues, newValues) {
   var numRows = oldValues.length;
   var numColumns = oldValues[0].length;
   
+  //Create a new array for the cleaned data
   var revisedValues = new Array();
   
   var found = false;
+  //Search for the 'Block' column
   for (var i = 0; i <= numColumns - 1; i++) {
     var column = oldValues[0][i];
     if (column == 'Block') {
       found = true;
       
+      //Add the column titles to the new data array
       revisedValues.push(oldValues[0]);
       
+      //Grab any relevant rows (courses that meet during lunch times)
+      //and push them to the new data array
       for (var j = 0; j < numRows - 1; j++) {
         var row = oldValues[j][i];
         if(row == "1" || row == "2" || 

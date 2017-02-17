@@ -61,7 +61,6 @@ function assignStudentLunchDays() {
           g = true;
         else if(stu.lunches[j].day == 'H')
           h = true;
-        
         if(stu.lunches[j].time == 'early'){
           pEarlyStudents.push({stuEarly: stu, lunch: j});
         }
@@ -231,7 +230,12 @@ function assignStudentLunchDays() {
     Logger.log("Too many or too few students in a lunch (shouldn't happen)");
   }
   
-  printStudentsToSheet(students, primary);
+  var userProperties = PropertiesService.getUserProperties();
+  
+  printStudentsToSheet(students, primary);  
+  colorBackgrounds(userProperties.pLunchTimeColumn);
+  colorBackgrounds(userProperties.pTableColumn);
+
 }
 
 /**
@@ -310,6 +314,7 @@ function printStudentsToSheet(students, primary){
   }
   var sheetRange = primary.getRange(2, 1, count, 19);
   sheetRange.setValues(finalArray);
+  
 }
 
 /**
@@ -461,6 +466,56 @@ function getStudents(pValues, pNumRows, teachers){
 }
 
 /**
+@desc Changes the background colors and/or fonts of certain cells in a given column
+@params - column - the column in which the cells need to be colored
+@funtional - yes
+@author - dicksontc
+*/
+function colorBackgrounds(column){
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var stuData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+  var ran = stuData.getRange(1, column + 1, stuData.getDataRange().getNumRows());
+  var vals = ran.getValues();
+  var col = ran.getNumColumns();
+  var ro = ran.getNumRows();
+  var rowColors = [];
+  if(vals[0] == "Lunch Time"){
+    for(var i = 0; i < ro; i++){
+      rowColors[i] = [];
+      if(vals[i] == "early")
+        rowColors[i].push("YELLOW");
+      else if(vals[i] == "late")
+        rowColors[i].push("#8db4e2");
+      else
+        rowColors[i].push("WHITE");
+    }
+    ran.setBackgrounds(rowColors);
+  }else if(vals[0] == "Lunch Table"){
+    var fonts = [];
+    for(var i = 0; i < ro; i++){
+      rowColors[i] = [];
+      fonts[i] = [];
+      if(vals[i] == "Ledger"){
+        rowColors[i].push("#660066");
+        fonts[i].push("YELLOW");
+      }else{
+        if(vals[i] == "Academy")
+          fonts[i].push("#3366ff");
+        else if(vals[i] == "Arrow")
+          fonts[i].push("#008000");
+        else if(vals[i] == "Crest")
+          fonts[i].push("#ff0000");
+        else
+          fonts[i].push("BLACK");
+        rowColors[i].push("WHITE");
+      }
+    }
+    ran.setFontColors(fonts);
+    ran.setBackgrounds(rowColors);
+  }
+}
+
+/**
 @desc Calculates and assigns the students zelm number where zelm means
 z, # early lunches, # late lunches, # mid lunches
 @params - stu - the student whose zelm is being calculated
@@ -481,6 +536,10 @@ function assignZelm(stu){
 /**
 @desc Creates teacher array filled with teacher information.
 @params - tValues - the array of the teachers rows and columns
+tFNameColumn - the column index of the faculty first name
+tLNameColumn - the column index of the faculty last name
+tLunchTimeColumn - the column index of the lunch time
+tLunchDayIndex - the column index of the lunch day
 tNumRows - the number of rows in the faculty choices list
 @funtional - yes
 @author - dicksontc

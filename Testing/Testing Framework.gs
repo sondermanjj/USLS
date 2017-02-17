@@ -55,6 +55,12 @@ function allTests(thisFnWrapsAllYourTests) {
       });
     },
     
+    errorSpot: function(message, failed) {
+      runTestAndRecordResult("Error: " + message, function() {
+        return failed;
+      });
+    },
+    
     areEqual: function(expected, actual) {
       runTestAndRecordResult("Expected " + expected.constructor.name + " " + expected + ", got " + actual.constructor.name + " " + actual + ".", function() {
         return expected === actual;
@@ -72,6 +78,7 @@ function allTests(thisFnWrapsAllYourTests) {
   });
   
   var totalTests = successes + failures.length;
-  Logger.log(successes + " of " + totalTests + " tests passed.\n" + failures.length + " failures.\n" + failures.join("\n"));
-  
+  var message = (successes + " of " + totalTests + " tests passed.\n" + failures.length + " failures.\n" + failures.join("\n"));
+  Logger.log(message);
+  return message;  
 }
