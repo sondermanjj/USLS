@@ -27,11 +27,11 @@
     var nameDiv = document.getElementById('nameDiv');
     var schedDiv = document.getElementById('schedDiv');
     var subHeadingDiv = document.getElementById('subHeadingDiv');
-    var nameEntered = capitalize(document.getElementById('Name').value.toString());
-    var houseEntered = capitalize(document.getElementById('House').value.toString().trim());
-    var tableEntered = document.getElementById('Table').value.toString().trim();
+    var nameEntered = capitalize(document.getElementById('Name').value.toString().toLowerCase());
+    var houseEntered = capitalize(document.getElementById('House').value.toString().trim().toLowerCase());
+    var tableEntered = capitalize(document.getElementById('Table').value.toString().trim().toLowerCase());
     var dayEntered = document.getElementById('Day').value.toString().trim().toUpperCase();
-    var timeEntered = document.getElementById('Time').value.toString().trim();
+    var timeEntered = document.getElementById('Time').value.toString().trim().toLowerCase();
     var heading = "";
     var subHeading = "";
     
@@ -293,38 +293,70 @@
     
     //Search for House
     else if(nameEntered === "" && houseEntered !== ""){
-      heading = houseEntered;
-      strSched = "<table><tr><th>Name</th><th>Lunch Day</th><th>Block</th><th>Lunch Time</th><th>Table</th></tr>";
-      for(var index=0; index<length; index++){
-      
-        var house = json[index].gsx$house.$t;
+    
+      //Search for house and table
+      if(tableEntered !== ""){
+        heading = houseEntered;
+        strSched = "<table><tr><th>Lunch Day</th><th>Name</th><th>Block</th><th>Lunch Time</th><th>Table</th></tr>";
         
-        if(houseEntered === house){
-        var dayArray = [];
-          var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
-          var time = json[index].gsx$eml.$t;
-          var block = json[index].gsx$block.$t;
-          var day = json[index].gsx$lunchday.$t;
-          var table = "";
+        for(var index=0; index<length; index++){
+          var house = json[index].gsx$house.$t;
+          var table = json[index].gsx$table.$t;
+        
+          if(houseEntered === house && tableEntered === table){
+            var dayArray = [];
+            var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+            var time = json[index].gsx$eml.$t;
+            var block = json[index].gsx$block.$t;
+            var day = json[index].gsx$lunchday.$t;
           
-          switch(time){
-            case "early":
-              table = json[index].gsx$table.$t;
-              break;
-            case "late":
-              table = json[index].gsx$house.$t;
-              break;
+            dayArray.push(day);
+            dayArray.push(name);
+            dayArray.push(block);
+            dayArray.push(time);
+            dayArray.push(table);
+            if(day !== "I"){
+              resultsArray.push(dayArray);
+            }
           }
-          dayArray.push(name);
-          dayArray.push(day);
-          dayArray.push(block);
-          dayArray.push(time);
-          dayArray.push(table);
-          if(day !== "I"){
-            resultsArray.push(dayArray);
-          }
-        }  
-      } 
+        }
+      }
+      
+      //Search for just house
+      else{
+        heading = houseEntered;
+        strSched = "<table><tr><th>Name</th><th>Lunch Day</th><th>Block</th><th>Lunch Time</th><th>Table</th></tr>";
+        for(var index=0; index<length; index++){
+      
+          var house = json[index].gsx$house.$t;
+        
+          if(houseEntered === house){
+            var dayArray = [];
+            var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+            var time = json[index].gsx$eml.$t;
+            var block = json[index].gsx$block.$t;
+            var day = json[index].gsx$lunchday.$t;
+            var table = "";
+          
+            switch(time){
+              case "early":
+                table = json[index].gsx$table.$t;
+                break;
+              case "late":
+                table = json[index].gsx$house.$t;
+                break;
+            }
+            dayArray.push(name);
+            dayArray.push(day);
+            dayArray.push(block);
+            dayArray.push(time);
+            dayArray.push(table);
+            if(day !== "I"){
+              resultsArray.push(dayArray);
+            }
+          }  
+        }
+      }
     }
     
     //Search for Table
@@ -505,6 +537,10 @@
     
     strSched += "</table>";
     
+    if(resultsArray.length == 0){
+      strSched = "Invalid Search. No Results Found."
+    }
+    
     //Set the inner HTML of the necessary components to the proper contents
     schedDiv.innerHTML = strSched;
     nameDiv.innerHTML = "<h1>" + heading + "</h1>";
@@ -514,6 +550,7 @@
   
 </script>
 
+<hr>
 <div id="searchForm">
   <form id="nameForm">
     <b>Name: </b><input id="Name" type="text" name="fullname" />
@@ -541,6 +578,7 @@
     </div>
   </form>
 </div>
+<hr>
 <div id="loadingDiv"></div>
 <div id="nameDiv"></div>
 <div id="subHeadingDiv"></div>
