@@ -135,6 +135,7 @@ function getColumnIndex(values, name) {
  */
 function getListOfColumns(values) {
   var list = new Array();
+  values.sort(function(a, b){return b[2]-a[2]});
     for( var j = 0; j < values[0].length; j++) {
       list.push(values[0][j].toString().toLowerCase());
     }

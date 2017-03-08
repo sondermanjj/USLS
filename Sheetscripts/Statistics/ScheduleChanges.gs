@@ -53,7 +53,9 @@ function scheduleChanges() {
   }
   
   var scannedValues = scannedSheet.getDataRange().getValues();
+  
   var changes = findChanges(scannedValues, currentValues, changesSheet);
+  
   scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
   
   return changes;
@@ -74,12 +76,12 @@ function findChanges(oldValues, newValues, changesSheet) {
   var lastNameColumn = getColumnIndex(newColumnList, "Last Name");
   var newLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
   var newLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
-  var newTableColumn = getColumnIndex(newColumnList, "Table");
+  var newTableColumn = getColumnIndex(newColumnList, "Lunch Table");
   
   var oldColumnList = getListOfColumns(oldValues);
-  var oldLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
-  var oldLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
-  var oldTableColumn = getColumnIndex(newColumnList, "Table");
+  var oldLunchTimeColumn = getColumnIndex(oldColumnList, "Lunch Time");
+  var oldLunchDayColumn = getColumnIndex(oldColumnList, "Lunch Day");
+  var oldTableColumn = getColumnIndex(oldColumnList, "Lunch Table");
   
   var changes = new Array();
 
@@ -110,7 +112,7 @@ function findChanges(oldValues, newValues, changesSheet) {
       
     } else if ( !newValues[i].toString().equals(oldValues[i].toString())) {
       
-      changesSheet.appendRow(oldValues[i]);
+      //changesSheet.appendRow(oldValues[i]);
       
       changes.push( [newValues[i][firstNameColumn],
                      newValues[i][lastNameColumn],
