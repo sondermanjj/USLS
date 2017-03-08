@@ -50,6 +50,7 @@ function scheduleChanges() {
     changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
     changesSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
     changesSheet.clear();
+    changesSheet.appendRow(getListOfColumns(currentValues));
   }
   
   var scannedValues = scannedSheet.getDataRange().getValues();
@@ -112,7 +113,9 @@ function findChanges(oldValues, newValues, changesSheet) {
       
     } else if ( !newValues[i].toString().equals(oldValues[i].toString())) {
       
-      //changesSheet.appendRow(oldValues[i]);
+      changesSheet.appendRow(oldValues[i]);
+      changesSheet.appendRow(newValues[i]);
+      changesSheet.appendRow(["\t"]);
       
       changes.push( [newValues[i][firstNameColumn],
                      newValues[i][lastNameColumn],
