@@ -135,9 +135,19 @@ function getColumnIndex(values, name) {
  */
 function getListOfColumns(values) {
   var list = new Array();
-  values.sort(function(a, b){return b[2]-a[2]});
+  var row = -1;
+  for (var i = 0; i < values.length; i++) {
     for( var j = 0; j < values[0].length; j++) {
-      list.push(values[0][j].toString().toLowerCase());
+      if(values[i][j] == 'First Name') {
+        row = i;
+      } 
     }
+  }
+  if (row == -1) {
+    SpreadsheetApp.getUi().alert("There is no /'First Name/' column. Please make sure it is spelt exactly as shown.");
+  }
+  for( j = 0; j < values[row].length; j++) {
+    list.push(values[row][j].toString().toLowerCase());
+  }
   return list;
 }

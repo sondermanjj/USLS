@@ -12,11 +12,11 @@ function getScheduleChanges() {
     for ( i = 0; i < changes.length; i++) {
       if (changes[i].length < 6) {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
-      } else if (changes[i][3] == 'mid' && changes[i][5] == 'mid') {
+      } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
-      } else if (changes[i][3] == 'mid') {
+      } else if (changes[i][3] == 'early') {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
-      } else if (changes[i][5] == 'mid') {
+      } else if (changes[i][5] == 'early') {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
       } else {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
