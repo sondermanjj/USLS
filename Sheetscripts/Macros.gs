@@ -11,7 +11,7 @@ function sortByLunches() {
  * @author - hendersonam
  */
 function sortByLunchesThenTableNumber() {
-  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["First Name", "Last Name", "Grade Level", "Table Head", "Table Number", "Lunch Day"]);
+  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["First Name", "Last Name", "Grade Level", "Table Head", "Lunch Table", "Lunch Day"]);
 }
 
 /**
@@ -19,7 +19,7 @@ function sortByLunchesThenTableNumber() {
  * @author - hendersonam
  */
 function sortByTable() {
-  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["First Name", "Last Name", "Grade Level", "Table Head", "Lunch Day", "Table Number"]);
+  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["First Name", "Last Name", "Grade Level", "Table Head", "Lunch Day", "Lunch Table"]);
 }
 
 /**
@@ -35,14 +35,14 @@ function sortByCourses() {
  * @author - hendersonam
  */
 function sortByIndivicualsByLunchDay() {
-  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["Lunch Days", "First Name", "Last Name", "Grade Level"]);
+  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["Lunch Day", "First Name", "Last Name", "Grade Level"]);
 }
 
 /**
  * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+n
  * @author - hendersonam
  */
-function sortByLunches() {
+function sortByL() {
   sortSheetBy(SpreadsheetApp.getActiveSheet(), ["Block", "Lunch Day", "First Name", "Last Name", "Grade Level"]);
 }
 

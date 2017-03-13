@@ -23,10 +23,6 @@ function getHTMLDropdown(list) {
   return html;
 }
 
-function test () {
-  sortSheetBy(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data"), ["First Name"]);
-}
-
 /**
  * @desc - Sorts the given sheet by the list of sorts given
  * @param - Sheet - Sheet to sort
