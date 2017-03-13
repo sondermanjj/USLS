@@ -88,7 +88,7 @@ function statistics(time, day, values, students) {
   
   var listOfColumns = getListOfColumns(values);
   var lunchDayColumn = getColumnIndex(listOfColumns, "Lunch Day");
-  var gradeColumn = getColumnIndex(listOfColumns, "Grade");
+  var gradeColumn = getColumnIndex(listOfColumns, "Grade Level");
   var lunchTimeColumn = getColumnIndex(listOfColumns, "Lunch Time");
   var flag;
   var lunchDay;
