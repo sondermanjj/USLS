@@ -1,15 +1,44 @@
 
+
+/**
+ * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
+ * @return - String(HTML) - HTML for a dropdown list of headers
+ * @author - hendersonam
+ */
 function getDropdownList() {
   var list = getListOfColumns(getFinalStudentDataValues());
   return getHTMLDropdown(list);
 }
 
+
+/**
+ * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
+ * @param - Object[] - Array of header names
+ * @return - String(HTML) - HTML for a dropdown list of headers
+ * @author - hendersonam
+ */
 function getHTMLDropdown(list) {
   var html = "<option value=\"All\">All</option>";
   for(var i = 0; i < list.length; i++) {
     html += "<option value=\"" + list[i] + "\">" + list[i] + "</option>";
   }
   return html;
+}
+
+/**
+ * @desc - Sorts the given sheet by the list of sorts given
+ * @param - Sheet - Sheet to sort
+ *          Object[] - Array of header names to sort by in the order given
+ * @author - hendersonam
+ */
+function sortSheetBy(sheet, sorts) {
+  var values = sheet.getDataRange().getValues();
+  var headers = getListOfColumns(values);
+  
+  for (var i = 0; i < sorts.length; i++) {
+    var column = getColumnIndex(headers, sorts[i]);
+    sheet.sort(column+1);
+  }
 }
 
 /**
