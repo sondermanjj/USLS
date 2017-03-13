@@ -332,6 +332,7 @@ function parseStudentChanges(){
     }
   }
   printStudentsToSheet(students, primarySheet);
+  changesSheet.deleteRows(2, changeData.getNumRows() - 1);
 }
 
 /**
