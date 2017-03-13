@@ -56,7 +56,6 @@ function scheduleChanges() {
   var scannedValues = scannedSheet.getDataRange().getValues();
   
   var changes = findChanges(scannedValues, currentValues, changesSheet);
-  
   scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
   
   return changes;
