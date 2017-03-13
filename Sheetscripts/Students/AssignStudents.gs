@@ -30,6 +30,7 @@ function assignStudentLunchDays() {
   
   var nextRow = primaryData.getNumRows() + 1;
   var pEarlyStudents = [];
+  var students8Plus = [];
   
   //Checks to see if each student has a lunch for each day, adds students with an early lunch
   //to an array, and do the table assignments for late lunches
@@ -107,12 +108,23 @@ function assignStudentLunchDays() {
         h = true;
         nextRow++;
       }
-      
-      assignZelm(stu);
-      doLateAssignment(stu);
+      if(stu.lunches.length == 8){
+        assignZelm(stu);
+        doLateAssignment(stu);
+      }else{
+        students8Plus.push(stu);
+      }
     }
   }
-  
+  if(students8Plus.length > 0){
+    var message = "These Students have conflicting lunches:\n";
+    for(var i = 0; i < students8Plus.length; i++){
+      var bad = students8Plus[i];
+      message += "" + bad.fName + " " + bad.lName + ": " + bad.lunches.length + " lunches\n";
+    }
+    SpreadsheetApp.getUi().alert(message);
+    return;
+  }
   var A = [];
   var B = [];
   var C = [];
@@ -231,11 +243,10 @@ function assignStudentLunchDays() {
   }
   
   var userProperties = PropertiesService.getUserProperties();
+  printStudentsToSheet(students, primary); 
   
-  printStudentsToSheet(students, primary);  
-  colorBackgrounds(userProperties.pLunchTimeColumn);
-  colorBackgrounds(userProperties.pTableColumn);
-
+  colorBackgrounds(userProperties.getProperty("pLunchTimeColumn"));
+  colorBackgrounds(userProperties.getProperty("pTableColumn"));
 }
 
 /**
