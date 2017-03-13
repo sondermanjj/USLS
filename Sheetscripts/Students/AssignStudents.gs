@@ -235,7 +235,169 @@ function assignStudentLunchDays() {
   printStudentsToSheet(students, primary);  
   colorBackgrounds(userProperties.pLunchTimeColumn);
   colorBackgrounds(userProperties.pTableColumn);
+  
+}
 
+/**
+@desc Uses the students and changes arrays to change student schedules 
+@funtional - yes
+@author - dicksontc
+*/
+function parseStudentChanges(){
+  var changesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
+  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
+  
+  var changeData = changesSheet.getDataRange();
+  var primaryData = primarySheet.getDataRange();
+  var teacherData = teacher.getDataRange();
+  
+  var pValues = primaryData.getValues();
+  var cValues = changeData.getValues();
+  var tValues = teacherData.getValues();
+  
+  var pNumRows = primaryData.getNumRows();
+  var pNumColumns = primaryData.getNumColumns();
+  var cNumRows = changeData.getNumRows();
+  var cNumColumns = changeData.getNumColumns();
+  var tNumRows = teacherData.getNumRows();
+  var tNumColumns = teacherData.getNumColumns();
+  
+  var students = [];
+  var changes = [];
+  var teachers = [];
+  teachers = getTeachers(tValues, tNumRows);
+  students = getStudents(pValues, pNumRows, teachers);
+  changes = getChanges(cValues, cNumRows, cNumColumns);
+  
+  for(var i = 0; i < changes.length; i++){
+    var change = changes[i];
+    if(change.oldTime != change.newTime){
+      for(var j = 0; j < students.length; j++){
+        var stu = students[j];
+        if(change.fName == stu.fName && change.lName == stu.lName){
+          for(var h = 0; h < stu.lunches.length; h++){
+            var lunch = stu.lunches[h];
+            if(lunch.day == change.oldDay){
+              var oldtime = lunch.time;
+              var newtime = change.newTime;
+              if((oldtime == "mid" || oldtime == "late") && (newtime == "mid" || newtime == "late")){
+                students[j].lunches[h].time = newtime;
+                if(newtime == "mid")
+                  students[j].lunches[h].table = "";
+                else
+                  students[j].lunches[h].table = stu.house;
+              }else{
+                var affectedRow;
+                var affectedLunch;
+                var day = change.newDay;
+                var zelmStudents = getZelmStudents(students, day);
+                for(var k = 0; k < zelmStudents.length; k++){
+                  var zStu = zelmStudents[k].stu;
+                  affectedRow = zelmStudents[k].row;
+                  affectedLunch = zelmStudents[k].j;
+                }
+                if(affectedRow == null){
+                  SpreadsheetApp.getUi().alert("Not enough students to switch into/out of early lunch!");
+                  return;
+                }
+                var oldtime = change.oldTime;
+                var newtime = change.newTime;
+                if(change.oldTime == "early"){
+                  students[j].lunches[h].time = newtime;
+                  if(newtime == "mid")
+                    students[j].lunches[h].table = "";
+                  else
+                    students[j].lunches[h].table = students[j].house;
+                  students[affectedRow].lunches[affectedLunch].time = oldtime;
+                  students[affectedRow].lunches[affectedLunch].table = change.oldTable;
+                }else if(newtime == "early"){
+                  students[j].lunches[h].time = newtime;
+                  students[j].lunches[h].table = students[affectedRow].lunches[affectedLunch].table;
+                  students[affectedRow].lunches[affectedLunch].time = oldtime;
+                  if(oldtime == "mid")
+                    students[affectedRow].lunches[affectedLunch].table = "";
+                  else
+                    students[affectedRow].lunches[affectedLunch].table = students[affectedRow].house;
+                }
+                assignZelm(students[affectedRow]);
+              }
+              assignZelm(students[j]);
+              h = stu.lunches.length;
+            }
+          }
+          j = students.length;
+        }
+      }
+    }
+  }
+  printStudentsToSheet(students, primarySheet);
+  changesSheet.deleteRows(2, changeData.getNumRows() - 1);
+}
+
+/**
+@desc Uses the student schedule changes to format the changes into a more usable format
+@params - cVals - the values in the Change array
+cRow - the number of Change rows
+cCol - the number of Change columns
+students - the students and their lunches
+@funtional - yes
+@author - dicksontc
+*/
+function getChanges(cVals, cRow, cCol, students){
+  var changes = [];
+  var fNameCol;
+  var lNameCol;
+  var timeCol;
+  var dayCol;
+  var tableCol;
+  for(var i = 0; i < cCol; i++){
+    if(cVals[0][i] == "First Name"){
+      fNameCol = i;
+    }else if(cVals[0][i] == "Last Name"){
+      lNameCol = i;
+    }else if(cVals[0][i] == "Time"){
+      timeCol = i;
+    }else if(cVals[0][i] == "Day"){
+      dayCol = i;
+    }else if(cVals[0][i] == "Table"){
+      tableCol = i;
+    }
+  }
+  
+  for(var i = 1; i < cRow; i+= 3){
+    var change = {fName: cVals[i][fNameCol], lName: cVals[i][lNameCol], oldTime: cVals[i][timeCol], oldDay: cVals[i][dayCol],
+                  oldTable: cVals[i][tableCol], newTime: cVals[i+1][timeCol], newDay: cVals[i+1][dayCol], newTable: cVals[i+1][tableCol]};
+    changes.push(change);
+  }
+  
+  return changes;
+}
+
+/**
+@desc Creates an array of all the students who have a free period
+@params - students - the array of students
+@funtional - yes
+@author - dicksontc
+*/
+function getZelmStudents(students, day){
+  var zelmStudents = [];
+  for(var i = 0; i < students.length; i++){
+    var student = students[i];
+    for(var j = 0; j < student.lunches.length; j++){
+      if(student.lunches[j].day == day){
+        if(student.lunches[j].zelm){
+          zelmStudents.push({stu: student, j: j, row: i});
+        }
+        j = student.lunches.length;
+      }
+    }
+  } 
+  zelmStudents.sort(function(a, b) {
+    return parseFloat(a.stu.zelm) - parseFloat(b.stu.zelm);
+  });
+  
+  return zelmStudents;
 }
 
 /**
@@ -589,27 +751,14 @@ students - the list of students
 */
 function moveFromMidToEarly(numStudents, day, students, dayStudents){
   var needed = 133 - numStudents;
-  var zelmStudents = [];
-  for(var i = 0; i < students.length; i++){
-    var student = students[i];
-    for(var j = 0; j < student.lunches.length; j++){
-      if(student.lunches[j].day == day){
-        if(student.lunches[j].zelm){
-          zelmStudents.push({stu: student, j: j});
-        }
-        j = student.lunches.length;
-      }
-    }
-  } 
-  zelmStudents.sort(function(a, b) {
-    return parseFloat(a.stu.zelm) - parseFloat(b.stu.zelm);
-  });
+  var zelmStudents = getZelmStudents(students, day);
+  
   while(needed > 0){
     if(zelmStudents.length > 0){      
       var student = zelmStudents[0].stu;
       var x = zelmStudents[0].j;
       student.lunches[x].time = 'early';
-      student.lunches[x].zelm = false;
+      //student.lunches[x].zelm = false;
       student.zelm += 99; // minus 1 and plus 100 for mid to early
       dayStudents.push({stuEarly: student, lunch: x});
       zelmStudents = zelmStudents.slice(1, zelmStudents.length);
