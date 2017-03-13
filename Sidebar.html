@@ -50,7 +50,13 @@
     
     th, td {
       text-align: center;
-      padding: 15px;
+      padding: 8px 16px;
+    }
+    
+    #studentStatsTable th, #teacherStatsTable th{
+      border: none;
+      background-color: #e6e6e6;
+      font-weight: bold;
     }
     
     #tabs {
@@ -71,7 +77,7 @@
       display: block;
       color: #000;
       text-align: center;
-      padding: 10px 12px;
+      padding: 7px 12px;
       text-decoration: none;
       margin: 0 5px 0 0;
       border-radius: 0 0 8px 8px;
@@ -232,18 +238,18 @@
       <!--Navbar; On menu Item click, hide or display appropriate data and buttons -->
       <div id="tabs">
       <ul>
-        <li id="cleanTab"onclick="showCleanupPage(); hideStatisticsPage(); hideSearchPage();">Clean-Up</li>
-        <li id="statsTab"onclick="showStatisticsPage(); hideCleanupPage(); hideSearchPage();">Statistics</li>
+        <li id="cleanTab" onclick="showCleanupPage(); hideStatisticsPage(); hideSearchPage();">Clean-Up</li>
+        <li id="statsTab" onclick="showStatisticsPage(); hideCleanupPage(); hideSearchPage();">Statistics</li>
         <li id="searchTab" onclick="showSearchPage(); hideCleanupPage(); hideStatisticsPage();">Search/Sort</li>
      </ul>
      </div>
      
      <div id="cleanPage">
-       <button class="action" onclick="google.script.run.startTableAssigning()">Clean Up</button>
+       <button id="cleanButton" class="action" onclick="google.script.run.startTableAssigning()">Clean Up</button>
      </div>
      
      <div id="statsPage">
-       <button class="action" onclick="scanData()">Scan</button>
+       <button id="scanButton" class="action" onclick="scanData()">Scan</button>
        <div id="changes"></div>
        <div id="stats"></div>
      </div>
@@ -251,7 +257,7 @@
      <div id="searchPage">
        <select id="dropdownfilter"></select>
        <input type="text" id="filter" onkeypress="mySearch(event)" placeholder="Search for names..">
-       <button class="action" onclick="mySearch(event)">Search</button>
+       <button id="searchButton" class="action" onclick="mySearch(event)">Search</button>
        <br/><br/>
        <button class="action" onclick="google.script.run.showAllValues()">Show All</button>
      </div>
