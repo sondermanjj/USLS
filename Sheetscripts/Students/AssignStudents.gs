@@ -233,8 +233,8 @@ function assignStudentLunchDays() {
   var userProperties = PropertiesService.getUserProperties();
   
   printStudentsToSheet(students, primary);  
-  colorBackgrounds(userProperties.pLunchTimeColumn);
-  colorBackgrounds(userProperties.pTableColumn);
+  colorBackgrounds(userProperties.getProperty("pLunchTimeColumn"));
+  colorBackgrounds(userProperties.getProperty("pTableColumn"));
 
 }
 
