@@ -234,7 +234,7 @@ function createNewSheets(data, name, id) {
     sheet.insertSheet(name);
     ts = sheet.getSheetByName(name); //Target sheet
   }
-  ts.getRange(1, 1, ts.getMaxRows(), ts.getMaxColumns()).setBackground("white"); 
+   ts.getRange(1, 1, ts.getMaxRows(), ts.getMaxColumns()).setBackground("white"); 
   ts.clearContents()
   
   //set the target range to the values of the source data
