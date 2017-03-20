@@ -162,21 +162,21 @@ function getColumnIndex(values, name) {
  * @param - Object[][] - 2D Array of data, columns should be in the 0 index
  * @return - Array[] - List of the column names in the given data
  */
-function getListOfColumns(values) {
+function getListOfColumns(headers) {
   var list = new Array();
   var row = -1;
-  for (var i = 0; i < values.length; i++) {
-    for( var j = 0; j < values[0].length; j++) {
-      if(values[i][j] == 'First Name') {
+  for (var i = 0; i < headers.length; i++) {
+    for( var j = 0; j < headers[0].length; j++) {
+      if(headers[i][j] == 'First Name') {
         row = i;
       } 
     }
   }
   if (row == -1) {
-    SpreadsheetApp.getUi().alert("There is no /'First Name/' column. Please make sure it is spelt exactly as shown.");
+    SpreadsheetApp.getUi().alert("There is no 'First Name' column. Please make sure it is spelt exactly as shown.");
   }
-  for( j = 0; j < values[row].length; j++) {
-    list.push(values[row][j].toString().toLowerCase());
+  for( j = 0; j < headers[row].length; j++) {
+    list.push(headers[row][j].toString());
   }
   return list;
 }
