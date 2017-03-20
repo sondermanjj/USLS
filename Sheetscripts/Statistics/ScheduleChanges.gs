@@ -12,11 +12,11 @@ function getScheduleChanges() {
     for ( i = 0; i < changes.length; i++) {
       if (changes[i].length < 6) {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
-      } else if (changes[i][3] == 'mid' && changes[i][5] == 'mid') {
+      } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
-      } else if (changes[i][3] == 'mid') {
+      } else if (changes[i][3] == 'early') {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
-      } else if (changes[i][5] == 'mid') {
+      } else if (changes[i][5] == 'early') {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
       } else {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
@@ -35,6 +35,7 @@ function getScheduleChanges() {
 function scheduleChanges() {
   
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  sortSheetBy(spreadsheet.getSheetByName("Final Student Data"), ["Lunch Day", "Last Name", "First Name"]);
   var currentValues = getFinalStudentDataValues();
   
   var scannedSheet = spreadsheet.getSheetByName("Scanned Data");
@@ -50,10 +51,14 @@ function scheduleChanges() {
     changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
     changesSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
     changesSheet.clear();
+    changesSheet.appendRow(getListOfColumns(currentValues));
   }
   
+  sortSheetBy(scannedSheet, ["Lunch Day", "Last Name", "First Name"]);
   var scannedValues = scannedSheet.getDataRange().getValues();
+  
   var changes = findChanges(scannedValues, currentValues, changesSheet);
+  
   scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
   
   return changes;
@@ -74,12 +79,12 @@ function findChanges(oldValues, newValues, changesSheet) {
   var lastNameColumn = getColumnIndex(newColumnList, "Last Name");
   var newLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
   var newLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
-  var newTableColumn = getColumnIndex(newColumnList, "Table");
+  var newTableColumn = getColumnIndex(newColumnList, "Lunch Table");
   
   var oldColumnList = getListOfColumns(oldValues);
-  var oldLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
-  var oldLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
-  var oldTableColumn = getColumnIndex(newColumnList, "Table");
+  var oldLunchTimeColumn = getColumnIndex(oldColumnList, "Lunch Time");
+  var oldLunchDayColumn = getColumnIndex(oldColumnList, "Lunch Day");
+  var oldTableColumn = getColumnIndex(oldColumnList, "Lunch Table");
   
   var changes = new Array();
 
@@ -96,9 +101,6 @@ function findChanges(oldValues, newValues, changesSheet) {
     }
   }
   
-  oldValues.sort();
-  newValues.sort();
-  
   for ( i = 0; i < newValues.length; i++) {
     
     if(oldValues[i] == null) {
@@ -111,6 +113,8 @@ function findChanges(oldValues, newValues, changesSheet) {
     } else if ( !newValues[i].toString().equals(oldValues[i].toString())) {
       
       changesSheet.appendRow(oldValues[i]);
+      changesSheet.appendRow(newValues[i]);
+      changesSheet.appendRow(["\t"]);
       
       changes.push( [newValues[i][firstNameColumn],
                      newValues[i][lastNameColumn],

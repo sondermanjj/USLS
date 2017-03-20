@@ -22,8 +22,8 @@ function startCleanUp() {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(response.getResponseText());
     if(sheet != null) {
       var cleaned = false;
-      cleaned = true;
       cleanUp(sheet);
+      cleaned = true;
       if(cleaned) {
         ui.alert("Finished cleaning.");
       }
@@ -49,7 +49,6 @@ function cleanUp(raw) {
   //Create a new sheet to write the cleaned data to (if it doesn't already exist)
   var masterList = spreadsheet.getSheetByName("Final Student Data");
   if (masterList == null) {
-    var values = raw.getDataRange().getValues();
     spreadsheet.insertSheet("Final Student Data");
     masterList = spreadsheet.getSheetByName("Final Student Data");
   }

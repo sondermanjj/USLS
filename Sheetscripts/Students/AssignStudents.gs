@@ -352,8 +352,9 @@ function parseStudentChanges(){
   if(changesSheet.getDataRange().getNumRows() > 1){
     changesSheet.deleteRows(2, changeData.getNumRows() - 1);
   }
-  if(message.length == 0)
+  if(message.length == 0){
     message = "No changes have been made";
+  }
   SpreadsheetApp.getUi().alert(message);
 }
 
@@ -521,65 +522,33 @@ function setProperties(pNumColumns, pValues, tNumColumns, tValues){
                     pCourseTitleColumn: 0, pCourseCodeColumn: 0, pCourseLengthColumn: 0, pCourseIDColumn: 0, pSectionIDColumn: 0, pBlockColumn: 0, pDOBColumn: 0, pTableHeadColumn: 0,
                     pTableColumn: 0, pGradeColumn: 0, pHouseColumn: 0, tFNameColumn: 0, tLNameColumn: 0, tLunchDayColumn: 0, tLunchTimeColumn: 0};
   
-  for(var i = 0; i < pNumColumns; i++){
-    var column = pValues[0][i];
-    if(column == 'Lunch Day') {
-      properties.pLunchDayColumn = i ;
-    }else if(column == 'Lunch Time'){
-      properties.pLunchTimeColumn = i;
-    }else if(column == 'Faculty First Name'){
-      properties.pTFNameColumn = i;
-    }else if(column == 'Faculty Last Name'){
-      properties.pTLNameColumn = i;
-    }else if(column == 'First Name'){
-      properties.pSFNameColumn = i;
-    }else if(column == 'Last Name'){
-      properties.pSLNameColumn = i;
-    }else if(column == 'Lunch Table'){
-      properties.pTableColumn = i;
-    }else if(column == 'House'){
-      properties.pHouseColumn = i;
-    }else if(column == 'Grade Level'){
-      properties.pGradeColumn = i;
-    }else if(column == "Advisor"){
-      properties.pAdvisorColumn = i;
-    }else if(column == "Gender"){
-      properties.pGenderColumn = i;
-    }else if(column == "Course Title"){
-      properties.pCourseTitleColumn = i;
-    }else if(column == "Course Code"){
-      properties.pCourseCodeColumn = i;
-    }else if(column == "Course ID"){
-      properties.pCourseIDColumn = i;
-    }else if(column == "Section Identifier"){
-      properties.pSectionIDColumn = i;
-    }else if(column == "Block"){
-      properties.pBlockColumn = i;
-    }else if(column == "Date of Birth"){
-      properties.pDOBColumn = i;
-    }else if(column == "Table Head"){
-      properties.pTableHeadColumn = i;
-    }else if(column == "Advisor"){
-      properties.pAdvisorColumn = i;
-    }else if(column == "Course Length"){
-      properties.pCourseLengthColumn = i;
-    }
-  }
+  var pheaders = getListOfColumns(pValues);            
+  properties.pSFNameColumn = getColumnIndex(pheaders, "first name");            
+  properties.pSLNameColumn = getColumnIndex(pheaders, "last name");            
+  properties.pTFNameColumn = getColumnIndex(pheaders, "faculty first name");            
+  properties.pTLNameColumn = getColumnIndex(pheaders, "faculty last name");            
+  properties.pLunchDayColumn = getColumnIndex(pheaders, "lunch day");            
+  properties.pLunchTimeColumn = getColumnIndex(pheaders, "lunch time");            
+  properties.pTableColumn = getColumnIndex(pheaders, "lunch table");            
+  properties.pHouseColumn = getColumnIndex(pheaders, "house");            
+  properties.pGradeColumn = getColumnIndex(pheaders, "grade level");            
+  properties.pAdvisorColumn = getColumnIndex(pheaders, "advisor");            
+  properties.pGenderColumn = getColumnIndex(pheaders, "gender");            
+  properties.pCourseTitleColumn = getColumnIndex(pheaders, "course title");            
+  properties.pCourseCodeColumn = getColumnIndex(pheaders, "course code");            
+  properties.pCourseIDColumn = getColumnIndex(pheaders, "course id");            
+  properties.pSectionIDColumn = getColumnIndex(pheaders, "section identifier");            
+  properties.pBlockColumn = getColumnIndex(pheaders, "block");            
+  properties.pDOBColumn = getColumnIndex(pheaders, "date of birth");            
+  properties.pTableHeadColumn = getColumnIndex(pheaders, "table head");            
+  properties.pCourseLengthColumn = getColumnIndex(pheaders, "course length");            
   
-  //Set needed variables in Faculty Choices
-  for(var i = 0; i < tNumColumns; i++){
-    var column = tValues[0][i];
-    if(column == 'Lunch Day') {
-      properties.tLunchDayColumn = i ;
-    }else if(column == 'First Name'){
-      properties.tFNameColumn = i;
-    }else if(column == 'Last Name'){
-      properties.tLNameColumn = i;
-    }else if(column == 'Lunch Assignment'){
-      properties.tLunchTimeColumn = i;
-    }
-  }
-  
+  var theaders = getListOfColumns(tValues);            
+  properties.tFNameColumn = getColumnIndex(theaders, "first name");            
+  properties.tLNameColumn = getColumnIndex(theaders, "last name");            
+  properties.tLunchDayColumn = getColumnIndex(theaders, "lunch day");            
+  properties.tLunchTimeColumn = getColumnIndex(theaders, "lunch assignment");  
+
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperties(properties);
 }
@@ -888,4 +857,27 @@ function doRandomAssignment(students){
     var lunch = gTwelve[i].lunch;
     student.lunches[lunch].table = nums[numIndex];
   } 
+}
+
+/**
+@desc Asks the user if they want to automatically re-assign the students whose lunches changed.
+@funtional - yes
+@author - dicksontc
+*/
+function promptForChanges(){
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var changesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
+  var rows = changesSheet.getDataRange().getNumRows();
+  if(rows >= 3){
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.prompt('Auto-Reassign', 'Do you want to automatically re-assign the students?', ui.ButtonSet.YES_NO);
+    // Process the user's response.
+    if (response.getSelectedButton() == ui.Button.YES) {
+      parseStudentChanges();
+    } else if (response.getSelectedButton() == ui.Button.NO) {
+      //Nothing will happen.
+    } else {
+      //Nothing will happen.
+    }
+  }
 }

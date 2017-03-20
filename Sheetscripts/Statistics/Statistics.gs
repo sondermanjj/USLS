@@ -4,8 +4,8 @@
  * @author - hendersonam
  */
 function getStatistics() {
-  var html = "Number of Students:\n" + getStudentStatistics();
-  html += "Number of Teachers:\n" + getTeacherStatistics();
+  var html = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStudentStatistics();
+  html += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getTeacherStatistics();
   return html;
 }
 
@@ -19,7 +19,7 @@ function getStudentStatistics() {
   var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
   var tableValues = statistics(time, day, getFinalStudentDataValues(), true);
   
-  return getHTMLTable(time, day, tableValues);
+  return "<table id='studentStatsTable'>" + getHTMLTable(time, day, tableValues);
   
 }
 
@@ -33,7 +33,7 @@ function getTeacherStatistics() {
   var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
   var tableValues = statistics(time, day, getFinalStudentDataValues(), false);
   
-  return getHTMLTable(time, day, tableValues);
+  return "<table id='teacherStatsTable'>" + getHTMLTable(time, day, tableValues);
 }
 
 /**
@@ -46,21 +46,22 @@ function getTeacherStatistics() {
  */
 function getHTMLTable(columns, rows, values) {
   
-  var html = "<table>";
-  html += "<tr>\n<th></th>\n";
+  var html = "";
+  //var html = "<table class='statsTable'>";
+  html += "<tr><th></th>";
   for(var column = 0; column < columns.length; column++){
-     html += "<th>" + columns[column] + "</th>\n";
+     html += "<th>" + columns[column] + "</th>";
   }
-  html += "</tr>\n";
+  html += "</tr>";
   
   for ( var row = 0; row < rows.length ; row++ ) {
     html += "<tr><td>" + rows[row] + "</td>";
     for ( column = 0; column < columns.length ; column++ ) {
       html += "<td>" + values[row][column] + "</td>";
     }
-    html += "</tr>\n";
+    html += "</tr>";
   }
-  html += "</table>\n";
+  html += "</table>";
   
   return html;
       
@@ -88,7 +89,7 @@ function statistics(time, day, values, students) {
   
   var listOfColumns = getListOfColumns(values);
   var lunchDayColumn = getColumnIndex(listOfColumns, "Lunch Day");
-  var gradeColumn = getColumnIndex(listOfColumns, "Grade");
+  var gradeColumn = getColumnIndex(listOfColumns, "Grade Level");
   var lunchTimeColumn = getColumnIndex(listOfColumns, "Lunch Time");
   var flag;
   var lunchDay;
