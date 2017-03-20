@@ -266,6 +266,9 @@ function parseStudentChanges(){
   var students = [];
   var changes = [];
   var teachers = [];
+  
+  var message = "";
+  
   teachers = getTeachers(tValues, tNumRows);
   students = getStudents(pValues, pNumRows, teachers);
   changes = getChanges(cValues, cNumRows, cNumColumns);
@@ -290,6 +293,7 @@ function parseStudentChanges(){
                   students[j].lunches[h].table = "";
                 else
                   students[j].lunches[h].table = stu.house;
+                message += "" + change.fName + " " + change.lName + " moved from " + oldtime + " to " + newtime + "\n";
               }else{
                 var affectedStu;
                 var affectedLunch;
@@ -328,6 +332,7 @@ function parseStudentChanges(){
                     students[affectedStu].lunches[affectedLunch].table = students[affectedStu].house;
                 }
                 assignZelm(students[affectedStu]);
+                message += "" + change.fName + " " + change.lName + " switch spots with " + students[affectedStu].fName + " " + students[affectedStu].lName + " on " + "day\n";
               }
               assignZelm(students[j]);
               h = stu.lunches.length;
@@ -336,6 +341,8 @@ function parseStudentChanges(){
           j = students.length;
         }
       }
+    }else{
+      message += "" + change.fName + " " + change.lName + " did not move\n";
     }
   }
   printStudentsToSheet(students, primarySheet);
@@ -345,6 +352,9 @@ function parseStudentChanges(){
   if(changesSheet.getDataRange().getNumRows() > 1){
     changesSheet.deleteRows(2, changeData.getNumRows() - 1);
   }
+  if(message.length == 0)
+    message = "No changes have been made";
+  SpreadsheetApp.getUi().alert(message);
 }
 
 /**
