@@ -35,7 +35,6 @@ function getScheduleChanges() {
 function scheduleChanges() {
   
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  sortSheetBy(spreadsheet.getSheetByName("Final Student Data"), ["Lunch Day", "Last Name", "First Name"]);
   var currentValues = getFinalStudentDataValues();
   
   var scannedSheet = spreadsheet.getSheetByName("Scanned Data");
@@ -54,7 +53,6 @@ function scheduleChanges() {
     changesSheet.appendRow(getListOfColumns(currentValues));
   }
   
-  sortSheetBy(scannedSheet, ["Lunch Day", "Last Name", "First Name"]);
   var scannedValues = scannedSheet.getDataRange().getValues();
   
   var changes = findChanges(scannedValues, currentValues, changesSheet);
@@ -100,6 +98,9 @@ function findChanges(oldValues, newValues, changesSheet) {
                      newValues[count][newLunchTimeColumn]]);
     }
   }
+  
+  oldValues.sort();
+  newValues.sort();
   
   for ( i = 0; i < newValues.length; i++) {
     
