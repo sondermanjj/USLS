@@ -293,7 +293,7 @@ function parseStudentChanges(){
                   students[j].lunches[h].table = "";
                 else
                   students[j].lunches[h].table = stu.house;
-                message += "" + change.fName + " " + change.lName + " moved from " + oldtime + " to " + newtime + "\n";
+                message += "" + change.fName + " " + change.lName + " moved from " + oldtime + " to " + newtime + ".\n";
               }else{
                 var affectedStu;
                 var affectedLunch;
@@ -332,7 +332,7 @@ function parseStudentChanges(){
                     students[affectedStu].lunches[affectedLunch].table = students[affectedStu].house;
                 }
                 assignZelm(students[affectedStu]);
-                message += "" + change.fName + " " + change.lName + " switch spots with " + students[affectedStu].fName + " " + students[affectedStu].lName + " on " + "day\n";
+                message += "" + change.fName + " " + change.lName + " switched spots with " + students[affectedStu].fName + " " + students[affectedStu].lName + " on " + day + "day.\n";
               }
               assignZelm(students[j]);
               h = stu.lunches.length;
@@ -342,7 +342,7 @@ function parseStudentChanges(){
         }
       }
     }else{
-      message += "" + change.fName + " " + change.lName + " did not move\n";
+      message += "" + change.fName + " " + change.lName + " did not move.\n";
     }
   }
   printStudentsToSheet(students, primarySheet);
