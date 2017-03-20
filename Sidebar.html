@@ -59,6 +59,23 @@
       font-weight: bold;
     }
     
+    #sortButtons, #sortButtons tr, #searchButtons, #searchButtons tr, #searchButtons td{
+      border: none;
+      padding: 8px 0px;
+      
+    }
+    
+    #sortButtons td {
+      text-align: left;
+      font-weight: bold;
+      border: none;
+      padding: 8px 5px;
+    }
+    
+    #sortButtons button {
+      text-align: center;
+    }
+    
     #tabs {
       background-color: white;
       border-top: 5px solid #0d47a1;
@@ -90,6 +107,11 @@
       /*top color: background-color: #333;*/
       /*button color: background-color: #4a8bf5;*/
       /*school color: background-color: #002967;*/
+      background-color: #0d47a1;
+      color: #fff;
+    }
+    
+    .active {
       background-color: #0d47a1;
       color: #fff;
     }
@@ -173,8 +195,14 @@
       if (key==13){
         var filter = document.getElementById('filter').value.toLowerCase();
         var column = document.getElementById('dropdownfilter').value;
-        google.script.run.hideValues(filter, column);
+        google.script.run.showDialog('search, ' + filter + ', ' + column);
       }
+    }
+    
+    function search(){
+      var filter = document.getElementById('filter').value.toLowerCase();
+      var column = document.getElementById('dropdownfilter').value;
+      google.script.run.showDialog('search, ' + filter + ', ' + column);
     }
 
     /**
@@ -231,6 +259,26 @@
       x.style.display = 'none';
     }
     
+    function changeID(button){
+      switch (button){
+        case 'clean':
+          document.getElementById('cleanTab').className = 'active';
+          document.getElementById('statsTab').className = 'inactive';
+          document.getElementById('searchTab').className = 'inactive';
+          break;
+        case 'stats':
+          document.getElementById('cleanTab').className = 'inactive';
+          document.getElementById('statsTab').className = 'active';
+          document.getElementById('searchTab').className = 'inactive';
+          break;
+        case 'search':
+          document.getElementById('cleanTab').className = 'inactive';
+          document.getElementById('statsTab').className = 'inactive';
+          document.getElementById('searchTab').className = 'active';
+          break;
+      }
+}
+    
     </script>
   </head>
     <body>
@@ -238,18 +286,18 @@
       <!--Navbar; On menu Item click, hide or display appropriate data and buttons -->
       <div id="tabs">
       <ul>
-        <li id="cleanTab" onclick="showCleanupPage(); hideStatisticsPage(); hideSearchPage();">Clean-Up</li>
-        <li id="statsTab" onclick="showStatisticsPage(); hideCleanupPage(); hideSearchPage();">Statistics</li>
-        <li id="searchTab" onclick="showSearchPage(); hideCleanupPage(); hideStatisticsPage();">Search/Sort</li>
+        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Clean-Up</li>
+        <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
+        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Search/Sort</li>
      </ul>
      </div>
      
      <div id="cleanPage">
-       <button id="cleanButton" class="action" onclick="google.script.run.startTableAssigning()">Clean Up</button>
+       <button id="cleanButton" class="action" onclick="google.script.run.sheetCleanupPrompt();">Clean Up</button>
      </div>
      
      <div id="statsPage">
-       <button id="scanButton" class="action" onclick="scanData()">Scan</button>
+       <button id="scanButton" class="action" onclick="scanData()">Scan Data</button>
        <div id="changes"></div>
        <div id="stats"></div>
      </div>
@@ -257,9 +305,47 @@
      <div id="searchPage">
        <select id="dropdownfilter"></select>
        <input type="text" id="filter" onkeypress="mySearch(event)" placeholder="Search for names..">
-       <button id="searchButton" class="action" onclick="mySearch(event)">Search</button>
-       <br/><br/>
-       <button class="action" onclick="google.script.run.showAllValues()">Show All</button>
+       <table id="searchButtons">
+         <tr>
+           <td><button id="searchButton" class="action" onclick="search()">Search</button></td>
+           <td><button class="action" onclick="google.script.run.showDialog('show');">Show All</button></td>
+         </tr>
+       </table>
+       <table id="sortButtons">
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('l');">l</button></td>
+           <td>Sort by Lunch</td>
+         </tr>
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('n');">n</button></td>
+           <td>Sort by Lunch then Table Number</td>
+         </tr>
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('j');">j</button></td>
+           <td>Sort by Table</td>
+         </tr>
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('k');">k</button></td>
+           <td>Sort by Course</td>
+         </tr>
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('t')">t</button></td>
+           <td>Sort by Individual by Lunch Day</td>
+         </tr>
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('g')">g</button></td>
+           <td>Sort by Individual by Block</td>
+         </tr>
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('p')">p</button></td>
+           <td>Sort by House</td>
+         </tr>
+         <tr>
+           <td><button class="action" onclick="google.script.run.showDialog('Word, One, Blue')">Test</button></td>
+           <td>Testing method calls</td>
+         </tr>
+       </table>
+       
      </div>
       
     </body>
