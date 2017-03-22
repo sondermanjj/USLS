@@ -29,6 +29,7 @@ function callMethod(args) {
       showAllValues();
       break;
     case 'scan':
+      Logger.log("Scan");
       break;
     case 'search':
       var filter = params[1].toString();

@@ -39,6 +39,10 @@
       width: 100%;
     }
     
+    body {
+      margin-left: 10px;
+    }
+    
     table {
       border-collapse: collapse;
       width: 80%;
@@ -94,7 +98,7 @@
       display: block;
       color: #000;
       text-align: center;
-      padding: 7px 12px;
+      padding: 5px 10px;
       text-decoration: none;
       margin: 0 5px 0 0;
       border-radius: 0 0 8px 8px;
@@ -132,9 +136,16 @@
       * @author - hendersonam
       */
     function scanData() {
-    scanStats();
-    scanChanges();
-    google.script.run.withSuccessHandler(displayDropdown).getDropdownList();
+      google.script.run.withSuccessHandler(scanBoth).showDialog('scan');
+      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();
+    }
+    
+    /**
+    *
+    */
+    function scanBoth() {
+      scanStats();
+      scanChanges();
     }
     
     /**
@@ -142,7 +153,7 @@
       * @author - hendersonam
       */
     function scanStats() {
-    google.script.run.withSuccessHandler(displayStats).getStatistics();
+      google.script.run.withSuccessHandler(displayStats).getStatistics();
     }
     
     /**
@@ -150,7 +161,7 @@
       * @author - hendersonam
       */
     function scanChanges() {
-    google.script.run.withSuccessHandler(displayScheduleChanges).getScheduleChanges();
+      google.script.run.withSuccessHandler(displayScheduleChanges).getScheduleChanges();
     }
     
     /**
@@ -159,8 +170,8 @@
       */
     function displayDropdown(list) {
     
-    var html = document.getElementById('dropdownfilter');
-    html.innerHTML = list;
+      var html = document.getElementById('dropdownfilter');
+      html.innerHTML = list;
     }
     
     /**
@@ -259,6 +270,10 @@
       x.style.display = 'none';
     }
     
+    /**
+    * @desc - Changes tab class names in order to highlight the active tab
+    * @author - clemensam
+    */
     function changeID(button){
       switch (button){
         case 'clean':
@@ -297,12 +312,15 @@
      </div>
      
      <div id="statsPage">
-       <button id="scanButton" class="action" onclick="scanData()">Scan Data</button>
+       <button id="scanButton" class="action" onclick="scanData();">Scan Data</button>
        <div id="changes"></div>
        <div id="stats"></div>
      </div>
      
      <div id="searchPage">
+       <h2>Search</h2>
+       <div>Must do an initial scan on data before searching. Use the search to hide values not matching you search.</div>
+       <div>Searches can be stacked on top of one another. "Show All" will show all rows again.</div>
        <select id="dropdownfilter"></select>
        <input type="text" id="filter" onkeypress="mySearch(event)" placeholder="Search for names..">
        <table id="searchButtons">
@@ -311,6 +329,7 @@
            <td><button class="action" onclick="google.script.run.showDialog('show');">Show All</button></td>
          </tr>
        </table>
+       <h2>Sort</h2>
        <table id="sortButtons">
          <tr>
            <td><button class="action" onclick="google.script.run.showDialog('l');">l</button></td>
