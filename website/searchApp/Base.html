@@ -2,7 +2,7 @@
 <Module>
 <ModulePrefs title="Search Script" /> 
 <Content type="html">
-<?!= include('CSS'); ?>
+<?!= include('website/searchApp/CSS'); ?>
 <script type="text/javascript"> 
 
 
@@ -60,7 +60,7 @@
         var block = json[index].gsx$block.$t;
         
         if (name.toLowerCase().includes(nameEntered) && checkCheckBoxes("house", house) 
-                && checkCheckBoxes("time", time)  && table.includes(tableEntered) && checkCheckBoxes("day", day) ) {
+                && checkCheckBoxes("time", time)  && (tableEntered.trim() == "" || table == tableEntered) && checkCheckBoxes("day", day) ) {
             console.log("Match Found");
             if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
               var dayArray = [];
@@ -165,14 +165,14 @@ return "";
 
 }
 
-    function handle(e){
-        if(e.keyCode === 13){
-            e.preventDefault(); // Ensure it is only this code that rusn
+ function handle(e){
+   if(e.keyCode === 13){
+       e.preventDefault(); // Ensure it is only this code that rusn
             
-            google.script.run.withSuccessHandler(formSubmit).getJSON(); 
-            document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
-        }
+       google.script.run.withSuccessHandler(formSubmit).getJSON(); 
+       document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
     }
+ }
 
 </script>
 
@@ -197,7 +197,7 @@ return "";
       </tr>
       <tr class="noBorder">
         <td class="noBorder">Table: </td>
-        <td class="noBorder"><input class="h" id="Table" type="text" name="table" /></td>
+        <td class="noBorder"><input class="h" id="Table" onkeypress="handle(event)" type="text" name="table" /></td>
       </tr>
       <tr class="noBorder">
         <td class="noBorder">Day: </td>

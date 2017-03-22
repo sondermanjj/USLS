@@ -10,7 +10,7 @@ var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" 
 * @return HtmlOutput object containing the HTML to be displayed
 */
 function doGet() {
-  return HtmlService.createTemplateFromFile('Base').evaluate();
+  return HtmlService.createTemplateFromFile('website/searchApp/Base').evaluate();
 }
 
 /**
