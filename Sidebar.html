@@ -172,7 +172,7 @@
       var key= e.keyCode || e.which;
       if (key==13){
         var filter = document.getElementById('filter').value.toLowerCase();
-        var column = document.getElementById('dropdownfilter').value;
+        var column = document.getElementById('dropdownfilter').value.toString().toLowerCase();
         google.script.run.hideValues(filter, column);
       }
     }
