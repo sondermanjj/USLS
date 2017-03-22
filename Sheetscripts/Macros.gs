@@ -3,8 +3,8 @@
 * @ author - clemensam
 */
 function sort(x){
-  Logger.log("Sort Called. Value of x: " + x);
-  switch(x){
+  var sort = x.split(",");
+  switch(sort[0]){
     case "l": 
       sortByLunches();
       break;
@@ -26,6 +26,12 @@ function sort(x){
     case "p":
       sortByHouse();
       break;
+    case "sort":
+      var filters = [];
+      for(var i = 1; i < sort.length; i++){
+        filters.push(sort[i].toString());
+      }
+      sortSheetBy(SpreadsheetApp.getActiveSheet(), filters);
   }
 }
 

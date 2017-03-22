@@ -25,6 +25,9 @@ function callMethod(args) {
     case 'l': case 'n': case 'j': case 'k': case 't': case 'g': case 'p':
       sort(button);
       break;
+    case 'sort':
+      sort(params.toString());
+      Logger.log("Custom Sort: " + params);
     case 'show':
       showAllValues();
       break;

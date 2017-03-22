@@ -63,13 +63,13 @@
       font-weight: bold;
     }
     
-    #sortButtons, #sortButtons tr, #searchButtons, #searchButtons tr, #searchButtons td{
+    #sortButtons, #sortButtons tr, #searchButtons, #searchButtons tr, #searchButtons td, #customSort, #customSort tr{
       border: none;
       padding: 8px 0px;
       
     }
     
-    #sortButtons td {
+    #sortButtons td, #customSort td {
       text-align: left;
       font-weight: bold;
       border: none;
@@ -215,6 +215,11 @@
       var column = document.getElementById('dropdownfilter').value;
       google.script.run.showDialog('search, ' + filter + ', ' + column);
     }
+    
+    function customSort(){
+      var sortFilters = document.getElementById('customSearch').value;
+      google.script.run.showDialog('sort, ' + sortFilters);
+    }
 
     /**
     * @desc - Shows the contents relating to sheet clean up
@@ -332,36 +337,41 @@
        <h2>Sort</h2>
        <table id="sortButtons">
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('l');">l</button></td>
-           <td>Sort by Lunch</td>
+           <td colspan="1"><button class="action" onclick="google.script.run.showDialog('l');">l</button></td>
+           <td colspan="1">Sort by Lunch</td>
          </tr>
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('n');">n</button></td>
-           <td>Sort by Lunch then Table Number</td>
+           <td colspan="1"><button class="action" onclick="google.script.run.showDialog('n');">n</button></td>
+           <td colspan="1">Sort by Lunch then Table Number</td>
          </tr>
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('j');">j</button></td>
-           <td>Sort by Table</td>
+           <td colspan="1"><button class="action" onclick="google.script.run.showDialog('j');">j</button></td>
+           <td colspan="1">Sort by Table</td>
          </tr>
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('k');">k</button></td>
-           <td>Sort by Course</td>
+           <td colspan="1"><button class="action" onclick="google.script.run.showDialog('k');">k</button></td>
+           <td colspan="1">Sort by Course</td>
          </tr>
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('t')">t</button></td>
-           <td>Sort by Individual by Lunch Day</td>
+           <td colspan="1"><button class="action" onclick="google.script.run.showDialog('t')">t</button></td>
+           <td colspan="1">Sort by Individual by Lunch Day</td>
          </tr>
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('g')">g</button></td>
-           <td>Sort by Individual by Block</td>
+           <td colspan="1"><button class="action" onclick="google.script.run.showDialog('g')">g</button></td>
+           <td colspan="1">Sort by Individual by Block</td>
          </tr>
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('p')">p</button></td>
-           <td>Sort by House</td>
+           <td colspan="1"><button class="action" onclick="google.script.run.showDialog('p')">p</button></td>
+           <td colspan="1">Sort by House</td>
+         </tr>
+       </table>
+       <table id="customSort">
+          <tr>
+           <td colspan="2">Enter the order in which you would like to filter the sort using column names, separated by a comma.</td>
          </tr>
          <tr>
-           <td><button class="action" onclick="google.script.run.showDialog('Word, One, Blue')">Test</button></td>
-           <td>Testing method calls</td>
+           <td><input type="text" id="customSearch" placeholder="Search filters"></td>
+           <td><button class="action" onclick="customSort()">Sort</button></td>
          </tr>
        </table>
        
