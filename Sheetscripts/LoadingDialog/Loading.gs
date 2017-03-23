@@ -16,7 +16,13 @@ function doGet() {
       .setTitle('Simple Tasks')
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
-
+/*
+* @desc - determines what methods need to be called based on the button that was pressed to open the load dialog
+* @params - args Comma separated string with the first naming the button pressed and the 
+*           remianing being any args needed to be passed to the corresoponding method for 
+*           that button
+* @author - clemensam
+*/
 function callMethod(args) {
   Logger.log(args.split(", "));
   var params = args.split(", ");

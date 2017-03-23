@@ -141,7 +141,7 @@
     }
     
     /**
-    *
+    * @desc - Puts the scanStats and scanChanges method into one method so that it can be called when opening the loading dialog
     */
     function scanBoth() {
       scanStats();
@@ -210,12 +210,19 @@
       }
     }
     
+    /*
+    * @desc - same as above method, but used on button press instead up enter key press
+    */
     function search(){
       var filter = document.getElementById('filter').value.toLowerCase();
       var column = document.getElementById('dropdownfilter').value;
       google.script.run.showDialog('search, ' + filter + ', ' + column);
     }
     
+    /*
+    * @desc - gets sort information from text box and calls method to create custom sort
+    * @author - clemensam
+    */
     function customSort(){
       var sortFilters = document.getElementById('customSearch').value;
       google.script.run.showDialog('sort, ' + sortFilters);
