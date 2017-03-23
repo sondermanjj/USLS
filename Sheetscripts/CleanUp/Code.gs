@@ -7,8 +7,8 @@
 function onOpen() {
     var ui = SpreadsheetApp
       .getUi()
-      .createMenu("Personal Add-ons")
-      .addItem("Start", "showSidebar");
+      .createMenu("Lunch Schedule Add-ons")
+      .addItem("View Menu", "showSidebar");
       
     ui.addToUi();
 }
@@ -26,6 +26,7 @@ function showSidebar() {
     .setTitle('USL Project Add-On');
   
   SpreadsheetApp.getUi().showSidebar(sidebar);
+  Logger.log("Showing Sidebar");
 }
 
 /**
