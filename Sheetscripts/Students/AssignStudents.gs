@@ -120,7 +120,7 @@ function assignStudentLunchDays() {
       }
     }
   }
-  
+
   if(students8Plus.length > 0){
     var message = "These Students have conflicting lunches:\n";
     for(var i = 0; i < students8Plus.length; i++){
@@ -379,6 +379,7 @@ function setProperties(pNumColumns, pValues, tNumColumns, tValues){
   properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
   properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
   properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
+
   
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperties(properties);
@@ -500,6 +501,7 @@ function colorBackgrounds(column){
   }
   
   if(time){
+
     for(var i = 0; i < ro; i++){
       rowColors[i] = [];
       if(vals[i] == "early")
@@ -511,6 +513,7 @@ function colorBackgrounds(column){
     }
     ran.setBackgrounds(rowColors);
   }else if(table){
+
     var fonts = [];
     for(var i = 0; i < ro; i++){
       rowColors[i] = [];
@@ -571,6 +574,7 @@ function getTeachers(tValues, tNumRows){
   var lNameCol = parseInt(userProperties.getProperty("tLNameColumn"));
   var lunchTimeCol = parseInt(userProperties.getProperty("tLunchTimeColumn"));
   var lunchDayCol = parseInt(userProperties.getProperty("tLunchDayColumn"));
+
   for(var i = 0; i < tNumRows; i++){
     var fname = tValues[i][fNameCol];
     var lname = tValues[i][lNameCol];

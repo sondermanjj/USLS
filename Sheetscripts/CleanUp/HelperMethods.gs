@@ -69,6 +69,7 @@ function searchAll(filter) {
   var index = 0;  
   var map = {};
   
+
   for (var i = 1; i <= values.length; i++) { 
     while ( i <= values.length && (values[i-1].toString().toLowerCase().search(filter) == -1 
                                     && values[i-1].toString().toLowerCase().search("first name") == -1)) {
@@ -92,17 +93,15 @@ function searchAll(filter) {
  * @author - hendersonam
  */
 function searchColumn(filter, column) {
-  
   var values = getFinalStudentDataValues();
   var columnIndex = getColumnIndex(getListOfColumns(values), column);
   var count = 0;
   var index = 0;  
   var map = {};
-  
+
   for (var i = 1; i <= values.length; i++) { 
     while ( i <= values.length  && (values[i-1][columnIndex].toString().toLowerCase().search(filter.toString().toLowerCase()) == -1
      && values[i-1][columnIndex].toString().toLowerCase().search(column.toString().toLowerCase()) == -1)) {
-      
       if ( count == 0) {
         index = i;
       }
