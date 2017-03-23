@@ -35,6 +35,7 @@ function getScheduleChanges() {
 function scheduleChanges() {
   
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  sortSheetBy(spreadsheet.getSheetByName("Final Student Data"), ["Lunch Day", "Last Name", "First Name"]);
   var currentValues = getFinalStudentDataValues();
   
   var scannedSheet = spreadsheet.getSheetByName("Scanned Data");
@@ -53,6 +54,7 @@ function scheduleChanges() {
     changesSheet.appendRow(getListOfColumns(currentValues));
   }
   
+  sortSheetBy(scannedSheet, ["Lunch Day", "Last Name", "First Name"]);
   var scannedValues = scannedSheet.getDataRange().getValues();
   
   var changes = findChanges(scannedValues, currentValues, changesSheet);
@@ -98,34 +100,42 @@ function findChanges(oldValues, newValues, changesSheet) {
                      newValues[count][newLunchTimeColumn]]);
     }
   }
+  var k = 0;
+  var i = 0;
   
-  oldValues.sort();
-  newValues.sort();
+  for ( i ; i < newValues.length; i++) {
   
-  for ( i = 0; i < newValues.length; i++) {
+  if ( oldValues[i][0] == "First Name" ) {
+    i++;
+  }
+  
+  if ( newValues[k][0] == "First Name" ) {
+    k++;
+  }
     
     if(oldValues[i] == null) {
-      changes.push( [newValues[i][firstNameColumn],
-                     newValues[i][lastNameColumn],
-                     newValues[i][newLunchDayColumn],
-                     newValues[i][newLunchTimeColumn],
-                     newValues[i][newTableColumn]]);
+      changes.push( [newValues[k][firstNameColumn],
+                     newValues[k][lastNameColumn],
+                     newValues[k][newLunchDayColumn],
+                     newValues[k][newLunchTimeColumn],
+                     newValues[k][newTableColumn]]);
       
-    } else if ( !newValues[i].toString().equals(oldValues[i].toString())) {
+    } else if ( !newValues[k].toString().equals(oldValues[i].toString())) {
       
       changesSheet.appendRow(oldValues[i]);
-      changesSheet.appendRow(newValues[i]);
+      changesSheet.appendRow(newValues[k]);
       changesSheet.appendRow(["\t"]);
       
-      changes.push( [newValues[i][firstNameColumn],
-                     newValues[i][lastNameColumn],
+      changes.push( [newValues[k][firstNameColumn],
+                     newValues[k][lastNameColumn],
                      oldValues[i][oldLunchDayColumn],
                      oldValues[i][oldLunchTimeColumn],
-                     newValues[i][newLunchDayColumn],
-                     newValues[i][newLunchTimeColumn],
+                     newValues[k][newLunchDayColumn],
+                     newValues[k][newLunchTimeColumn],
                      oldValues[i][oldTableColumn],
-                     newValues[i][newTableColumn]]);
+                     newValues[k][newTableColumn]]);
     }
+    k++;
   }
   
   return changes;
