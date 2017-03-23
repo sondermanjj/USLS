@@ -252,6 +252,7 @@ function assignStudentLunchDays() {
 */
 function parseStudentChanges(){
   var changesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
+  var scanSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
   var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
   
@@ -359,6 +360,10 @@ function parseStudentChanges(){
   if(changesSheet.getDataRange().getNumRows() > 1){
     changesSheet.deleteRows(2, changeData.getNumRows() - 1);
   }
+  scanSheet.clear();
+  sortSheetBy(primarySheet, ["Lunch Day", "Last Name", "First Name"]);
+  var currentValues = getFinalStudentDataValues();
+  scanSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
   if(message.length == 0){
     message = "No changes have been made";
   }
@@ -933,13 +938,9 @@ function promptForChanges(){
   var rows = changesSheet.getDataRange().getNumRows();
   if(rows >= 3){
     var response = Browser.msgBox("Auto-Reassign", "Do you want to automatically re-assign the students?", Browser.Buttons.YES_NO);
-    //var ui = SpreadsheetApp.getUi();
-    //var response = ui.prompt('Auto-Reassign', 'Do you want to automatically re-assign the students?', ui.ButtonSet.YES_NO);
     // Process the user's response.
     if (response == "yes") {
       parseStudentChanges();
-    } else if (response == "no") {
-      //Nothing will happen.
     } else {
       //Nothing will happen.
     }
