@@ -1,9 +1,10 @@
 //ID of the Google sheet to retrieve data from
 var spreadsheetID = "1k3At6EDIUBB7_x7smZwrx7K5gXJOHTpNYD4NzvgS1vE&sheet=2";
-var id = "1k3At6EDIUBB7_x7smZwrx7K5gXJOHTpNYD4NzvgS1vE";
+var springScheduleSheetID = "1NYBlGkok313R3Fblj4F3L2_g2ZAqDnCVw68yb8lB7RE&sheet=1";
+var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
 
-// URL for retrieving sheets data as JSON using an external site to convert the data to JSON
-var url = "http://gsx2json.com/api?id=" + spreadsheetID;
+// URL for retrieving sheets data as JSON 
+var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/1/public/values?alt=json";
 
 /**
 * Tells the script how to serve the page when a GET request is made
@@ -27,40 +28,49 @@ function include(filename) {
 * @return JSON String of the sheets data
 */
 function getJSON() {
-  var json = UrlFetchApp.fetch(url);
-  return json.getContentText();
+   var json = UrlFetchApp.fetch(url);
+  
+  var JS = JSON.parse(json.getContentText());
+  
+  var feed = JS.feed;
+  
+  var entries = feed.entry;
+  
+  return entries;
 }
 
 function getResults(){
   var resultArray = [];
-  var js = JSON.parse(getJSON());
+  var js = getJSON();
   
-  var jsonlength = js.columns.firstname.length;
+  Logger.log("Length: " + js.length);
   
-  var rows = js.rows;
+  var length = js.length;
   
-  for(var i=0; i<jsonlength; i++) {
-    var grade = rows[i].gradelevel;
+  for(var index=0; index<length; index++){
+    var grade = js[index].gsx$gradelevel.$t;
     var studentArray = [];
-    if(grade === 10){
-      studentArray.push(rows[i].firstname + " " + rows[i].lastname);
-      studentArray.push(rows[i].block);
-      studentArray.push(rows[i].lunchday);
-      studentArray.push(rows[i].lunchtime);
-      switch(rows[i].lunchtime){
+    if(grade === "10" && js[index].gsx$lunchday.$t !== "I"){
+      studentArray.push(js[index].gsx$firstname.$t.replace(/\s/g,'') + " " + js[index].gsx$lastname.$t.replace(/\s/g,''));
+      studentArray.push(js[index].gsx$block.$t);
+      studentArray.push(js[index].gsx$lunchday.$t);
+      studentArray.push(js[index].gsx$eml.$t);
+      switch(js[index].gsx$eml.$t){
         case "early":
-          studentArray.push(rows[i].lunchtable);
+          studentArray.push(js[index].gsx$table.$t);
           break;
         case "mid":
           studentArray.push("");
           break;
         case "late":
-          studentArray.push(rows[i].house);
+          studentArray.push(js[index].gsx$house.$t);
           break;
       }
       resultArray.push(studentArray);
-    } 
+    }
+
   }
-  Logger.log(resultArray);
-  return resultArray;
+   Logger.log(resultArray);
+  
+  return resultArray.sort();
 }
