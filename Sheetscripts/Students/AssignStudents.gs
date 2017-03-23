@@ -36,86 +36,91 @@ function assignStudentLunchDays() {
   //to an array, and do the table assignments for late lunches
   for(var i = 0; i < students.length; i++){
     var stu = students[i];
-    if(stu.grade >= 9){
-      var a = false;
-      var b = false;
-      var c = false;
-      var d = false;
-      var e = false;
-      var f = false;
-      var g = false;
-      var h = false;
-      for(var j = 0; j < stu.lunches.length; j++){
-        if(stu.lunches[j].day == 'A')
-          a = true;
-        else if(stu.lunches[j].day == 'B')
-          b = true;
-        else if(stu.lunches[j].day == 'C')
-          c = true;
-        else if(stu.lunches[j].day == 'D')
-          d = true;
-        else if(stu.lunches[j].day == 'E')
-          e = true;
-        else if(stu.lunches[j].day == 'F')
-          f = true;
-        else if(stu.lunches[j].day == 'G')
-          g = true;
-        else if(stu.lunches[j].day == 'H')
-          h = true;
-        if(stu.lunches[j].time == 'early'){
-          pEarlyStudents.push({stuEarly: stu, lunch: j});
+    if(stu.fName == "First Name") {
+      //Do Nothing
+    } else {
+      if(stu.grade >= 9){
+        var a = false;
+        var b = false;
+        var c = false;
+        var d = false;
+        var e = false;
+        var f = false;
+        var g = false;
+        var h = false;
+        for(var j = 0; j < stu.lunches.length; j++){
+          if(stu.lunches[j].day == 'A')
+            a = true;
+          else if(stu.lunches[j].day == 'B')
+            b = true;
+          else if(stu.lunches[j].day == 'C')
+            c = true;
+          else if(stu.lunches[j].day == 'D')
+            d = true;
+          else if(stu.lunches[j].day == 'E')
+            e = true;
+          else if(stu.lunches[j].day == 'F')
+            f = true;
+          else if(stu.lunches[j].day == 'G')
+            g = true;
+          else if(stu.lunches[j].day == 'H')
+            h = true;
+          if(stu.lunches[j].time == 'early'){
+            pEarlyStudents.push({stuEarly: stu, lunch: j});
+          }
         }
-      }
-      
-      //If a student does not have a lunch for any day, add a lunch for that day
-      if(!a){
-        stu.lunches.push({day: 'A', time: 'mid', zelm: true, row: nextRow, table: 0});
-        a = true;
-        nextRow++;
-      }
-      if(!b){
-        stu.lunches.push({day: 'B', time: 'mid', zelm: true, row: nextRow, table: 0});
-        b = true;
-        nextRow++;
-      }
-      if(!c){
-        stu.lunches.push({day: 'C', time: 'mid', zelm: true, row: nextRow, table: 0});
-        c = true;
-        nextRow++;
-      }
-      if(!d){
-        stu.lunches.push({day: 'D', time: 'mid', zelm: true, row: nextRow, table: 0});
-        d = true;
-        nextRow++;
-      }
-      if(!e){
-        stu.lunches.push({day: 'E', time: 'mid', zelm: true, row: nextRow, table: 0});
-        e = true;
-        nextRow++;
-      }
-      if(!f){
-        stu.lunches.push({day: 'F', time: 'mid', zelm: true, row: nextRow, table: 0});
-        f = true;
-        nextRow++;
-      }
-      if(!g){
-        stu.lunches.push({day: 'G', time: 'mid', zelm: true, row: nextRow, table: 0});
-        g = true;
-        nextRow++;
-      }
-      if(!h){
-        stu.lunches.push({day: 'H', time: 'mid', zelm: true, row: nextRow, table: 0});
-        h = true;
-        nextRow++;
-      }
-      if(stu.lunches.length == 8){
-        assignZelm(stu);
-        doLateAssignment(stu);
-      }else{
-        students8Plus.push(stu);
+        
+        //If a student does not have a lunch for any day, add a lunch for that day
+        if(!a){
+          stu.lunches.push({day: 'A', time: 'mid', zelm: true, row: nextRow, table: 0});
+          a = true;
+          nextRow++;
+        }
+        if(!b){
+          stu.lunches.push({day: 'B', time: 'mid', zelm: true, row: nextRow, table: 0});
+          b = true;
+          nextRow++;
+        }
+        if(!c){
+          stu.lunches.push({day: 'C', time: 'mid', zelm: true, row: nextRow, table: 0});
+          c = true;
+          nextRow++;
+        }
+        if(!d){
+          stu.lunches.push({day: 'D', time: 'mid', zelm: true, row: nextRow, table: 0});
+          d = true;
+          nextRow++;
+        }
+        if(!e){
+          stu.lunches.push({day: 'E', time: 'mid', zelm: true, row: nextRow, table: 0});
+          e = true;
+          nextRow++;
+        }
+        if(!f){
+          stu.lunches.push({day: 'F', time: 'mid', zelm: true, row: nextRow, table: 0});
+          f = true;
+          nextRow++;
+        }
+        if(!g){
+          stu.lunches.push({day: 'G', time: 'mid', zelm: true, row: nextRow, table: 0});
+          g = true;
+          nextRow++;
+        }
+        if(!h){
+          stu.lunches.push({day: 'H', time: 'mid', zelm: true, row: nextRow, table: 0});
+          h = true;
+          nextRow++;
+        }
+        if(stu.lunches.length == 8){
+          assignZelm(stu);
+          doLateAssignment(stu);
+        }else{
+          students8Plus.push(stu);
+        }
       }
     }
   }
+
   if(students8Plus.length > 0){
     var message = "These Students have conflicting lunches:\n";
     for(var i = 0; i < students8Plus.length; i++){
@@ -338,68 +343,43 @@ tValues - the array of Faculty Choices
 @author - dicksontc
 */
 function setProperties(pNumColumns, pValues, tNumColumns, tValues){
-  var properties = {pLunchTimeColumn: 0, pLunchDayColumn: 0, pSFNameColumn: 0, pSLNameColumn: 0, pTFNameColumn: 0, pTLNameColumn: 0, pAdvisorColumn: 0, pGenderColumn: 0,
-                    pCourseTitleColumn: 0, pCourseCodeColumn: 0, pCourseLengthColumn: 0, pCourseIDColumn: 0, pSectionIDColumn: 0, pBlockColumn: 0, pDOBColumn: 0, pTableHeadColumn: 0,
-                    pTableColumn: 0, pGradeColumn: 0, pHouseColumn: 0, tFNameColumn: 0, tLNameColumn: 0, tLunchDayColumn: 0, tLunchTimeColumn: 0};
+  var properties = {pLunchTimeColumn: 0, pLunchDayColumn: 0, pSFNameColumn: 0,
+                    pSLNameColumn: 0, pTFNameColumn: 0, pTLNameColumn: 0,
+                    pAdvisorColumn: 0, pGenderColumn: 0,
+                    pCourseTitleColumn: 0, pCourseCodeColumn: 0, pCourseLengthColumn: 0,
+                    pCourseIDColumn: 0, pSectionIDColumn: 0, pBlockColumn: 0, pDOBColumn: 0,
+                    pTableHeadColumn: 0,pTableColumn: 0, pGradeColumn: 0,
+                    pHouseColumn: 0, tFNameColumn: 0, tLNameColumn: 0,
+                    tLunchDayColumn: 0, tLunchTimeColumn: 0};
   
-  for(var i = 0; i < pNumColumns; i++){
-    var column = pValues[0][i];
-    if(column == 'Lunch Day') {
-      properties.pLunchDayColumn = i ;
-    }else if(column == 'Lunch Time'){
-      properties.pLunchTimeColumn = i;
-    }else if(column == 'Faculty First Name'){
-      properties.pTFNameColumn = i;
-    }else if(column == 'Faculty Last Name'){
-      properties.pTLNameColumn = i;
-    }else if(column == 'First Name'){
-      properties.pSFNameColumn = i;
-    }else if(column == 'Last Name'){
-      properties.pSLNameColumn = i;
-    }else if(column == 'Lunch Table'){
-      properties.pTableColumn = i;
-    }else if(column == 'House'){
-      properties.pHouseColumn = i;
-    }else if(column == 'Grade Level'){
-      properties.pGradeColumn = i;
-    }else if(column == "Advisor"){
-      properties.pAdvisorColumn = i;
-    }else if(column == "Gender"){
-      properties.pGenderColumn = i;
-    }else if(column == "Course Title"){
-      properties.pCourseTitleColumn = i;
-    }else if(column == "Course Code"){
-      properties.pCourseCodeColumn = i;
-    }else if(column == "Course ID"){
-      properties.pCourseIDColumn = i;
-    }else if(column == "Section Identifier"){
-      properties.pSectionIDColumn = i;
-    }else if(column == "Block"){
-      properties.pBlockColumn = i;
-    }else if(column == "Date of Birth"){
-      properties.pDOBColumn = i;
-    }else if(column == "Table Head"){
-      properties.pTableHeadColumn = i;
-    }else if(column == "Advisor"){
-      properties.pAdvisorColumn = i;
-    }else if(column == "Course Length"){
-      properties.pCourseLengthColumn = i;
-    }
-  }
+  var pHeaders = getListOfColumns(pValues);
+  var tHeaders = getListOfColumns(tValues);
   
-  //Set needed variables in Faculty Choices
-  for(var i = 0; i < tNumColumns; i++){
-    var column = tValues[0][i];
-    if(column == 'Lunch Day') {
-      properties.tLunchDayColumn = i ;
-    }else if(column == 'First Name'){
-      properties.tFNameColumn = i;
-    }else if(column == 'Last Name'){
-      properties.tLNameColumn = i;
-    }else if(column == 'Lunch Assignment'){
-      properties.tLunchTimeColumn = i;
-    }
-  }
+  properties.pLunchTimeColumn = getColumnIndex(pHeaders, "Lunch Time");
+  properties.pLunchDayColumn = getColumnIndex(pHeaders, "Lunch Day");
+  properties.pSFNameColumn = getColumnIndex(pHeaders, "First Name");
+  properties.pSLNameColumn = getColumnIndex(pHeaders, "Last Name");
+  properties.pTFNameColumn = getColumnIndex(pHeaders, "Faculty First Name");
+  properties.pTLNameColumn = getColumnIndex(pHeaders, "Faculty Last Name");
+  properties.pAdvisorColumn = getColumnIndex(pHeaders, "Advisor");
+  properties.pGenderColumn = getColumnIndex(pHeaders, "Gender");
+  properties.pCourseTitleColumn = getColumnIndex(pHeaders, "Course Title");
+  properties.pCourseCodeColumn = getColumnIndex(pHeaders, "Course Code");
+  properties.pCourseLengthColumn = getColumnIndex(pHeaders, "Course Length");
+  properties.pCourseIDColumn = getColumnIndex(pHeaders, "Course ID");
+  properties.pSectionIDColumn = getColumnIndex(pHeaders, "Section Identifier");
+  properties.pBlockColumn = getColumnIndex(pHeaders, "Block");
+  properties.pDOBColumn = getColumnIndex(pHeaders, "Date of Birth");
+  properties.pHouseColumn = getColumnIndex(pHeaders, "House");
+  properties.pTableHeadColumn = getColumnIndex(pHeaders, "Table Head");
+  properties.pTableColumn = getColumnIndex(pHeaders, "Lunch Table");
+  properties.pGradeColumn = getColumnIndex(pHeaders, "Grade Level");
+  
+  properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
+  properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
+  properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
+  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
+
   
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperties(properties);
@@ -424,7 +404,7 @@ function getStudents(pValues, pNumRows, teachers){
   var tFNameCol = parseInt(userProperties.getProperty("pTFNameColumn"));
   var tLNameCol = parseInt(userProperties.getProperty("pTLNameColumn"));
   
-  for(var i = 1; i < pNumRows; i++){
+  for(var i = 0; i < pNumRows; i++){
     var day = pValues[i][lunchDayCol];
     var fname = pValues[i][sFNameCol];
     var lname = pValues[i][sLNameCol];
@@ -455,20 +435,39 @@ function getStudents(pValues, pNumRows, teachers){
     }
     
     if(temp.length == 0){
-      var lunches = [];
-      lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
-      temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
+      
+      if(fname == "First Name") {
+        var lunches = [];
+        lunches.push({day: day, time: "Lunch Time", zelm: zCheck, row: i, table: "Lunch Table"});
+        temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
+      } else {
+        var lunches = [];
+        lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
+        temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
+      }
     }else{
       for(var j = 0; j < temp.length; j++){
         if(temp[j].fName == fname && temp[j].lName == lname){
-          temp[j].lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
-          j = temp.length;
+          if(fname == "First Name") {
+            temp[j].lunches.push({day: day, time: "Lunch Time", zelm: zCheck, row: i, table: "Lunch Table"});
+            j = temp.length;
+          } else {
+            temp[j].lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
+            j = temp.length;
+          }
         }
         if(j == temp.length - 1){
-          var lunches = [];
-          lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
-          temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
-          j = temp.length;
+          if(fname == "First Name") {
+            var lunches = [];
+            lunches.push({day: day, time: "Lunch Time", zelm: zCheck, row: i, table: "Lunch Table"});
+            temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
+            j = temp.length;
+          } else {
+            var lunches = [];
+            lunches.push({day: day, time: val, zelm: zCheck, row: i, table: 0});
+            temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
+            j = temp.length;
+          }
         }
       }
     }
@@ -490,7 +489,19 @@ function colorBackgrounds(column){
   var col = ran.getNumColumns();
   var ro = ran.getNumRows();
   var rowColors = [];
-  if(vals[0] == "Lunch Time"){
+  var time = false;
+  var table = false;
+  
+  for(var c = 0; c < vals.length; c++) {
+    if( vals[c] == "Lunch Time") {
+      time = true;
+    } else if ( vals[c] == "Lunch Table") {
+      table = true;
+    }
+  }
+  
+  if(time){
+
     for(var i = 0; i < ro; i++){
       rowColors[i] = [];
       if(vals[i] == "early")
@@ -501,7 +512,8 @@ function colorBackgrounds(column){
         rowColors[i].push("WHITE");
     }
     ran.setBackgrounds(rowColors);
-  }else if(vals[0] == "Lunch Table"){
+  }else if(table){
+
     var fonts = [];
     for(var i = 0; i < ro; i++){
       rowColors[i] = [];
@@ -562,7 +574,8 @@ function getTeachers(tValues, tNumRows){
   var lNameCol = parseInt(userProperties.getProperty("tLNameColumn"));
   var lunchTimeCol = parseInt(userProperties.getProperty("tLunchTimeColumn"));
   var lunchDayCol = parseInt(userProperties.getProperty("tLunchDayColumn"));
-  for(var i = 1; i < tNumRows; i++){
+
+  for(var i = 0; i < tNumRows; i++){
     var fname = tValues[i][fNameCol];
     var lname = tValues[i][lNameCol];
     var val = tValues[i][lunchTimeCol];

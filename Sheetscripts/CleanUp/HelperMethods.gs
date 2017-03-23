@@ -69,8 +69,10 @@ function searchAll(filter) {
   var index = 0;  
   var map = {};
   
-  for (var i = 2; i <= values.length; i++) { 
-    while ( i <= values.length && values[i-1].toString().toLowerCase().search(filter) == -1 ) {
+
+  for (var i = 1; i <= values.length; i++) { 
+    while ( i <= values.length && (values[i-1].toString().toLowerCase().search(filter) == -1 
+                                    && values[i-1].toString().toLowerCase().search("first name") == -1)) {
       if ( count == 0) {
         index = i;
       }
@@ -96,10 +98,10 @@ function searchColumn(filter, column) {
   var count = 0;
   var index = 0;  
   var map = {};
-  
-  for (var i = 2; i <= values.length; i++) { 
-  var test = values[i-1][columnIndex];
-    while ( i <= values.length && values[i-1][columnIndex].toString().toLowerCase().search(filter) == -1 ) {
+
+  for (var i = 1; i <= values.length; i++) { 
+    while ( i <= values.length  && (values[i-1][columnIndex].toString().toLowerCase().search(filter.toString().toLowerCase()) == -1
+     && values[i-1][columnIndex].toString().toLowerCase().search(column.toString().toLowerCase()) == -1)) {
       if ( count == 0) {
         index = i;
       }
@@ -162,21 +164,21 @@ function getColumnIndex(values, name) {
  * @param - Object[][] - 2D Array of data, columns should be in the 0 index
  * @return - Array[] - List of the column names in the given data
  */
-function getListOfColumns(values) {
+function getListOfColumns(headers) {
   var list = new Array();
   var row = -1;
-  for (var i = 0; i < values.length; i++) {
-    for( var j = 0; j < values[0].length; j++) {
-      if(values[i][j] == 'First Name') {
+  for (var i = 0; i < headers.length; i++) {
+    for( var j = 0; j < headers[0].length; j++) {
+      if(headers[i][j] == 'First Name') {
         row = i;
       } 
     }
   }
   if (row == -1) {
-    SpreadsheetApp.getUi().alert("There is no /'First Name/' column. Please make sure it is spelt exactly as shown.");
+    SpreadsheetApp.getUi().alert("There is no 'First Name' column. Please make sure it is spelt exactly as shown.");
   }
-  for( j = 0; j < values[row].length; j++) {
-    list.push(values[row][j].toString().toLowerCase());
+  for( j = 0; j < headers[row].length; j++) {
+    list.push(headers[row][j].toString());
   }
   return list;
 }
