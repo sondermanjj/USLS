@@ -110,8 +110,8 @@ function assignStudentLunchDays() {
         }
       }
     }
-  }
-  
+  }  
+
   if(students8Plus.length > 0){
     var message = "These Students have conflicting lunches:\n";
     for(var i = 0; i < students8Plus.length; i++){
@@ -549,7 +549,6 @@ function setProperties(pNumColumns, pValues, tNumColumns, tValues){
   
   var pHeaders = getListOfColumns(pValues);
   var tHeaders = getListOfColumns(tValues);
-  
   properties.pLunchTimeColumn = getColumnIndex(pHeaders, "Lunch Time");
   properties.pLunchDayColumn = getColumnIndex(pHeaders, "Lunch Day");
   properties.pSFNameColumn = getColumnIndex(pHeaders, "First Name");
@@ -599,7 +598,6 @@ function getStudents(pValues, pNumRows, teachers){
   var lunchTableCol = parseInt(userProperties.getProperty("pTableColumn"));
   var tFNameCol = parseInt(userProperties.getProperty("pTFNameColumn"));
   var tLNameCol = parseInt(userProperties.getProperty("pTLNameColumn"));
-  
   var advisorCol = parseInt(userProperties.getProperty("pAdvisorColumn"));
   var codeCol = parseInt(userProperties.getProperty("pCourseCodeColumn"));
   var lengthCol = parseInt(userProperties.getProperty("pCourseLengthColumn"));
@@ -611,7 +609,7 @@ function getStudents(pValues, pNumRows, teachers){
   var titleCol = parseInt(userProperties.getProperty("pCourseTitleColumn"));
   var lunchTimeCol = parseInt(userProperties.getProperty("pLunchTimeColumn"));
   var genderCol = parseInt(userProperties.getProperty("pGenderColumn"));
-  
+
   for(var i = 0; i < pNumRows; i++){
     var day = pValues[i][lunchDayCol];
     var fname = pValues[i][sFNameCol];
@@ -780,7 +778,7 @@ function getTeachers(tValues, tNumRows){
   var lNameCol = parseInt(userProperties.getProperty("tLNameColumn"));
   var lunchTimeCol = parseInt(userProperties.getProperty("tLunchTimeColumn"));
   var lunchDayCol = parseInt(userProperties.getProperty("tLunchDayColumn"));
-  
+
   for(var i = 0; i < tNumRows; i++){
     var fname = tValues[i][fNameCol];
     var lname = tValues[i][lNameCol];

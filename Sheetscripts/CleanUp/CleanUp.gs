@@ -7,6 +7,21 @@ function startTableAssigning() {
   
 }
 
+function sheetCleanupPrompt(){
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.prompt('Data Clean-Up', 'Please enter the name of the sheet you would like to clean up. \n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
+  if(response.getSelectedButton() == ui.Button.OK){
+    var sheetName = response.getResponseText();
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+    if(sheet != null){
+      showDialog('clean, ' + sheetName);
+    }
+    else {
+      ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
+    }
+  }
+}
+
 /**
  * @desc - Prompts the user to enter the name of the sheet they would like to clean
  * @functional - yes
@@ -41,7 +56,9 @@ function startCleanUp() {
  * @functional - yes
  * @author - hendersonam
  */
-function cleanUp(raw) {
+function cleanUp(sheetName) {
+  
+  var raw = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   
   //Get active spreadsheet
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();

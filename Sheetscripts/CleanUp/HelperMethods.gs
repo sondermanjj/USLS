@@ -69,8 +69,10 @@ function searchAll(filter) {
   var index = 0;  
   var map = {};
   
-  for (var i = 2; i <= values.length; i++) { 
-    while ( i <= values.length && values[i-1].toString().toLowerCase().search(filter) == -1 ) {
+
+  for (var i = 1; i <= values.length; i++) { 
+    while ( i <= values.length && (values[i-1].toString().toLowerCase().search(filter) == -1 
+                                    && values[i-1].toString().toLowerCase().search("first name") == -1)) {
       if ( count == 0) {
         index = i;
       }
@@ -96,10 +98,10 @@ function searchColumn(filter, column) {
   var count = 0;
   var index = 0;  
   var map = {};
-  
-  for (var i = 2; i <= values.length; i++) { 
-  var test = values[i-1][columnIndex];
-    while ( i <= values.length && values[i-1][columnIndex].toString().toLowerCase().search(filter) == -1 ) {
+
+  for (var i = 1; i <= values.length; i++) { 
+    while ( i <= values.length  && (values[i-1][columnIndex].toString().toLowerCase().search(filter.toString().toLowerCase()) == -1
+     && values[i-1][columnIndex].toString().toLowerCase().search(column.toString().toLowerCase()) == -1)) {
       if ( count == 0) {
         index = i;
       }

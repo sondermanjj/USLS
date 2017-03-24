@@ -1,4 +1,41 @@
 /**
+* Universal search methos that determines which sort to do based on letter passed in which represents the buton that was pressed
+* @ author - clemensam
+*/
+function sort(x){
+  var sort = x.split(",");
+  switch(sort[0]){
+    case "l": 
+      sortByLunches();
+      break;
+    case "n":
+      sortByLunchesThenTableNumber();
+      break;
+    case "j":
+      sortByTable();
+      break;
+    case "k":
+      sortByCourses();
+      break;
+    case "t":
+      sortByIndividualsByLunchDay();
+      break;
+    case "g":
+      sortByIndividualsByBlock();
+      break;
+    case "p":
+      sortByHouse();
+      break;
+    case "sort":
+      var filters = [];
+      for(var i = 1; i < sort.length; i++){
+        filters.push(sort[i].toString());
+      }
+      sortSheetBy(SpreadsheetApp.getActiveSheet(), filters);
+  }
+}
+
+/**
  * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+1
  * @author - hendersonam
  */
@@ -7,7 +44,7 @@ function sortByLunches() {
 }
 
 /**
- * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+j
+ * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+n
  * @author - hendersonam
  */
 function sortByLunchesThenTableNumber() {
@@ -15,7 +52,7 @@ function sortByLunchesThenTableNumber() {
 }
 
 /**
- * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+k
+ * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+j
  * @author - hendersonam
  */
 function sortByTable() {
@@ -23,7 +60,7 @@ function sortByTable() {
 }
 
 /**
- * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+t
+ * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+k
  * @author - hendersonam
  */
 function sortByCourses() {
@@ -31,19 +68,19 @@ function sortByCourses() {
 }
 
 /**
- * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+g
+ * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+t
  * @author - hendersonam
  */
-function sortByIndivicualsByLunchDay() {
+function sortByIndividualsByLunchDay() {
   sortSheetBy(SpreadsheetApp.getActiveSheet(), ["Lunch Day", "First Name", "Last Name", "Grade Level"]);
 }
 
 /**
- * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+n
+ * @desc - Sorts the active sheet according to macro shortcut Option+Cmd+g
  * @author - hendersonam
  */
-function sortByL() {
-  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["Block", "Lunch Day", "First Name", "Last Name", "Grade Level"]);
+function sortByIndividualsByBlock() {
+  sortSheetBy(SpreadsheetApp.getActiveSheet(), ["Block", "First Name", "Last Name", "Grade Level"]);
 }
 
 /**

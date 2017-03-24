@@ -4,6 +4,7 @@
  * @author - hendersonam
  */
 function getStatistics() {
+  Logger.log("In getStatistics");
   var html = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStudentStatistics();
   html += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getTeacherStatistics();
   return html;
