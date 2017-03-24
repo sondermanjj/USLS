@@ -98,7 +98,9 @@
       display: block;
       color: #000;
       text-align: center;
+
       padding: 5px 10px;
+
       text-decoration: none;
       margin: 0 5px 0 0;
       border-radius: 0 0 8px 8px;
@@ -208,6 +210,60 @@
         var column = document.getElementById('dropdownfilter').value;
         google.script.run.showDialog('search, ' + filter + ', ' + column);
       }
+    }
+
+    /**
+    * @desc - Shows the contents relating to sheet clean up
+    * @author - clemensam
+    */
+    function showCleanupPage(){
+      var x = document.getElementById('cleanPage');
+      x.style.display = 'block';
+    }
+    
+    /**
+    * @desc - Shows the contents relating to the sheet's statistics
+    * @author - clemensam
+    */
+    function showStatisticsPage(){
+      var x = document.getElementById('statsPage');
+      x.style.display = 'block';
+    }
+    
+    /**
+    * @desc - Shows the contents relating to the search function for the sheet
+    * @author - clemensam
+    */
+    function showSearchPage(){
+      var x = document.getElementById('searchPage');
+      x.style.display = 'block';
+    }
+    
+    /**
+    * @desc - Hides the clean page contents
+    * @author - clemensam
+    */
+    function hideCleanupPage(){
+      var x = document.getElementById('cleanPage');
+      x.style.display = 'none';
+    }
+    
+    /**
+    * @desc - Hides the statistics page contents
+    * @author - clemensam
+    */
+    function hideStatisticsPage(){
+      var x = document.getElementById('statsPage');
+      x.style.display = 'none';
+    }
+    
+    /**
+    * @desc - Hides the search page contents
+    * @author - clemensam
+    */
+    function hideSearchPage(){
+      var x = document.getElementById('searchPage');
+      x.style.display = 'none';
     }
     
     /*
@@ -325,6 +381,7 @@
      
      <div id="statsPage">
        <button id="scanButton" class="action" onclick="scanData();">Scan Data</button>
+       <button id="changeButton" class="action" onclick="google.script.run.parseStudentChanges()">Auto-Reassign</button>
        <div id="changes"></div>
        <div id="stats"></div>
      </div>
