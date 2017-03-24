@@ -23,6 +23,7 @@ function getScheduleChanges() {
       }
     }
   }
+  promptForChanges();
   return html;
 }
 
