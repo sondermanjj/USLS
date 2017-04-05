@@ -1,5 +1,3 @@
-
-
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
  * @return - String(HTML) - HTML for a dropdown list of headers
@@ -181,4 +179,73 @@ function getListOfColumns(headers) {
     list.push(headers[row][j].toString());
   }
   return list;
+}
+
+/**
+ * @desc - Prompts the user to enter the name of a sheet they would like to create
+ * @param - String - The message you would like to give the user so they know what the sheet is being created for
+ * @functional - yes
+ * @author - hendersonam
+ */
+function promptForNewSheet(msg) {
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.prompt('New Sheet', msg, ui.ButtonSet.OK_CANCEL);
+
+  if (response.getSelectedButton() == ui.Button.OK) {
+  
+    var sheetName = response.getResponseText();
+    var sheet = ss.getSheetByName(sheetName);
+    
+    if(sheet == null) {
+    
+      ss.insertSheet(sheetName);
+      sheet = ss.getSheetByName(sheetName);
+      
+    } else {
+    
+      response = ui.prompt('Alert!', "Woops! That sheet already exists. Would you like to overwrite that sheet?", ui.ButtonSet.OK_CANCEL);
+      
+      if (response.getSelectedButton() == ui.Button.OK) {
+        
+        ss.deleteSheet(sheet);
+        ss.insertSheet(sheetName);
+        sheet = ss.getSheetByName(sheetName);
+        
+      } else {
+      
+        sheet = promptForNewSheet(msg);
+        
+      }
+    }
+  } 
+  
+  return sheet;
+}
+
+/**
+ * @desc - adds a column to a given 2d Array for a Google Sheet
+ * @param - Object[][] - 2D Array of values to add the column name to
+ *          name - name of the column
+ * @functional - YES
+ * @author - hendersonam, sondermanjj
+ */
+function addColumnName(values, name) {
+  var numColumns = values[0].length;
+  var exists = false;
+ 
+  for (var i = 0; i <= numColumns - 1; i++) {
+    var column = values[0][i];
+    if (column == name) {
+      exists = true;
+    }
+  }
+  if (!exists) {
+    values[0][numColumns] = name;
+    for (var j = 1; j < values.length; j++) {
+      values[j][numColumns] = "";
+    }
+  }
+  return values;
 }
