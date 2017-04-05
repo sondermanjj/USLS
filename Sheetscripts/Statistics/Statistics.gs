@@ -1,3 +1,5 @@
+//JSHint verified 4/3/2017 sondermanjj
+
 /**
  * @desc - Returns the statistics for the students and teachers
  * @return - String - HTML for 2 tables, one for student statistics and one for teacher statistics
@@ -77,11 +79,11 @@ function getHTMLTable(columns, rows, values) {
  */
 function statistics(time, day, values, students) {
 
-  var stats = new Array();
+  var stats = [];
   for (var i = 0; i < day.length; i++) {
-    stats[i] = new Array();
+    stats[i] = [];
   }
-  for (var i = 0; i < day.length; i++) {
+  for (i = 0; i < day.length; i++) {
     for( var j = 0; j < time.length; j++) { 
       stats[i][j] = 0;
     }
@@ -92,7 +94,6 @@ function statistics(time, day, values, students) {
   var lunchDayColumn = getColumnIndex(listOfColumns, "Lunch Day");
   var gradeColumn = getColumnIndex(listOfColumns, "Grade Level");
   var lunchTimeColumn = getColumnIndex(listOfColumns, "Lunch Time");
-  var flag;
   var lunchDay;
   var lunchTime;
   
@@ -101,7 +102,7 @@ function statistics(time, day, values, students) {
     lunchDay = values[k][lunchDayColumn].toString().toUpperCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
     
-    if( (values[k][gradeColumn] != "") == students) {
+    if( (values[k][gradeColumn] !== "") == students) {
     
       switch (lunchDay) {
       

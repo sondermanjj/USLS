@@ -1,7 +1,12 @@
+//JSHint verified 4/3/2017 sondermanjj
 
+/*
+* @desc - Shows the loading dialog to the users, stopping them from doing input.
+* @params - x Dialog that will be shown
+* @author - clemensam
+*/
 function showDialog(x) {
   //Logger.log("Dialog. Value of x: " + x);
-  var button = x;
   var html = HtmlService.createHtmlOutputFromFile('LoadingDialog')
   .setWidth(150)
   .setHeight(70);
@@ -11,6 +16,10 @@ function showDialog(x) {
   //Logger.log("html: " + html.getContent());
 }
 
+/*
+* @desc - Imports the item into the HTML Service, allowing the use of the dialog.
+* @author - clemensam
+*/
 function doGet() {
   return HtmlService.createTemplateFromFile('LoadingDialog').evaluate()
       .setTitle('Simple Tasks')

@@ -1,3 +1,4 @@
+//JSHint verified 4/3/2017 sondermanjj
 
 /**
  * @desc - On Spreadsheet open, creates the Add-On menu
@@ -30,6 +31,7 @@ function showSidebar() {
 }
 
 /**
+ * @desc 
  */
 function doGet(request) {
   return HtmlService.createHtmlOutputFromFile('Sidebar')

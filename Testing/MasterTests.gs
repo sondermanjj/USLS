@@ -1,3 +1,10 @@
+//JSHint verified 4/3/2017 sondermanjj
+
+/**
+ * @desc - runs all the possible tests, then checks for errors and collects all reports
+ *         into one file, that then gets sent to all members of the project.
+ * @author - sondermanjj
+ */
 function runTestingSuite() {
   
   var testingMessages = [];
@@ -12,13 +19,13 @@ function runTestingSuite() {
     i++;
   }
   
-  for (var v = 0; v< studentMessages.length; v++) {
+  for (v = 0; v< studentMessages.length; v++) {
    testingMessages[i] = studentMessages[v] + "\n"; 
     i++;
   }
   
   testingMessages[i] = ("FacultyTests: " + runFacultyTests()+ "\n");
-  i++
+  i++;
     
   var d = new Date();
   var arrayLength = testingMessages.length;
@@ -28,7 +35,7 @@ function runTestingSuite() {
   
   
   var completeMessage = "REPORT " + myToday + ", "+d.getDate()+"/"+d.getMonth()+"/"+d.getYear();
-  for (var i = 0; i < arrayLength; i++) {
+  for (i = 0; i < arrayLength; i++) {
     completeMessage = completeMessage + "\r\n" + testingMessages[i];
   }
   Logger.log(completeMessage);

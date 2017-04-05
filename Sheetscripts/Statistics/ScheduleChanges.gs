@@ -1,3 +1,5 @@
+//JSHint verified 4/3/2017 sondermanjj
+
 /**
  * @desc - Gets the html for the schedule updates
  * @return - A list of schedule updates in html
@@ -6,10 +8,10 @@
 function getScheduleChanges() {
   var html = "<br>Student Lunch Changes:";
   var changes = scheduleChanges();
-  if(changes.length == 0) {
+  if(changes.length === 0) {
     html += "<br> No Schedule changes to display.";
   }  else {
-    for ( i = 0; i < changes.length; i++) {
+    for (var i = 0; i < changes.length; i++) {
       if (changes[i].length < 6) {
         html += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
       } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
@@ -40,14 +42,14 @@ function scheduleChanges() {
   var currentValues = getFinalStudentDataValues();
   
   var scannedSheet = spreadsheet.getSheetByName("Scanned Data");
-  if (scannedSheet == null) {
+  if (scannedSheet === null) {
     spreadsheet.insertSheet("Scanned Data");
     scannedSheet = spreadsheet.getSheetByName("Scanned Data");
     scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
   }
   
   var changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
-  if (changesSheet == null) {
+  if (changesSheet === null) {
     spreadsheet.insertSheet("Student Schedule Changes");
     changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
     changesSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
@@ -87,7 +89,7 @@ function findChanges(oldValues, newValues, changesSheet) {
   var oldLunchDayColumn = getColumnIndex(oldColumnList, "Lunch Day");
   var oldTableColumn = getColumnIndex(oldColumnList, "Lunch Table");
   
-  var changes = new Array();
+  var changes = [];
 
   if ( oldValues.length != newValues.length) {
     var count = oldValues.length;
@@ -114,7 +116,7 @@ function findChanges(oldValues, newValues, changesSheet) {
     k++;
   }
     
-    if(oldValues[i] == null) {
+    if(oldValues[i] === null) {
       changes.push( [newValues[k][firstNameColumn],
                      newValues[k][lastNameColumn],
                      newValues[k][newLunchDayColumn],
