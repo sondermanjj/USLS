@@ -8,7 +8,6 @@ function getDropdownList() {
   return getHTMLDropdown(list);
 }
 
-
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
  * @param - Object[] - Array of header names
@@ -194,29 +193,19 @@ function promptForNewSheet(msg) {
   var response = ui.prompt('New Sheet', msg, ui.ButtonSet.OK_CANCEL);
 
   if (response.getSelectedButton() == ui.Button.OK) {
-  
     var sheetName = response.getResponseText();
     var sheet = ss.getSheetByName(sheetName);
-    
     if(sheet == null) {
-    
       ss.insertSheet(sheetName);
       sheet = ss.getSheetByName(sheetName);
-      
     } else {
-    
-      response = ui.prompt('Alert!', "Woops! That sheet already exists. Would you like to overwrite that sheet?", ui.ButtonSet.OK_CANCEL);
-      
-      if (response.getSelectedButton() == ui.Button.OK) {
-        
+      response = ui.alert('Alert!', "Woops! That sheet already exists. Would you like to overwrite that sheet?", ui.ButtonSet.YES_NO);
+      if (response == ui.Button.YES) {
         ss.deleteSheet(sheet);
         ss.insertSheet(sheetName);
         sheet = ss.getSheetByName(sheetName);
-        
       } else {
-      
         sheet = promptForNewSheet(msg);
-        
       }
     }
   } 

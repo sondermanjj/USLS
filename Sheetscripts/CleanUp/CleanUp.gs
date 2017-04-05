@@ -5,15 +5,20 @@
  */
 function sheetCleanupPrompt(){
   var ui = SpreadsheetApp.getUi();
-  var response = ui.prompt('Data Clean-Up', 'Please enter the name of the sheet you would like to clean up. \n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
-  if(response.getSelectedButton() == ui.Button.OK){
-    var sheetName = response.getResponseText();
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-    if(sheet != null){
-      showDialog('clean, ' + sheetName);
-    }
-    else {
-      ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
+  var response = ui.alert('Data Clean-Up', 'Would you like to clean this sheet?', ui.ButtonSet.YES_NO);
+  if(response == ui.Button.YES) {
+    showDialog('clean, ' + SpreadsheetApp.getActiveSheet().getName());
+  } else if (response == ui.Button.NO) {
+    response = ui.prompt('Data Clean-Up', 'Please enter the name of the sheet you would like to clean up. \n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
+    if(response.getSelectedButton() == ui.Button.OK){
+      var sheetName = response.getResponseText();
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+      if(sheet != null){
+        showDialog('clean, ' + sheetName);
+      }
+      else {
+        ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
+      }
     }
   }
 }
