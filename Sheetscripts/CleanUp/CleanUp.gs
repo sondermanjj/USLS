@@ -4,23 +4,30 @@
  * @author - hendersonam
  */
 function sheetCleanupPrompt(){
+
+  var cleanedSheet;
+  
   var ui = SpreadsheetApp.getUi();
-  var response = ui.alert('Data Clean-Up', 'Would you like to clean this sheet?', ui.ButtonSet.YES_NO);
+  var response = ui.alert('Preparing to clean raw data sheet...', 'Is this the raw student data sheet?', ui.ButtonSet.YES_NO);
   if(response == ui.Button.YES) {
-    showDialog('clean, ' + SpreadsheetApp.getActiveSheet().getName());
+    var sheet = SpreadsheetApp.getActiveSheet();
+    cleanedSheet = cleanUp(SpreadsheetApp.getActiveSheet().getName());
+    //showDialog('clean, ' + SpreadsheetApp.getActiveSheet().getName());
   } else if (response == ui.Button.NO) {
-    response = ui.prompt('Data Clean-Up', 'Please enter the name of the sheet you would like to clean up. \n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
+    response = ui.prompt('Preparing to clean raw data sheet...', 'Please enter the name of the raw data sheet.\n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
     if(response.getSelectedButton() == ui.Button.OK){
       var sheetName = response.getResponseText();
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
       if(sheet != null){
-        showDialog('clean, ' + sheetName);
+        setStudentSheet(sheet);
+        cleanedSheet = cleanUp(sheetName);
       }
       else {
         ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
       }
     }
   }
+  return cleanedSheet;
 }
 
 /**
@@ -37,7 +44,6 @@ function cleanUp(sheetName) {
   var masterList = promptForNewSheet("Please enter the name of the sheet you would like to save the cleaned student information to.");
   
   var newValues = masterList.getDataRange().getValues();
-  Logger.log(newValues == [[]]);
   //If newValues has content, clean that content instead of replacing it with raw data
   if( newValues == [[]]) {
    oldValues = newValues;
@@ -57,7 +63,10 @@ function cleanUp(sheetName) {
   newValues = populateLunchDay(newValues);
 
   masterList.clearContents();
-  masterList.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);  
+  masterList.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
+  
+  return masterList;
+  
 }
 
 /**

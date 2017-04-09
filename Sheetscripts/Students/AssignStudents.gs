@@ -4,9 +4,11 @@
 @author - dicksontc
 */
 function assignStudentLunchDays() {
+
+  var properties = PropertiesService.getDocumentProperties();
   var sheet = SpreadsheetApp.getActiveSheet();
-  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
-  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
+  var primary =properties.getProperty("studentData");
+  var teacher = properties.getProperty("teacherData");
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -20,7 +22,7 @@ function assignStudentLunchDays() {
   var tNumColumns = teacherData.getNumColumns();
   
   var students = [];
-  setProperties(pNumColumns, pValues, tNumColumns, tValues);
+  //setProperties(pNumColumns, pValues, tNumColumns, tValues);
   //Set needed variables in Primary List
   
   var teachers = [];
@@ -527,8 +529,10 @@ function printStudentsToSheet(students, primary){
   sheetRange.setValues(finalArray);
   
 }
-
 /**
+
+
+
 @desc Sets the user properies to make use of global variables
 @params - pNumColumns - the number of columns in Final Student Data
 pValues - the array of the Final Student Data
@@ -536,7 +540,7 @@ tNumColumns - the number of columns in Faculty Choices
 tValues - the array of Faculty Choices
 @funtional - yes
 @author - dicksontc
-*/
+
 function setProperties(pNumColumns, pValues, tNumColumns, tValues){
   var properties = {pLunchTimeColumn: 0, pLunchDayColumn: 0, pSFNameColumn: 0,
                     pSLNameColumn: 0, pTFNameColumn: 0, pTLNameColumn: 0,
@@ -577,6 +581,8 @@ function setProperties(pNumColumns, pValues, tNumColumns, tValues){
   var userProperties = PropertiesService.getUserProperties();
   userProperties.setProperties(properties);
 }
+
+*/
 
 /**
 @desc Creates student array filled with student information.

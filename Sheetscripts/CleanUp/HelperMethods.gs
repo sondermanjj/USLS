@@ -199,13 +199,41 @@ function promptForNewSheet(msg) {
       ss.insertSheet(sheetName);
       sheet = ss.getSheetByName(sheetName);
     } else {
-      response = ui.alert('Alert!', "Woops! That sheet already exists. Would you like to overwrite that sheet?", ui.ButtonSet.YES_NO);
+      response = ui.alert('Alert!', "That sheet already exists. Are you sure you want to use it?", ui.ButtonSet.YES_NO);
       if (response == ui.Button.YES) {
         ss.deleteSheet(sheet);
         ss.insertSheet(sheetName);
         sheet = ss.getSheetByName(sheetName);
       } else {
         sheet = promptForNewSheet(msg);
+      }
+    }
+  } 
+  
+  return sheet;
+}
+
+/**
+ * @desc - Prompts the user to enter the name of a sheet they would like to use
+ * @param - String - The message you would like to give the user so they know what the sheet is being used for
+ * @author - hendersonam
+ */
+function promptForSettingSheetProperty(msg) {
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.prompt('Setting Properties...', msg, ui.ButtonSet.OK_CANCEL);
+
+  if (response.getSelectedButton() == ui.Button.OK) {
+    var sheetName = response.getResponseText();
+    var sheet = ss.getSheetByName(sheetName);
+    if(sheet == null) {
+      response = ui.alert('Alert!', "That sheet does not exist. Would you like to create it?", ui.ButtonSet.YES_NO);
+      if (response == ui.Button.YES) {
+        ss.insertSheet(sheetName);
+        sheet = ss.getSheetByName(sheetName);
+        } else {
+        sheet = promptForSettingSheetProperty(msg);
       }
     }
   } 
