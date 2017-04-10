@@ -7,8 +7,11 @@ function assignStudentLunchDays() {
 
   var properties = PropertiesService.getDocumentProperties();
   var sheet = SpreadsheetApp.getActiveSheet();
-  var primary =properties.getProperty("studentData");
-  var teacher = properties.getProperty("teacherData");
+  var primarySheetName =properties.getProperty("studentData");
+  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(primarySheetName);
+  var teacherSheetName = properties.getProperty("teacherChoices");
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(teacherSheetName);
+  Logger.log(teacher);
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -240,11 +243,11 @@ function assignStudentLunchDays() {
     Logger.log("Too many or too few students in a lunch (shouldn't happen)");
   }
   
-  var userProperties = PropertiesService.getUserProperties();
+  var documentProperties = PropertiesService.getDocumentProperties();
   printStudentsToSheet(students, primary); 
   
-  colorBackgrounds(userProperties.getProperty("pLunchTimeColumn"));
-  colorBackgrounds(userProperties.getProperty("pTableColumn"));
+  colorBackgrounds(documentProperties.getProperty("pLunchTimeColumn"));
+  colorBackgrounds(documentProperties.getProperty("pTableColumn"));
 }
 
 /**
@@ -356,9 +359,9 @@ function parseStudentChanges(){
       }
     }
     printStudentsToSheet(students, primarySheet);
-    var userProperties = PropertiesService.getUserProperties();
-    colorBackgrounds(userProperties.getProperty("pLunchTimeColumn"));
-    colorBackgrounds(userProperties.getProperty("pTableColumn"));
+    var documentProperties = PropertiesService.getDocumentProperties();
+    colorBackgrounds(documentProperties.getProperty("pLunchTimeColumn"));
+    colorBackgrounds(documentProperties.getProperty("pTableColumn"));
     if(changesSheet.getDataRange().getNumRows() > 1){
       changesSheet.deleteRows(2, changeData.getNumRows());
       
@@ -446,33 +449,33 @@ primary - the sheet the students are being printed to
 @author - dicksontc
 */
 function printStudentsToSheet(students, primary){
-  var userProperties = PropertiesService.getUserProperties();
+  var documentProperties = PropertiesService.getDocumentProperties();
   var primaryData = primary.getDataRange();
   var pValues = primaryData.getValues();
   var pushArray;
   var finalArray = [];
   var count = 0;
   
-  var sFNameCol = parseInt(userProperties.getProperty("pSFNameColumn"));
-  var sLNameCol = parseInt(userProperties.getProperty("pSLNameColumn"));
-  var gradeCol = parseInt(userProperties.getProperty("pGradeColumn"));
-  var houseCol = parseInt(userProperties.getProperty("pHouseColumn"));
-  var lunchDayCol = parseInt(userProperties.getProperty("pLunchDayColumn"));
-  var lunchTableCol = parseInt(userProperties.getProperty("pTableColumn"));
-  var tFNameCol = parseInt(userProperties.getProperty("pTFNameColumn"));
-  var tLNameCol = parseInt(userProperties.getProperty("pTLNameColumn"));
+  var sFNameCol = parseInt(documentProperties.getProperty("pSFNameColumn"));
+  var sLNameCol = parseInt(documentProperties.getProperty("pSLNameColumn"));
+  var gradeCol = parseInt(documentProperties.getProperty("pGradeColumn"));
+  var houseCol = parseInt(documentProperties.getProperty("pHouseColumn"));
+  var lunchDayCol = parseInt(documentProperties.getProperty("pLunchDayColumn"));
+  var lunchTableCol = parseInt(documentProperties.getProperty("pTableColumn"));
+  var tFNameCol = parseInt(documentProperties.getProperty("pTFNameColumn"));
+  var tLNameCol = parseInt(documentProperties.getProperty("pTLNameColumn"));
   
-  var advisorCol = parseInt(userProperties.getProperty("pAdvisorColumn"));
-  var cCodeCol = parseInt(userProperties.getProperty("pCourseCodeColumn"));
-  var cLengthCol = parseInt(userProperties.getProperty("pCourseLengthColumn"));
-  var cIDCol = parseInt(userProperties.getProperty("pCourseIDColumn"));
-  var sIDCol = parseInt(userProperties.getProperty("pSectionIDColumn"));
-  var blockCol = parseInt(userProperties.getProperty("pBlockColumn"));
-  var dobCol = parseInt(userProperties.getProperty("pDOBColumn"));
-  var tableHeadCol = parseInt(userProperties.getProperty("pTableHeadColumn"));
-  var cTitleCol = parseInt(userProperties.getProperty("pCourseTitleColumn"));
-  var lunchTimeCol = parseInt(userProperties.getProperty("pLunchTimeColumn"));
-  var genderCol = parseInt(userProperties.getProperty("pGenderColumn"));
+  var advisorCol = parseInt(documentProperties.getProperty("pAdvisorColumn"));
+  var cCodeCol = parseInt(documentProperties.getProperty("pCourseCodeColumn"));
+  var cLengthCol = parseInt(documentProperties.getProperty("pCourseLengthColumn"));
+  var cIDCol = parseInt(documentProperties.getProperty("pCourseIDColumn"));
+  var sIDCol = parseInt(documentProperties.getProperty("pSectionIDColumn"));
+  var blockCol = parseInt(documentProperties.getProperty("pBlockColumn"));
+  var dobCol = parseInt(documentProperties.getProperty("pDOBColumn"));
+  var tableHeadCol = parseInt(documentProperties.getProperty("pTableHeadColumn"));
+  var cTitleCol = parseInt(documentProperties.getProperty("pCourseTitleColumn"));
+  var lunchTimeCol = parseInt(documentProperties.getProperty("pLunchTimeColumn"));
+  var genderCol = parseInt(documentProperties.getProperty("pGenderColumn"));
   
   for(var post = 0; post < students.length; post++){
     var fin = students[post];
@@ -578,8 +581,8 @@ function setProperties(pNumColumns, pValues, tNumColumns, tValues){
   properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
   properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
   
-  var userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperties(properties);
+  var documentProperties = PropertiesService.getDocumentProperties();
+  documentProperties.setProperties(properties);
 }
 
 */
@@ -594,27 +597,27 @@ teachers - the list of teachers
 */
 function getStudents(pValues, pNumRows, teachers){
   var temp = [];
-  var userProperties = PropertiesService.getUserProperties();
+  var documentProperties = PropertiesService.getDocumentProperties();
   
-  var sFNameCol = parseInt(userProperties.getProperty("pSFNameColumn"));
-  var sLNameCol = parseInt(userProperties.getProperty("pSLNameColumn"));
-  var gradeCol = parseInt(userProperties.getProperty("pGradeColumn"));
-  var houseCol = parseInt(userProperties.getProperty("pHouseColumn"));
-  var lunchDayCol = parseInt(userProperties.getProperty("pLunchDayColumn"));
-  var lunchTableCol = parseInt(userProperties.getProperty("pTableColumn"));
-  var tFNameCol = parseInt(userProperties.getProperty("pTFNameColumn"));
-  var tLNameCol = parseInt(userProperties.getProperty("pTLNameColumn"));
-  var advisorCol = parseInt(userProperties.getProperty("pAdvisorColumn"));
-  var codeCol = parseInt(userProperties.getProperty("pCourseCodeColumn"));
-  var lengthCol = parseInt(userProperties.getProperty("pCourseLengthColumn"));
-  var cIDCol = parseInt(userProperties.getProperty("pCourseIDColumn"));
-  var sIDCol = parseInt(userProperties.getProperty("pSectionIDColumn"));
-  var blockCol = parseInt(userProperties.getProperty("pBlockColumn"));
-  var dobCol = parseInt(userProperties.getProperty("pDOBColumn"));
-  var tableHeadCol = parseInt(userProperties.getProperty("pTableHeadColumn"));
-  var titleCol = parseInt(userProperties.getProperty("pCourseTitleColumn"));
-  var lunchTimeCol = parseInt(userProperties.getProperty("pLunchTimeColumn"));
-  var genderCol = parseInt(userProperties.getProperty("pGenderColumn"));
+  var sFNameCol = parseInt(documentProperties.getProperty("pSFNameColumn"));
+  var sLNameCol = parseInt(documentProperties.getProperty("pSLNameColumn"));
+  var gradeCol = parseInt(documentProperties.getProperty("pGradeColumn"));
+  var houseCol = parseInt(documentProperties.getProperty("pHouseColumn"));
+  var lunchDayCol = parseInt(documentProperties.getProperty("pLunchDayColumn"));
+  var lunchTableCol = parseInt(documentProperties.getProperty("pTableColumn"));
+  var tFNameCol = parseInt(documentProperties.getProperty("pTFNameColumn"));
+  var tLNameCol = parseInt(documentProperties.getProperty("pTLNameColumn"));
+  var advisorCol = parseInt(documentProperties.getProperty("pAdvisorColumn"));
+  var codeCol = parseInt(documentProperties.getProperty("pCourseCodeColumn"));
+  var lengthCol = parseInt(documentProperties.getProperty("pCourseLengthColumn"));
+  var cIDCol = parseInt(documentProperties.getProperty("pCourseIDColumn"));
+  var sIDCol = parseInt(documentProperties.getProperty("pSectionIDColumn"));
+  var blockCol = parseInt(documentProperties.getProperty("pBlockColumn"));
+  var dobCol = parseInt(documentProperties.getProperty("pDOBColumn"));
+  var tableHeadCol = parseInt(documentProperties.getProperty("pTableHeadColumn"));
+  var titleCol = parseInt(documentProperties.getProperty("pCourseTitleColumn"));
+  var lunchTimeCol = parseInt(documentProperties.getProperty("pLunchTimeColumn"));
+  var genderCol = parseInt(documentProperties.getProperty("pGenderColumn"));
 
   for(var i = 0; i < pNumRows; i++){
     var day = pValues[i][lunchDayCol];
@@ -779,11 +782,11 @@ tNumRows - the number of rows in the faculty choices list
 */
 function getTeachers(tValues, tNumRows){
   var teachers = [];
-  var userProperties = PropertiesService.getUserProperties();
-  var fNameCol = parseInt(userProperties.getProperty("tFNameColumn"));
-  var lNameCol = parseInt(userProperties.getProperty("tLNameColumn"));
-  var lunchTimeCol = parseInt(userProperties.getProperty("tLunchTimeColumn"));
-  var lunchDayCol = parseInt(userProperties.getProperty("tLunchDayColumn"));
+  var documentProperties = PropertiesService.getDocumentProperties();
+  var fNameCol = parseInt(documentProperties.getProperty("tFNameColumn"));
+  var lNameCol = parseInt(documentProperties.getProperty("tLNameColumn"));
+  var lunchTimeCol = parseInt(documentProperties.getProperty("tLunchTimeColumn"));
+  var lunchDayCol = parseInt(documentProperties.getProperty("tLunchDayColumn"));
 
   for(var i = 0; i < tNumRows; i++){
     var fname = tValues[i][fNameCol];

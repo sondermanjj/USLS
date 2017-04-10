@@ -1,4 +1,5 @@
 function testting() {
+ 
   Logger.log(PropertiesService.getDocumentProperties().getProperties());
   Logger.log(PropertiesService.getUserProperties().getProperties());
 }
@@ -24,8 +25,7 @@ function initilization() {
   setTeacherChoicesSheet(teacherChoicesSheet);
   setTeacherTableSheet(teacherTableSheet);
   setDODSheet(dodSheet);
-  
-  Logger.log(studentSheet.getDataRange().getValues());
+
   setStudentProperties(studentSheet.getDataRange().getValues());
   setTeacherProperties(teacherChoicesSheet.getDataRange().getValues());
 }
@@ -125,7 +125,7 @@ function setStudentProperties(pValues){
   properties.pTableColumn = getColumnIndex(pHeaders, "Lunch Table");
   properties.pGradeColumn = getColumnIndex(pHeaders, "Grade Level");
   
-  var userProperties = PropertiesService.getUserProperties().setProperties(properties);
+  PropertiesService.getDocumentProperties().setProperties(properties);
 }
 
 /**
@@ -137,15 +137,16 @@ function setTeacherProperties(tValues) {
 
   var properties = { tFNameColumn : 0,
                      tLNameColumn : 0,
-                     tLunchDay : 0,
-                     tLunchTime : 0};
+                     tLunchDayColumn : 0,
+                     tLunchTimeColumn : 0};
 
   var tHeaders = getListOfColumns(tValues);
+  Logger.log(tHeaders);
   
   properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
   properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
   properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
   properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
   
-  PropertiesService.getUserProperties().setProperties(properties);
+  PropertiesService.getDocumentProperties().setProperties(properties);
 }
