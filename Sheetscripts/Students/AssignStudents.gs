@@ -25,7 +25,6 @@ function assignStudentLunchDays() {
   var tNumColumns = teacherData.getNumColumns();
   
   var students = [];
-  //setProperties(pNumColumns, pValues, tNumColumns, tValues);
   //Set needed variables in Primary List
   
   var teachers = [];
@@ -698,7 +697,7 @@ function getStudents(pValues, pNumRows, teachers){
 */
 function colorBackgrounds(column){
   var sheet = SpreadsheetApp.getActiveSheet();
-  var stuData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+  var stuData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PropertiesService.getDocumentProperties().getProperty("studentData"));
   var ran = stuData.getRange(1, column + 1, stuData.getDataRange().getNumRows());
   var vals = ran.getValues();
   var col = ran.getNumColumns();

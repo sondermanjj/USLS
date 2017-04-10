@@ -11,6 +11,7 @@ function sheetCleanupPrompt(){
   var response = ui.alert('Preparing to clean raw data sheet...', 'Is this the raw student data sheet?', ui.ButtonSet.YES_NO);
   if(response == ui.Button.YES) {
     var sheet = SpreadsheetApp.getActiveSheet();
+    setStudentSheet(sheet);
     cleanedSheet = cleanUp(SpreadsheetApp.getActiveSheet().getName());
     //showDialog('clean, ' + SpreadsheetApp.getActiveSheet().getName());
   } else if (response == ui.Button.NO) {
@@ -44,10 +45,7 @@ function cleanUp(sheetName) {
   var masterList = promptForNewSheet("Please enter the name of the sheet you would like to save the cleaned student information to.");
   
   var newValues = masterList.getDataRange().getValues();
-  //If newValues has content, clean that content instead of replacing it with raw data
-  if( newValues == [[]]) {
-   oldValues = newValues;
-  }
+  
    
   //Remove irrelevant data
   newValues = removeIrrelevantData(oldValues, newValues);
@@ -81,37 +79,27 @@ function removeIrrelevantData(oldValues, newValues) {
   
   //Create a new array for the cleaned data
   var revisedValues = new Array();
+  var headers = getListOfColumns(oldValues);
+  var blockColumn = getColumnIndex(headers, "Block");
+      
+  //Add the column titles to the new data array
+  revisedValues.push(headers);
   
-  var found = false;
-  //Search for the 'Block' column
-  for (var i = 0; i <= oldValues[0].length - 1; i++) {
-    var column = oldValues[0][i];
-    if (column == 'Block') {
-      found = true;
+  //Grab any relevant rows (courses that meet during lunch times)
+  //and push them to the new data array
+  for (var j = 0; j < oldValues.length - 1; j++) {
+    var row = oldValues[j][blockColumn];
+    if(row == "1" || row == "2" || 
+       row == "3" || row == "4" || 
+       row == "5" || row == "6" || 
+       row == "7" || row == "8" || 
+       row == "E1" || row == "G2" || 
+       row == "A3" || row == "C4" || 
+       row == "F5" || row == "H6" || 
+       row == "B7" || row == "D8") {
       
-      //Add the column titles to the new data array
-      revisedValues.push(oldValues[0]);
-      
-      //Grab any relevant rows (courses that meet during lunch times)
-      //and push them to the new data array
-      for (var j = 0; j < oldValues.length - 1; j++) {
-        var row = oldValues[j][i];
-        if(row == "1" || row == "2" || 
-              row == "3" || row == "4" || 
-              row == "5" || row == "6" || 
-              row == "7" || row == "8" || 
-              row == "E1" || row == "G2" || 
-              row == "A3" || row == "C4" || 
-              row == "F5" || row == "H6" || 
-              row == "B7" || row == "D8") {
-              
-          revisedValues.push(oldValues[j]);
-        }
-      }
-    } 
-  }
-  if (!found) {
-    SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row to remove irrelevant data!");
+      revisedValues.push(oldValues[j]);
+    }
   }
   
   return revisedValues;
@@ -125,26 +113,14 @@ function removeIrrelevantData(oldValues, newValues) {
  * @author - hendersonam
  */
 function populateLunchDay(values) {
-
-  var blockFound = false;
-  var lunchDayFound = false;
+  
+  var headers = getListOfColumns(values);
+  var blockColumn = getColumnIndex(headers, "Block");
+  var lunchDayColumn = getColumnIndex(headers, "Lunch Day");
   
   //Get necessary data 
   var numRows = values.length;
   var numColumns = values[0].length;
-  
-  //Get the indices for the 'Block' and 'Lunch Day' columns
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == 'Block') {
-      blockFound = true;
-      var blockColumn = i ;
-    }
-    if (column == 'Lunch Day') {
-      lunchDayFound = true;
-      var lunchDayColumn = i ;
-    }
-  }
   
     //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
   for (var j = 0; j <= numRows - 1; j++) {
@@ -180,13 +156,6 @@ function populateLunchDay(values) {
     
       values[j][lunchDayColumn] = "D";
     }
-  }
-  
-  if (!blockFound) {
-    SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row to fill in the Lunch Days!");
-  }
-  if (!lunchDayFound) {
-    SpreadsheetApp.getUi().alert("Could not find the 'Lunch Day' column in the first row to fill in the Lunch Days!");
   }
   
   return values;

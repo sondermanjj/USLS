@@ -8,11 +8,9 @@
   */
   
   function addFacultyTables() {
-    addTeachersToTableList(SpreadsheetApp.getActiveSpreadsheet().getId());
+    addTeachersToTableList();
   }
-  
-  var numberOfTables = 19; //NUmber of tables in the early lunch
-  var letterDays = ["A","B","C","D","E","F","G","H"]; //Letter days
+ 
   var earlyCount = 0; //Number of teachers for early lunch
   
   /**
@@ -23,16 +21,17 @@
   @param id: The sheet ID to be edited
   @functional YES
   */
-  function addTeachersToTableList(id) {
+  function addTeachersToTableList() {
     
     Logger.clear();
-    
-    populateTableList(id);
+    var documentProperties = PropertiesService.getDocumentProperties();
+    populateTableList();
     
     Logger.log("Adding teachers begun");
-    var tableList =   SpreadsheetApp.openById(id).getSheetByName("Faculty Table List");
-    var teacherList = SpreadsheetApp.openById(id).getSheetByName("Faculty Choices")
-    var dodListsheet = SpreadsheetApp.openById(id).getSheetByName("DOD List");
+    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherTables"));
+    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherChoices"));
+    var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("DODList"));
+    var letterDays = JSON.parse(documentProperties.getProperty("letterDays"));
     
     var teacherRow;
     
@@ -157,9 +156,6 @@
     
     Logger.log("Empty Spots marked");
     
-    //Notify that the task is done
-    var ui = SpreadsheetApp.getUi();
-    //ui.alert("Faculty assigned with "+emptyCount+" empty slots");
   }
   
   /**
@@ -169,8 +165,9 @@
   @return returns the formatted teacher data, with all tables assigned
   @functional YES
   */
-  function copyTeacherDataToPrimary(id) {
-    var teacherList = SpreadsheetApp.openById(id).getSheetByName("Faculty Choices");
+  function copyTeacherDataToPrimary() {
+    var documentProperties = PropertiesService.getDocumentProperties();
+    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherChoices"));
     teacherList.sort(1);
     teacherList.getRange(2, 11, teacherList.getLastRow(), 15).clear();
     var teacherData = teacherList.getRange(2, 1, teacherList.getLastRow(), 6).getValues();
@@ -212,10 +209,14 @@
   @returns True if process was succesful
   @functional YES
   */
-  function populateTableList(id) {
-    createNewSheets(null, "Faculty Table List", id);
-    var tableList = SpreadsheetApp.openById(id).getSheetByName("Faculty Table List");
+  function populateTableList() {
+  
+    var documentProperties = PropertiesService.getDocumentProperties();
+     
+    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherTables"));
     var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
+    var numberOfTables = documentProperties.getProperty("numberOfTables");
+    var letterDays = JSON.parse(documentProperties.getProperty("letterDays"));
     
     tableList.getRange("A1:F1").setValues(headerList);
     
@@ -239,7 +240,7 @@
   name: Name of the sheet
   id: id of the sheet to be edited.
   @Functional YES
-  */
+  
   function createNewSheets(data, name, id) {
     var sheet = SpreadsheetApp.openById(id);
     var ts = sheet.getSheetByName(name) //Target sheet
@@ -256,3 +257,4 @@
       ts.getRange(1, 1, data.length, data[0].length).setValues(data);
     }
   }
+  */

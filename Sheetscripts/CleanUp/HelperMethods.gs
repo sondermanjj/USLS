@@ -158,7 +158,7 @@ function getColumnIndex(values, name) {
 
 /**
  * @desc - Gets a list of the column names saved in an array
- * @param - Object[][] - 2D Array of data, columns should be in the 0 index
+ * @param - Object[][] - 2D Array of data
  * @return - Array[] - List of the column names in the given data
  */
 function getListOfColumns(headers) {
