@@ -125,20 +125,6 @@ function showAllValues() {
 }
 
 /**
- * @desc - Returns the data values from the Final Student Data sheet
- * @return Object[][] - the data values
- * @author - hendersonam
- */
-function getFinalStudentDataValues() {
-  return SpreadsheetApp
-    .getActiveSpreadsheet()
-    .getSheetByName("Final Student Data")
-    .getDataRange()
-    .getValues();
-  
-}
-
-/**
   * @desc - Gets the index of the column in the given data
   * @param - Object[][] - Values to search through
   *          String - Name of the column
@@ -265,4 +251,15 @@ function addColumnName(values, name) {
     }
   }
   return values;
+}
+
+function compareByColumnIndex(index) {
+  return function(a,b){
+    if (a[index] === b[index]) {
+        return 0;
+    }
+    else {
+        return (a[index] < b[index]) ? -1 : 1;
+    }
+  }
 }

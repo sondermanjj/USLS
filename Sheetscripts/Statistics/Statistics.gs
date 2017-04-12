@@ -4,7 +4,6 @@
  * @author - hendersonam
  */
 function getStatistics() {
-  Logger.log("In getStatistics");
   var html = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStudentStatistics();
   html += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getTeacherStatistics();
   return html;
@@ -16,11 +15,19 @@ function getStatistics() {
  * @author - hendersonam
  */
 function getStudentStatistics() {
-  var time = ["Early", "Mid", "Late"];
-  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var tableValues = statistics(time, day, getFinalStudentDataValues(), true);
+
+  var properties = PropertiesService.getDocumentProperties();
+  var days = JSON.parse(properties.getProperty("letterDays"));
+  var times = JSON.parse(properties.getProperty("lunchTimes"));
+  var values = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.getProperty("studentData"))
+                  .getDataRange()
+                  .getValues();
+                  
+  var tableValues = statistics(times, days, values, true);
   
-  return "<table id='studentStatsTable'>" + getHTMLTable(time, day, tableValues);
+  return "<table id='studentStatsTable'>" + getHTMLTable(times, days, tableValues);
   
 }
 
@@ -30,11 +37,19 @@ function getStudentStatistics() {
  * @author - hendersonam
  */
 function getTeacherStatistics() {
-  var time = ["Early", "Mid", "Late"];
-  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var tableValues = statistics(time, day, getFinalStudentDataValues(), false);
+
+  var properties = PropertiesService.getDocumentProperties();
+  var days = JSON.parse(properties.getProperty("letterDays"));
+  var times = JSON.parse(properties.getProperty("lunchTimes"));
+  var values = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.getProperty("studentData"))
+                  .getDataRange()
+                  .getValues();
   
-  return "<table id='teacherStatsTable'>" + getHTMLTable(time, day, tableValues);
+  var tableValues = statistics(times, days, values, false);
+  
+  return "<table id='teacherStatsTable'>" + getHTMLTable(times, days, tableValues);
 }
 
 /**
@@ -87,23 +102,46 @@ function statistics(time, day, values, students) {
     }
   }
   
+  var properties = PropertiesService.getDocumentProperties();
   
-  var listOfColumns = getListOfColumns(values);
-  var lunchDayColumn = getColumnIndex(listOfColumns, "Lunch Day");
-  var gradeColumn = getColumnIndex(listOfColumns, "Grade Level");
-  var lunchTimeColumn = getColumnIndex(listOfColumns, "Lunch Time");
+  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
+  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
   var flag;
   var lunchDay;
   var lunchTime;
+  var count;
   
   for( var k = 1; k < values.length; k++) {
   
-    lunchDay = values[k][lunchDayColumn].toString().toUpperCase();
+    lunchDay = values[k][lunchDayColumn].toString().toLowerCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
     
     if( (values[k][gradeColumn] != "") == students) {
     
-      switch (lunchDay) {
+      count = 0;
+      while( isNaN(lunchDay) ) {
+        lunchDay == day[count].toString().toLowerCase() ? lunchDay = count : count++;
+        if (count > day.length) break;
+      }
+      
+      count = 0;
+      while ( isNaN(lunchTime) ) {
+        lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
+      }
+      
+      if (!isNaN(lunchDay) && !isNaN(lunchTime)) { 
+        stats[lunchDay][lunchTime] += 1;
+        if (count > time.length) break;
+      }
+    }
+  }
+  return stats;
+}
+
+/*
+
+ switch (lunchDay) {
       
         case 'A':
           lunchDay = 0;
@@ -245,12 +283,8 @@ function statistics(time, day, values, students) {
           //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch day");
           break;  
       }
-      if (!isNaN(lunchDay) && !isNaN(lunchTime)) { 
-        stats[lunchDay][lunchTime] += 1;
-      }
-    }
-  }
-  return stats;
-}
+      
+      
+      */
 
 

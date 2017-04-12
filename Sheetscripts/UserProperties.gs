@@ -1,5 +1,6 @@
 
 function testting() {
+  setLunchTimes(["early", "mid", "late"]);
  Logger.log(PropertiesService.getDocumentProperties().getProperties());
 }
  /*****************************************************************************************************************
@@ -65,6 +66,7 @@ function setProperties() {
   setStudentColumnIndices(properties.getProperty("studentData"));
   setTeacherColumnIndices(properties.getProperty("teacherChoices"));
   setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
+  setLunchTimes(["early", "mid", "late"]);
   setNumberOfTables(19);
   
 }
@@ -76,6 +78,10 @@ function setProperties() {
  */
 function setLetterDays(value) {
   PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+}
+
+function setLunchTimes(value) {
+  PropertiesService.getDocumentProperties().setProperty("lunchTimes", JSON.stringify(value));
 }
 
 /**
