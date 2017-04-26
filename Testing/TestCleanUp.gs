@@ -23,14 +23,14 @@ function runCorrectBlockDataTest() {
   
   // Here's where we actually run the tests:
   return allTests(function(t) {
-    
+    var properties = PropertiesService.getDocumentProperties();
     var errors = 0;
     //Check the framework is working
     t.areEqual(1,1);
     //Get necessary data 
     var range = SpreadsheetApp
     .getActiveSpreadsheet()
-    .getSheetByName("Final Student Data")
+    .getSheetByName(properties.getProperty("studentData"))
     .getDataRange();
     
     var values = range.getValues();
@@ -76,31 +76,19 @@ function runCorrectLunchDayDataTest() {
     //Check the framework is working
     t.areEqual(1,1);
     
-    
+    var properties = PropertiesService.getDocumentProperties();
     //Get necessary data 
     var range = SpreadsheetApp
     .getActiveSpreadsheet()
-    .getSheetByName("Final Student Data")
+    .getSheetByName(properties.getProperty("studentData"))
     .getDataRange();
     
     var values = range.getValues();
-    
+    var blockColumn = properties.getProperty("pBlockColumn");
+    var lunchDayColumn = properties.getProperty("pLunchDayColumn");
     var numRows = values.length;
     var numColumns = values[0].length;
     
-    //Get the indices for the 'Block' and 'Lunch Day' columns
-    for (var i = 0; i <= numColumns - 1; i++) {
-      var column = values[0][i];
-      if (column == 'Block') {
-        blockFound = true;
-        var blockColumn = i ;
-      }
-      
-      if (column == 'Lunch Day') {
-        lunchDayFound = true;
-        var lunchDayColumn = i ;
-      }
-    }
     
     //Check for innapropriate lunch days
     for (var j = 0; j <= numRows - 1; j++) {

@@ -7,10 +7,10 @@ as runs the tests.
 function studentTester(){
   
   assignStudentLunchDays();
-  
+  var properties = PropertiesService.getDocumentProperties();
   var sheet = SpreadsheetApp.getActiveSheet();
-  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
-  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
+  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices"));
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -23,59 +23,21 @@ function studentTester(){
   var tNumRows = teacherData.getNumRows();
   var tNumColumns = teacherData.getNumColumns();
   
-  var pLunchTimeColumn;
-  var pLunchDayColumn;
-  var pSFNameColumn;
-  var pSLNameColumn;
-  var pTFNameColumn;
-  var pTLNameColumn;
-  var pTableColumn;
-  var pGradeColumn;
-  var pHouseColumn;
-  var tFNameColumn;
-  var tLNameColumn;
-  var tLunchDayColumn;
-  var tLunchTimeColumn;
+  var pLunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
+  var pLunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
+  var pSFNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
+  var pSLNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
+  var pTFNameColumn = parseInt(properties.getProperty("pTFNameColumn"));
+  var pTLNameColumn = parseInt(properties.getProperty("pTLNameColumn"));
+  var pTableColumn = parseInt(properties.getProperty("pTableColumn"));
+  var pGradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+  var pHouseColumn = parseInt(properties.getProperty("pHouseColumn"));
+  var tFNameColumn = parseInt(properties.getProperty("tFNameColumn"));
+  var tLNameColumn = parseInt(properties.getProperty("pLNameColumn"));
+  var tLunchDayColumn = parseInt(properties.getProperty("tLunchDayColumn"));
+  var tLunchTimeColumn = parseInt(properties.getProperty("tLunchTimeColumn"));
   
   var students = [];
-  
-  //Set needed variables in Primary List
-  for(var i = 0; i < pNumColumns; i++){
-    var column = pValues[0][i];
-    if(column == 'Lunch Day') {
-      pLunchDayColumn = i ;
-    }else if(column == 'Lunch Time'){
-      pLunchTimeColumn = i;
-    }else if(column == 'Faculty First Name'){
-      pTFNameColumn = i;
-    }else if(column == 'Faculty Last Name'){
-      pTLNameColumn = i;
-    }else if(column == 'First Name'){
-      pSFNameColumn = i;
-    }else if(column == 'Last Name'){
-      pSLNameColumn = i;
-    }else if(column == 'Lunch Table'){
-      pTableColumn = i;
-    }else if(column == 'House'){
-      pHouseColumn = i;
-    }else if(column == 'Grade Level'){
-      pGradeColumn = i;
-    }
-  }
-  
-  //Set needed variables in Faculty Choices
-  for(var i = 0; i < tNumColumns; i++){
-    var column = tValues[0][i];
-    if(column == 'Lunch Day') {
-      tLunchDayColumn = i ;
-    }else if(column == 'First Name'){
-      tFNameColumn = i;
-    }else if(column == 'Last Name'){
-      tLNameColumn = i;
-    }else if(column == 'Lunch Assignment'){
-      tLunchTimeColumn = i;
-    }
-  }
   
   var students = [];
   for(var i = 1; i < pNumRows; i++){
@@ -129,8 +91,9 @@ Fails - Any background colors are incorrect
 */
 function testColorByTime(column){
   return allTests(function(t) {
+    var properties = PropertiesService.getDocumentProperties();
     var sheet = SpreadsheetApp.getActiveSheet();
-    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
     var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
     var vals = range.getValues();
     
@@ -184,8 +147,9 @@ Fails - Any background or font colors are incorrect
 */
 function testColorByTable(column){
   return allTests(function(t) {
+     var properties = PropertiesService.getDocumentProperties();
     var sheet = SpreadsheetApp.getActiveSheet();
-    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
     var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
     var vals = range.getValues();
     var check = 0;

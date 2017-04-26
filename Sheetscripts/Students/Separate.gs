@@ -5,8 +5,9 @@ into separate sheets based on house.
 @author - dicksontc
 */
 function splitIntoNewSheets(){
+  var properties = PropertiesService.getDocumentProperties();
   var sheet = SpreadsheetApp.getActiveSheet();
-  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
   
   var primaryData = primary.getDataRange();
   
@@ -15,35 +16,16 @@ function splitIntoNewSheets(){
   var pNumRows = primaryData.getNumRows();
   var pNumColumns = primaryData.getNumColumns();
   
-  var lunchTimeColumn;
-  var lunchTableColumn;
-  var fNameColumn;
-  var lNameColumn;
-  var houseColumn;
-  var lunchDayColumn;
-  var gradeColumn;
+  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
+  var lunchTableColumn = parseInt(properties.getProperty("pLunchTableColumn"));
+  var fNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
+  var lNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
+  var houseColumn = parseInt(properties.getProperty("pHouseColumn"));
+  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
+  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
   
-  for(var i = 0; i < pNumColumns; i++){
-    var column = pValues[0][i];
-    if(column == 'Lunch Day') {
-      lunchDayColumn = i ;
-    }else if(column == 'Lunch Time'){
-      lunchTimeColumn = i;
-    }else if(column == 'First Name'){
-      fNameColumn = i;
-    }else if(column == 'Last Name'){
-      lNameColumn = i;
-    }else if(column == 'Lunch Table'){
-      lunchTableColumn = i;
-    }else if(column == 'House'){
-      houseColumn = i;
-    }else if(column == 'Grade Level'){
-      gradeColumn = i;
-    }
-  }
-  
-  doHouseSheets(lunchTimeColumn,lunchTableColumn,fNameColumn,lNameColumn,houseColumn,lunchDayColumn,gradeColumn, pValues,pNumRows);
-  doTableSheets(lunchTimeColumn,lunchTableColumn,fNameColumn,lNameColumn,houseColumn,lunchDayColumn,gradeColumn, pValues,pNumRows);
+  doHouseSheets(pValues,pNumRows);
+  doTableSheets(pValues,pNumRows);
   
 }
 
@@ -82,7 +64,18 @@ function createNewSheet(data, name) {
 @funtional - yes
 @author - dicksontc
 */
-function doHouseSheets(lunchTimeColumn,lunchTableColumn,fNameColumn,lNameColumn,houseColumn,lunchDayColumn,gradeColumn, pValues,pNumRows){
+function doHouseSheets(pValues,pNumRows){
+
+  var properties = PropertiesService.getDocumentProperties();
+  
+  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
+  var lunchTableColumn = parseInt(properties.getProperty("pLunchTableColumn"));
+  var fNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
+  var lNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
+  var houseColumn = parseInt(properties.getProperty("pHouseColumn"));
+  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
+  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+  
   var academy = [];
   var crest = [];
   var arrow = [];
@@ -133,7 +126,18 @@ function doHouseSheets(lunchTimeColumn,lunchTableColumn,fNameColumn,lNameColumn,
 @funtional - yes
 @author - dicksontc
 */
-function doTableSheets(lunchTimeColumn,lunchTableColumn,fNameColumn,lNameColumn,houseColumn,lunchDayColumn,gradeColumn, pValues, pNumRows){
+function doTableSheets(pValues, pNumRows){
+  var properties = PropertiesService.getDocumentProperties();
+  
+  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
+  var lunchTableColumn = parseInt(properties.getProperty("pLunchTableColumn"));
+  var fNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
+  var lNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
+  var houseColumn = parseInt(properties.getProperty("pHouseColumn"));
+  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
+  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+
+
   var tables = [];
   var rowZero = ["First Name", "Last Name", "Grade", "Lunch Day", "EML", "Table", "House"];
   for(var k = 0; k < 19; k++){

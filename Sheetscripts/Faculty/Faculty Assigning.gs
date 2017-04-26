@@ -67,8 +67,9 @@
     //Assign random numbers to all the early teachers
     var lastRow = teacherList.getLastRow();
   
-    for (var i = 0; i <= lastRow; i++) {
-      if (allTeachersLunch[i] == "early") {
+    for (var i = 0; i < lastRow; i++) {
+    Logger.log(i);
+      if (allTeachersLunch[i].toString().toLowerCase() == "early") {
         earlyTeachersRows.push(i+1);
         earlyCount++;
       }

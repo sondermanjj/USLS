@@ -4,7 +4,8 @@
  * @author - hendersonam
  */
 function getDropdownList() {
-  var list = getListOfColumns(getFinalStudentDataValues());
+  var properties = PropertiesService.getDocumentProperties();
+  var list = getListOfColumns(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues());
   return getHTMLDropdown(list);
 }
 
@@ -44,7 +45,8 @@ function sortSheetBy(sheet, sorts) {
  * @author - hendersonam
  */
 function hideValues(filter, column) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+  var properties = PropertiesService.getDocumentProperties()
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
   if( column == "All") {
     var map = searchAll(filter);
   } else {
@@ -61,7 +63,8 @@ function hideValues(filter, column) {
  * @author - hendersonam
  */
 function searchAll(filter) {
-  var values = getFinalStudentDataValues();
+  var properties = PropertiesService.getDocumentProperties();
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
   var count = 0;
   var index = 0;  
   var map = {};
@@ -90,7 +93,8 @@ function searchAll(filter) {
  * @author - hendersonam
  */
 function searchColumn(filter, column) {
-  var values = getFinalStudentDataValues();
+  var properties = PropertiesService.getDocumentProperties();
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
   var columnIndex = getColumnIndex(getListOfColumns(values), column);
   var count = 0;
   var index = 0;  
@@ -118,8 +122,10 @@ function searchColumn(filter, column) {
  * @author - hendersonam
  */
 function showAllValues() {
-  var values = getFinalStudentDataValues();
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+ var properties = PropertiesService.getDocumentProperties();
+ var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+  var values = sheet.getDataRange().getValues();
+  
 
   sheet.showRows(1, values.length);
 }
@@ -253,6 +259,11 @@ function addColumnName(values, name) {
   return values;
 }
 
+/**
+ * @desc - returns a function that compares values from a certain column index
+ * @param - Int - the index of the column to compare by
+ * @return - Function
+*/
 function compareByColumnIndex(index) {
   return function(a,b){
     if (a[index] === b[index]) {
