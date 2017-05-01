@@ -13,6 +13,32 @@
   table {
     border-collapse: collapse;
   }
+  
+   #printButton {
+    background-image: url("https://farm5.staticflickr.com/4184/34211099306_31b9f44900_b.jpg");
+    background-size: 100%; /* To fill the dimensions of container (button), or */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #e6e6e6;
+    background-position: center; 
+    border: 1px solid #bfbfbf;
+    width: 100px;
+    height: 35px;
+  }
+  
+@media print {
+  #printButtonDiv{
+    visibility: hidden;
+  }
+  #printDiv {
+    visibility: visible;
+  }
+  #printDiv {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
 </style>
 
 
