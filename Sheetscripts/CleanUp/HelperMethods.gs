@@ -1,4 +1,11 @@
+var dropdownhtml;
 
+/**
+*
+*/
+function getDropdownHTML(){
+  return dropdownhtml;
+}
 
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
@@ -7,7 +14,7 @@
  */
 function getDropdownList() {
   var list = getListOfColumns(getFinalStudentDataValues());
-  return getHTMLDropdown(list);
+  getHTMLDropdown(list);
 }
 
 
@@ -18,11 +25,11 @@ function getDropdownList() {
  * @author - hendersonam
  */
 function getHTMLDropdown(list) {
-  var html = "<option value=\"All\">All</option>";
+  dropdownhtml = "<option value=\"All\">All</option>";
   for(var i = 0; i < list.length; i++) {
-    html += "<option value=\"" + list[i] + "\">" + list[i] + "</option>";
+    dropdownhtml += "<option value=\"" + list[i] + "\">" + list[i] + "</option>";
   }
-  return html;
+  //return html;
 }
 
 /**

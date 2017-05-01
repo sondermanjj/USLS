@@ -133,13 +133,18 @@
     </style>
     <script>
     
+    function showMenus(){
+      scanBoth();
+      google.script.run.withSuccessHandler(displayDropdown).getDropdownHTML();
+    }
+
     /**
       * @desc - Scans the data for statistics
       * @author - hendersonam
       */
     function scanData() {
-      google.script.run.withSuccessHandler(scanBoth).showDialog('scan');
-      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();
+      google.script.run.withSuccessHandler(scanBoth).showDialog('sc');
+      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
     }
     
     /**
@@ -171,7 +176,6 @@
       * @author - hendersonam
       */
     function displayDropdown(list) {
-    
       var html = document.getElementById('dropdownfilter');
       html.innerHTML = list;
     }
@@ -181,7 +185,6 @@
       * @author - hendersonam
       */
     function displayStats(statistics) {
-      
       var html = document.getElementById('stats');
       html.innerHTML = statistics;
       
@@ -192,7 +195,6 @@
       * @author - hendersonam
       */
     function displayScheduleChanges(changes) {
-      
       var html = document.getElementById('changes');
       html.innerHTML = changes;
       

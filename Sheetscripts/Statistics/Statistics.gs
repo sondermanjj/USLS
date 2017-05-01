@@ -1,13 +1,22 @@
+var statshtml = "";
+var updatedStats = false;
+
+function getStatisticsHTML(){
+  return statshtml;
+}
+
 /**
  * @desc - Returns the statistics for the students and teachers
  * @return - String - HTML for 2 tables, one for student statistics and one for teacher statistics
  * @author - hendersonam
  */
 function getStatistics() {
-  Logger.log("In getStatistics");
-  var html = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStudentStatistics();
-  html += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getTeacherStatistics();
-  return html;
+  updatedStats = false;
+  statshtml = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStudentStatistics();
+  statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getTeacherStatistics();
+  updatedStats = true;
+  Logger.log("Stats: " + statshtml);
+  return statshtml;
 }
 
 /**
@@ -47,24 +56,24 @@ function getTeacherStatistics() {
  */
 function getHTMLTable(columns, rows, values) {
   
-  var html = "";
+  var tablehtml = "";
   //var html = "<table class='statsTable'>";
-  html += "<tr><th></th>";
+  tablehtml += "<tr><th></th>";
   for(var column = 0; column < columns.length; column++){
-     html += "<th>" + columns[column] + "</th>";
+     tablehtml += "<th>" + columns[column] + "</th>";
   }
-  html += "</tr>";
+  tablehtml += "</tr>";
   
   for ( var row = 0; row < rows.length ; row++ ) {
-    html += "<tr><td>" + rows[row] + "</td>";
+    tablehtml += "<tr><td>" + rows[row] + "</td>";
     for ( column = 0; column < columns.length ; column++ ) {
-      html += "<td>" + values[row][column] + "</td>";
+      tablehtml += "<td>" + values[row][column] + "</td>";
     }
-    html += "</tr>";
+    tablehtml += "</tr>";
   }
-  html += "</table>";
+  tablehtml += "</table>";
   
-  return html;
+  return tablehtml;
       
 }
 
