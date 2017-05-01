@@ -123,6 +123,7 @@
             teacherRow[t][5] = z+1;
             teacherRow[t][7]++;
             var teacherValues = [teacherRow[t]];
+            Logger.log(letterDays);
             tableList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
             teacherList.getRange((t+1+offset), 1, 1, 8).setValues(teacherValues);
             tablesAssigned[startingRow+z] = 1;

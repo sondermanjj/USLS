@@ -1,8 +1,8 @@
 
 
 function testting() {
-  
- Logger.log(JSON.parse(getHeaderColumnNames()));
+ setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
+ Logger.log(PropertiesService.getDocumentProperties().getProperties());
 }
 
  /*****************************************************************************************************************
@@ -74,6 +74,11 @@ function initialization() {
   
 }
 
+/**
+ * @desc - Sets the document property for the list of header columns in the student data sheet. Saves it as
+ *         a Json.stringify(array)
+ * @author - hendersonam
+ */
 function setHeaderColumnNames() {
   var properties = PropertiesService.getDocumentProperties();
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -83,6 +88,10 @@ function setHeaderColumnNames() {
   properties.setProperty("headers", JSON.stringify(headers));
 }
 
+/**
+ * @desc - Return the list of header column names from the property service
+ * @author - hendersonam
+ */
 function getHeaderColumnNames() {
   return PropertiesService.getDocumentProperties().getProperty("headers");
 }
@@ -121,7 +130,7 @@ function setLetterDays(value) {
  * @author - hendersonam
  */
 function setAssignedLunches(value) {
-  PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+  //PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
 }
 
 /**
@@ -130,7 +139,7 @@ function setAssignedLunches(value) {
  * @author - hendersonam
  */
 function setNonAssignedLunches(value) {
-  PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+  //PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
 }
 
 /**
