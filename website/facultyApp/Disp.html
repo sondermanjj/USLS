@@ -1,6 +1,32 @@
-<?!= include('CSS'); ?>
-<script></script>
+<Module>
+<ModulePrefs title="Faculty Script" /> 
+<Content type="html">
+<?!= include('website/facultyApp/CSS'); ?>
 
+<script type="text/javascript">
+  //JSHint verified 4/30/2017 sondermanjj
+  function printDay(day){
+    if(day === 'all'){
+      var printDivs = document.getElementsByClassName("dayDiv");
+      for(var i = 0; i < printDivs.length; i++){
+        printDivs.item(i).className = "dayDiv printAll";
+      }
+      var fullSchedule = document.getElementById("results");
+      fullSchedule.className = "dayDiv print";
+    }
+    else{
+      document.getElementById('printDiv').className = "";
+      var doNotPrint = document.getElementsByClassName("dayDiv");
+      for(var j = 0; j < doNotPrint.length; j++){
+        doNotPrint.item(j).className = "dayDiv notPrint";
+      }
+    
+      var dayToPrint = document.getElementById(day);
+      dayToPrint.className = "dayDiv print";
+    }
+  }
+  
+</script>
 
 <div id="results">
 <? var data = getResults(); ?>
@@ -13,7 +39,11 @@
 <? var gDay = getGDay(); ?>
 <? var hDay = getHDay(); ?>
 
-<h1>A Day</h1>
+<input id="printPageButton" onclick="printDay('all'); window.print();" type="button" value=" " />
+
+<div id="printDiv" class="showAll">
+<div id="A" class="dayDiv notPrint">
+<h1>A Day</h1><input class="printButton" onclick="printDay('A'); window.print();" type="button" value=" " />
 <table>
   <tr>
     <th>Name</th>
@@ -30,8 +60,10 @@
     </tr>
   <? } ?>
 </table>
+</div>
 
-<h1>B Day</h1>
+<div id="B" class="dayDiv notPrint">
+<h1>B Day</h1><input class="printButton" onclick="printDay('B'); window.print();" type="button" value=" " /> 
 <table>
   <tr>
     <th>Name</th>
@@ -48,8 +80,10 @@
     </tr>
   <? } ?>
 </table>
+</div>
 
-<h1>C Day</h1>
+<div id="C" class="dayDiv notPrint">
+<h1>C Day</h1><input class="printButton" onclick="printDay('C'); window.print(); " type="button" value=" " />
 <table>
   <tr>
     <th>Name</th>
@@ -66,8 +100,10 @@
     </tr>
   <? } ?>
 </table>
+</div>
 
-<h1>D Day</h1>
+<div id="D" class="dayDiv notPrint">
+<h1>D Day</h1><input class="printButton" onclick="printDay('D'); window.print();" type="button" value=" " />
 <table>
   <tr>
     <th>Name</th>
@@ -84,8 +120,10 @@
     </tr>
   <? } ?>
 </table>
+</div>
 
-<h1>E Day</h1>
+<div id="E" class="dayDiv notPrint">
+<h1>E Day</h1><input class="printButton" onclick="printDay('E'); window.print();" type="button" value=" " />
 <table>
   <tr>
     <th>Name</th>
@@ -102,8 +140,10 @@
     </tr>
   <? } ?>
 </table>
+</div>
 
-<h1>F Day</h1>
+<div id="F" class="dayDiv notPrint">
+<h1>F Day</h1><input class="printButton" onclick="printDay('F');window.print();" type="button" value=" " />
 <table>
   <tr>
     <th>Name</th>
@@ -120,8 +160,10 @@
     </tr>
   <? } ?>
 </table>
+</div>
 
-<h1>G Day</h1>
+<div id="G" class="dayDiv notPrint">
+<h1>G Day</h1><input class="printButton" onclick="printDay('G'); window.print();" type="button" value=" " />
 <table>
   <tr>
     <th>Name</th>
@@ -138,8 +180,10 @@
     </tr>
   <? } ?>
 </table>
+</div>
 
-<h1>H Day</h1>
+<div id="H" class="dayDiv notPrint">
+<h1>H Day</h1><input class="printButton" onclick="printDay('H'); window.print();" type="button" value=" " />
 <table>
   <tr>
     <th>Name</th>
@@ -157,5 +201,7 @@
   <? } ?>
 </table>
 </div>
-
-
+</div>
+</div>
+</Content>
+</Module>

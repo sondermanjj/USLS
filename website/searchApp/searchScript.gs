@@ -9,8 +9,17 @@ var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" 
 * Tells the script how to serve the page when a GET request is made
 * @return HtmlOutput object containing the HTML to be displayed
 */
-function doGet() {
-  return HtmlService.createTemplateFromFile('website/searchApp/Base').evaluate();
+function doGet(e) {
+  var params = JSON.stringify(e);
+  var apphtml = HtmlService.createTemplateFromFile('website/searchApp/Base').evaluate();
+  var paramhtml = HtmlService.createHtmlOutput(params);
+  
+  Logger.log(params);
+  
+  return apphtml;
+}
+
+function doPost(e){
 }
 
 /**
@@ -45,6 +54,12 @@ function getJSON() {
 function getData() {
   return SpreadsheetApp.openById(spreadsheetID).getActiveSheet().getDataRange().getValues();
 }
+
+/**
+*
+*/
+
+
 
   
 

@@ -1,16 +1,24 @@
+//JSHint verified 4/3/2017 sondermanjj
 
+/*
+* @desc - Shows the loading dialog to the users, stopping them from doing input.
+* @params - x Dialog that will be shown
+* @author - clemensam
+*/
 function showDialog(x) {
-  //Logger.log("Dialog. Value of x: " + x);
   var button = x;
   var html = HtmlService.createHtmlOutputFromFile('LoadingDialog')
   .setWidth(150)
-  .setHeight(70);
+  .setHeight(170);
   html.append("<p id='button'>" + x + "</p></body></html>");
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
   .showModalDialog(html, ' '); 
-  //Logger.log("html: " + html.getContent());
 }
 
+/*
+* @desc - Imports the item into the HTML Service, allowing the use of the dialog.
+* @author - clemensam
+*/
 function doGet() {
   return HtmlService.createTemplateFromFile('LoadingDialog').evaluate()
       .setTitle('Simple Tasks')
@@ -24,7 +32,6 @@ function doGet() {
 * @author - clemensam
 */
 function callMethod(args) {
-  Logger.log(args.split(", "));
   var params = args.split(", ");
   var button = params[0];
   switch(button){
@@ -33,18 +40,17 @@ function callMethod(args) {
       break;
     case 'sort':
       sort(params.toString());
-      Logger.log("Custom Sort: " + params);
     case 'show':
       showAllValues();
       break;
-    case 'scan':
-      Logger.log("Scan");
+    case 'sc':
+      updateChanges();
+      getStatistics();
+      var stats = getStatisticsHTML();
       break;
     case 'search':
       var filter = params[1].toString();
       var column = params[2].toString();
-      Logger.log(filter);
-      Logger.log(column);
       hideValues(filter, column);
       break;
     case 'clean':

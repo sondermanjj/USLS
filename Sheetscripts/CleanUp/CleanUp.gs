@@ -76,11 +76,13 @@ function cleanUp(sheetName) {
  * @author - hendersonam
  */
 function removeIrrelevantData(oldValues, newValues) {
+
   
   //Create a new array for the cleaned data
   var revisedValues = new Array();
   var headers = getListOfColumns(oldValues);
   var blockColumn = getColumnIndex(headers, "Block");
+
       
   //Add the column titles to the new data array
   revisedValues.push(headers);
@@ -121,6 +123,7 @@ function populateLunchDay(values) {
   //Get necessary data 
   var numRows = values.length;
   var numColumns = values[0].length;
+
   
     //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
   for (var j = 0; j <= numRows - 1; j++) {

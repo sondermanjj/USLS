@@ -1,6 +1,8 @@
+//JSHint verified 4/3/2017 sondermanjj
 
 /**
-*
+* @desc - runs clean up, then runs tests and puts them into messages for the main tester
+* @hendersam
 */
 function runCleanUpTests() {
   
@@ -19,12 +21,18 @@ function runCleanUpTests() {
   
 }
 
+/**
+* @desc - Checks the blocks and make sure all are correct
+* @hendersam
+*/
 function runCorrectBlockDataTest() {  
   
   // Here's where we actually run the tests:
   return allTests(function(t) {
+
     var properties = PropertiesService.getDocumentProperties();
     var errors = 0;
+
     //Check the framework is working
     t.areEqual(1,1);
     //Get necessary data 
@@ -34,7 +42,7 @@ function runCorrectBlockDataTest() {
     .getDataRange();
     
     var values = range.getValues();
-    
+    var blockColumn;
     var numRows = values.length;
     var numColumns = values[0].length;
     
@@ -42,7 +50,7 @@ function runCorrectBlockDataTest() {
       var column = values[0][i];
       if (column == 'Block') {
         blockFound = true;
-        var blockColumn = i ;
+        blockColumn = i ;
       }
     }
     
@@ -68,6 +76,10 @@ function runCorrectBlockDataTest() {
   });
 }
 
+/**
+* @desc - checks that the day is correct for the lunch day
+* @hendersam
+*/
 function runCorrectLunchDayDataTest() {  
   
   // Here's where we actually run the tests:
@@ -83,12 +95,15 @@ function runCorrectLunchDayDataTest() {
     .getSheetByName(properties.getProperty("studentData"))
     .getDataRange();
     
+    var blockColumn;
+    var lunchDayColumn;
     var values = range.getValues();
     var blockColumn = properties.getProperty("pBlockColumn");
     var lunchDayColumn = properties.getProperty("pLunchDayColumn");
     var numRows = values.length;
     var numColumns = values[0].length;
     
+
     
     //Check for innapropriate lunch days
     for (var j = 0; j <= numRows - 1; j++) {

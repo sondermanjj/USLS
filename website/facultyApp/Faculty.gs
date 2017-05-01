@@ -1,3 +1,4 @@
+//JSHint verified 4/30/2017 sondermanjj
 //ID of the Google spreadsheet being accessed
 var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
 
@@ -5,7 +6,7 @@ var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
 var tab = "1";
 
 //URL for retrieving data from sheets directly as JSON
-var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" + tab + "/public/values?alt=json"
+var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" + tab + "/public/values?alt=json";
 
 var ADay = [];
 var BDay = [];
@@ -21,7 +22,7 @@ var HDay = [];
 * @return HtmlOutput object containing the HTML to be displayed
 */
 function doGet() {
-  return HtmlService.createTemplateFromFile('Disp').evaluate();
+  return HtmlService.createTemplateFromFile('website/facultyApp/Disp').evaluate();
 }
 
 /**

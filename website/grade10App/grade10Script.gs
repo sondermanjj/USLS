@@ -1,6 +1,4 @@
 //ID of the Google sheet to retrieve data from
-var spreadsheetID = "1k3At6EDIUBB7_x7smZwrx7K5gXJOHTpNYD4NzvgS1vE&sheet=2";
-var springScheduleSheetID = "1NYBlGkok313R3Fblj4F3L2_g2ZAqDnCVw68yb8lB7RE&sheet=1";
 var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
 
 // URL for retrieving sheets data as JSON 
@@ -11,7 +9,7 @@ var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/1/
 * @return HtmlOutput object containing the HTML to be displayed
 */
 function doGet() {
-  return HtmlService.createTemplateFromFile('Display').evaluate();
+  return HtmlService.createTemplateFromFile('website/grade10App/Display').evaluate();
 }
 
 /**

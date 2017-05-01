@@ -1,35 +1,41 @@
+//JSHint verified 4/3/2017 sondermanjj
 
-
-/**
- * @desc - Gets the html for the schedule updates
- * @return - A list of schedule updates in html
- * @author - hendersonam
- */
-function getScheduleChanges() {
-  var html = "<br>Student Lunch Changes:";
-  var changes = scheduleChanges();
-  if(changes.length == 0) {
-    html += "<br> No Schedule changes to display.";
-  }  else {
-    for ( i = 0; i < changes.length; i++) {
-      if (changes[i].length < 6) {
-        html += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
-      } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
-        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
-      } else if (changes[i][3] == 'early') {
-        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
-      } else if (changes[i][5] == 'early') {
-        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
-      } else {
-        html += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+  var changeshtml = "";
+  var updatedChanges = false;
+  
+  /**
+  * @desc - Gets the html for the schedule updates
+  * @return - A list of schedule updates in html
+  * @author - hendersonam
+  */
+  function getScheduleChanges() {
+    updatedChanges = false;
+    changeshtml = "<br>Student Lunch Changes:";
+    var changes = scheduleChanges();
+    if(changes.length == 0) {
+      changeshtml += "<br> No Schedule changes to display.";
+    }  else {
+      for ( i = 0; i < changes.length; i++) {
+        if (changes[i].length < 6) {
+          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
+        } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
+          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+        } else if (changes[i][3] == 'early') {
+          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+        } else if (changes[i][5] == 'early') {
+          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+        } else {
+          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+        }
       }
     }
+    if ( changes.length != 0) {
+      promptForChanges();
+    }
+    updatedChanges = true;
+    return changeshtml;
   }
-  if ( changes.length != 0) {
-    promptForChanges();
-  }
-  return html;
-}
+
 
 /**
  * @desc - Creates/Updates the Scanned Data and Student Schedule Changes sheets and returns the differences
@@ -55,8 +61,6 @@ function scheduleChanges() {
     ss.insertSheet("Scanned Data");
     scannedSheet = ss.getSheetByName("Scanned Data");
     scannedSheet.hideSheet();
-    scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
-  }
   
   var changesSheet = ss.getSheetByName("Student Schedule Changes");
   if (changesSheet == null) {
@@ -79,6 +83,7 @@ function scheduleChanges() {
   
   return changes;
 }
+
 
 /**
  * @desc - Finds the differences between the 2 arrays given and adds them to the given sheet
@@ -105,7 +110,7 @@ function findChanges(oldValues, newValues, changesSheet) {
   var LunchDayColumn =  parseInt(properties.getProperty("pLunchDayColumn"));
   var TableColumn =  parseInt(properties.getProperty("pTableColumn"));
   
-  var changes = new Array();
+  var changes = [];
 
   if ( oldValues.length != newValues.length) {
     var count = oldValues.length;
@@ -132,7 +137,7 @@ function findChanges(oldValues, newValues, changesSheet) {
       k++;
     }
     
-    if(oldValues[i] == null) {
+    if(oldValues[i] === null) {
       changes.push( [newValues[k][firstNameColumn],
                      newValues[k][lastNameColumn],
                      newValues[k][LunchDayColumn],
@@ -156,22 +161,13 @@ function findChanges(oldValues, newValues, changesSheet) {
     
   }
   
-  var dataRange = changesSheet.getDataRange()
-  var lastRow = dataRange.getLastRow();
-  var lastColumn = dataRange.getLastColumn();
-  var rows = changesSheetArray.length
-  var columns = changesSheetArray[0].length
-  
-  changesSheet.getRange(1, 1, 
-  changesSheetArray.length, 
-  changesSheetArray[0].length)
-  .setValues(changesSheetArray);
+  changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
   return changes;
 }
 
-
-
-
+function getChangesHTML(){
+  return changeshtml;
+}
 
 
 

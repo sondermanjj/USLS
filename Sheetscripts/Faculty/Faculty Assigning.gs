@@ -1,12 +1,11 @@
+//JSHint verified 4/3/2017 sondermanjj
 
   /**
   @desc 
   @author sondermanjj
   @return
   @param
-  @functional YES
   */
-  
   function addFacultyTables() {
     addTeachersToTableList();
   }
@@ -19,7 +18,6 @@
   @author sondermanjj
   @return NULL
   @param id: The sheet ID to be edited
-  @functional YES
   */
   function addTeachersToTableList() {
     
@@ -28,10 +26,12 @@
     populateTableList();
     
     Logger.log("Adding teachers begun");
+
     var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherTables"));
     var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherChoices"));
     var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("DODList"));
     var letterDays = JSON.parse(documentProperties.getProperty("letterDays"));
+
     
     var teacherRow;
     
@@ -42,7 +42,7 @@
   
     teacherList.sort(5);
     
-    var offset = 0 //Variable to handle whether the first row is frozen or not.
+    var offset = 0; //Variable to handle whether the first row is frozen or not.
     var firstRow = teacherList.getRange(1, 1, 1, 15).getValues();
     for (var i = 0; i < 15; i++) {
       if (firstRow[0][i] == "First Name") { //if first row is frozen, then it will set the offset
@@ -51,9 +51,9 @@
     }
     
     if (offset) {
-       Logger.log("Header is frozen")
+       Logger.log("Header is frozen");
     } else {
-      Logger.log("Header unfrozen")
+      Logger.log("Header unfrozen");
      }
      
     //Reset tables assigned to 0
@@ -68,8 +68,8 @@
     var lastRow = teacherList.getLastRow();
   
     for (var i = 0; i < lastRow; i++) {
-    Logger.log(i);
       if (allTeachersLunch[i].toString().toLowerCase() == "early") {
+
         earlyTeachersRows.push(i+1);
         earlyCount++;
       }
@@ -78,7 +78,7 @@
     Logger.log("All early teachers row numbers collected");
   
     var length = earlyTeachersRows.length;
-    for (var i = 0; i < length;i++) {
+    for (i = 0; i < length;i++) {
       teacherList.getRange(earlyTeachersRows[i]+offset, 9).setValue(Math.random()*100);
     }  
     
@@ -91,13 +91,13 @@
     Logger.log("Early teachers values retrieved");
     var tablesAssigned = []; 
     var dodList = dodListsheet.getRange(1,1, 8, 8).getValues();
-    
+    var teacherValues;
     for (var t = 0; t < 8; t++) {
-      for (var i = 0; i < earlyCount; i++) {
+      for (i = 0; i < earlyCount; i++) {
         if (teacherRow[i][2]==dodList[t][4] && teacherRow[i][1]==dodList[t][2]) {  
           teacherRow[i][5] = 1;
           teacherRow[i][7]++;
-          var teacherValues = [teacherRow[i]];
+          teacherValues = [teacherRow[i]];
           tableList.getRange(((t * 19)+2), 1, 1, 8).setValues(teacherValues);
           teacherList.getRange((i+1+offset), 1, 1, 8).setValues(teacherValues);
           tablesAssigned[(t * 19)+2] = 1;
@@ -110,10 +110,10 @@
     
     var startingRow = 0;
   
-    for (var t = 0; t < earlyCount; t++) {
+    for (t = 0; t < earlyCount; t++) {
       startingRow = -5;
       if (teacherRow[t][7]=="0") {
-        for (var i = 0; i< 8; i++) {
+        for (i = 0; i< 8; i++) {
           if (teacherRow[t][2] == letterDays[i]) {
             startingRow = (i*19)+2;
           }
@@ -123,7 +123,6 @@
             teacherRow[t][5] = z+1;
             teacherRow[t][7]++;
             var teacherValues = [teacherRow[t]];
-            Logger.log(letterDays);
             tableList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
             teacherList.getRange((t+1+offset), 1, 1, 8).setValues(teacherValues);
             tablesAssigned[startingRow+z] = 1;
@@ -146,7 +145,7 @@
     var emptyCount = 0;
     var tableRows = tableList.getRange(2, 2, tableLastRow).getValues();
     for (var r = 0; r < tableLastRow-1; r++) {
-      if (tableRows[r][0] == "") {
+      if (tableRows[r][0] === "") {
         emptyCount++;
         tableList.getRange(r+2, 1, 1, 6).setBackground("red");
       }
@@ -157,7 +156,6 @@
     
     
     Logger.log("Empty Spots marked");
-    
   }
   
   /**
@@ -201,7 +199,7 @@
     }
     
     teacherList.getRange(2, 11, teacherList.getLastRow(), 15).setValues(formattedTeacherData);
-    return formattedTeacherData  
+    return formattedTeacherData;
   }
   
   /**
@@ -223,13 +221,13 @@
     tableList.getRange("A1:F1").setValues(headerList);
     
     //Then populate the tableList with the letter day and table #'s, 19 tables to each day.
-    
+    var rowNumber;
     for (var i = 0; i<8;i++) {
       rowNumber = 2+(i*numberOfTables);
       tableList.getRange(rowNumber, 3, numberOfTables).setValue(letterDays[i]);
     }
     
-    for (var i = 2; i <= ((numberOfTables*8)+1); i++) {
+    for (i = 2; i <= ((numberOfTables*8)+1); i++) {
       tableList.getRange(i, 6).setValue(((i-2)%numberOfTables)+1);
     }
     
@@ -242,20 +240,21 @@
   name: Name of the sheet
   id: id of the sheet to be edited.
   @Functional YES
-  
+  */
+
   function createNewSheets(data, name, id) {
     var sheet = SpreadsheetApp.openById(id);
-    var ts = sheet.getSheetByName(name) //Target sheet
+    var ts = sheet.getSheetByName(name); //Target sheet
   
-    if (ts == null) {
+    if (ts === null) {
       sheet.insertSheet(name);
       ts = sheet.getSheetByName(name); //Target sheet
     }
      ts.getRange(1, 1, ts.getMaxRows(), ts.getMaxColumns()).setBackground("white"); 
-    ts.clearContents()
+    ts.clearContents();
     
     //set the target range to the values of the source data
-    if (data != null) {
+    if (data !== null) {
       ts.getRange(1, 1, data.length, data[0].length).setValues(data);
     }
   }

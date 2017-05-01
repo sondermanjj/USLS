@@ -133,13 +133,18 @@
     </style>
     <script>
     
+    function showMenus(){
+      scanBoth();
+      google.script.run.withSuccessHandler(displayDropdown).getDropdownHTML();
+    }
+
     /**
       * @desc - Scans the data for statistics
       * @author - hendersonam
       */
     function scanData() {
-      google.script.run.withSuccessHandler(scanBoth).showDialog('scan');
-      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();
+      google.script.run.withSuccessHandler(scanBoth).showDialog('sc');
+      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
     }
     
     /**
@@ -171,8 +176,7 @@
       * @author - hendersonam
       */
     function displayDropdown(list) {
-    
-      
+
     }
     
     /**
@@ -180,7 +184,6 @@
       * @author - hendersonam
       */
     function displayStats(statistics) {
-      
       var html = document.getElementById('stats');
       html.innerHTML = statistics;
       
@@ -191,7 +194,6 @@
       * @author - hendersonam
       */
     function displayScheduleChanges(changes) {
-      
       var html = document.getElementById('changes');
       html.innerHTML = changes;
       
@@ -266,7 +268,7 @@
     }
     
     /*
-    * @desc - same as above method, but used on button press instead up enter key press
+    * @desc - same as above method, but used on press instead up enter key press
     */
     function search(){
       var filter = document.getElementById('filter').value.toLowerCase();
@@ -375,7 +377,11 @@
      </div>
      
      <div id="cleanPage">
+
        <button id="cleanButton" class="action" onclick="google.script.run.initialization();">Initialize</button>
+
+       <button id="exportButton" class="action" onclick="google.script.run.exportToWebsite();">Export</button>
+
      </div>
      
      <div id="statsPage">

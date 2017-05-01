@@ -1,12 +1,20 @@
+//JSHint verified 4/3/2017 sondermanjj
+var statshtml = "";
+var updatedStats = false;
+
+function getStatisticsHTML(){
+  return statshtml;
+}
+
 /**
  * @desc - Returns the statistics for the students and teachers
  * @return - String - HTML for 2 tables, one for student statistics and one for teacher statistics
  * @author - hendersonam
  */
 function getStatistics() {
-  var html = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
-  html += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getStats(false);
-  return html;
+  var statshtml = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
+  statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getStats(false);
+  return statshtml;
 }
 
 /**
@@ -43,24 +51,24 @@ function getStats(students) {
  */
 function getHTMLTable(columns, rows, values) {
   
-  var html = "";
+  var tablehtml = "";
   //var html = "<table class='statsTable'>";
-  html += "<tr><th></th>";
+  tablehtml += "<tr><th></th>";
   for(var column = 0; column < columns.length; column++){
-     html += "<th>" + columns[column] + "</th>";
+     tablehtml += "<th>" + columns[column] + "</th>";
   }
-  html += "</tr>";
+  tablehtml += "</tr>";
   
   for ( var row = 0; row < rows.length ; row++ ) {
-    html += "<tr><td>" + rows[row] + "</td>";
+    tablehtml += "<tr><td>" + rows[row] + "</td>";
     for ( column = 0; column < columns.length ; column++ ) {
-      html += "<td>" + values[row][column] + "</td>";
+      tablehtml += "<td>" + values[row][column] + "</td>";
     }
-    html += "</tr>";
+    tablehtml += "</tr>";
   }
-  html += "</table>";
+  tablehtml += "</table>";
   
-  return html;
+  return tablehtml;
       
 }
 
@@ -73,12 +81,13 @@ function getHTMLTable(columns, rows, values) {
  */
 function statistics(time, day, values, students) {
 
-  //Initialize the size of the 2D array and set a default value for each index
-  var stats = new Array();
+
+  var stats = [];
+
   for (var i = 0; i < day.length; i++) {
-    stats[i] = new Array();
+    stats[i] = [];
   }
-  for (var i = 0; i < day.length; i++) {
+  for (i = 0; i < day.length; i++) {
     for( var j = 0; j < time.length; j++) { 
       stats[i][j] = 0;
     }
@@ -99,7 +108,7 @@ function statistics(time, day, values, students) {
     lunchDay = values[k][lunchDayColumn].toString().toLowerCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
     
-    if( (values[k][gradeColumn] != "") == students) {
+    if( (values[k][gradeColumn] !== "") == students) {
     
       count = 0;
       while( isNaN(lunchDay) ) {

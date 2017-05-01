@@ -1,3 +1,5 @@
+//JSHint verified 4/3/2017 sondermanjj
+
 /**
 @desc This function sets up the necessary information for the tests as well
 as runs the tests.
@@ -7,10 +9,12 @@ as runs the tests.
 function studentTester(){
   
   assignStudentLunchDays();
+
   var properties = PropertiesService.getDocumentProperties();
   var sheet = SpreadsheetApp.getActiveSheet();
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices"));
+
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -20,7 +24,6 @@ function studentTester(){
   
   var pNumRows = primaryData.getNumRows();
   var pNumColumns = primaryData.getNumColumns();
-  var tNumRows = teacherData.getNumRows();
   var tNumColumns = teacherData.getNumColumns();
   
   var pLunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
@@ -46,10 +49,10 @@ function studentTester(){
     var lname = pValues[i][pSLNameColumn];
     var grad = pValues[i][pGradeColumn];
     var house = pValues[i][pHouseColumn];
-    var time = pValues[i][pLunchTimeColumn]
+    var time = pValues[i][pLunchTimeColumn];
     
-    if(students.length == 0){
-      var lunches = [];
+    if(students.length === 0){
+      lunches = [];
       lunches.push({day: day, time: time, zelm: false, row: i, table: 0});
       students.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
     }else{
@@ -59,7 +62,7 @@ function studentTester(){
           j = students.length;
         }
         if(j == students.length - 1){
-          var lunches = [];
+          lunches = [];
           lunches.push({day: day, time: time, zelm: false, row: i, table: 0});
           students.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house});
           j = students.length;
@@ -128,7 +131,7 @@ function testColorByTime(column){
       t.errorSpot("Wrong Column", false);
       check++;
     }
-    if(check == 0){
+    if(check === 0){
       t.errorSpot("testColorByTime has passed!", true);
     }else{
       t.errorSpot("testColorByTime has failed!", false);
@@ -193,7 +196,7 @@ function testColorByTable(column){
       t.errorSpot("Wrong Column", false);
       check++;
     }
-    if(check == 0){
+    if(check === 0){
       t.errorSpot("testColorByTable has passed!", true);
     }else{
       t.errorSpot("testColorByTable has failed!", false);
@@ -224,7 +227,7 @@ function testForFilledEarlyLunches(students) {
     for(var x = 1; x < students.length; x++){
       var stu = students[x];
       for(var j = 0; j < stu.lunches.length; j++){
-        if(stu.lunches[j].time = 'early'){
+        if(stu.lunches[j].time == 'early'){
           if(stu.lunches[j].day == 'A')
             A.push(stu);
           else if(stu.lunches[j].day == 'B')
