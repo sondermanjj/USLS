@@ -1,6 +1,6 @@
+//JSHint verified 4/3/2017 sondermanjj
+
 //ID of the Google sheet to retrieve data from
-var spreadsheetID = "1k3At6EDIUBB7_x7smZwrx7K5gXJOHTpNYD4NzvgS1vE&sheet=2";
-var springScheduleSheetID = "1NYBlGkok313R3Fblj4F3L2_g2ZAqDnCVw68yb8lB7RE&sheet=1";
 var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
 
 // URL for retrieving sheets data as JSON 
@@ -9,6 +9,7 @@ var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/1/
 /**
 * Tells the script how to serve the page when a GET request is made
 * @return HtmlOutput object containing the HTML to be displayed
+* @author clemensam
 */
 function doGet() {
   return HtmlService.createTemplateFromFile('Display').evaluate();
@@ -18,6 +19,7 @@ function doGet() {
 * Creates an HTML template from the file pointed to so that it can be included in other pages
 * @param filename Name of the HTML file to be generated as a template
 * @return partial HTML template of the page passed in
+* @author clemensam
 */
 function include(filename) {
   return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
@@ -26,6 +28,7 @@ function include(filename) {
 /**
 * Retrieves the sheet data from the global URL as a JSON String
 * @return JSON String of the sheets data
+* @author clemensam
 */
 function getJSON() {
    var json = UrlFetchApp.fetch(url);
@@ -39,6 +42,11 @@ function getJSON() {
   return entries;
 }
 
+/**
+* Retrieves the sheet data for seniors
+* @return array of senior studens
+* @author clemensam
+*/
 function getResults(){
  var resultArray = [];
   var js = getJSON();

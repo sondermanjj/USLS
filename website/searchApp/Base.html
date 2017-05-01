@@ -5,10 +5,12 @@
 <?!= include('website/searchApp/CSS'); ?>
 <script type="text/javascript"> 
 
+//JSHint verified 4/5/2017 sondermanjj
 
   /**
   * Method to be called when the Search button is pressed
   * @param json the JSON string returned when calling getJSON from the script file
+  * @author sondermanjj
   */
   function formSubmit(json){
   
@@ -16,6 +18,7 @@
     * Takes in a string and capitalizes each word in the string
     * @param string the string to capitalize
     * @return the capitalized version of the string
+    * @author clemensam
     */
     function capitalize(string){
     
@@ -100,7 +103,10 @@
     document.getElementById('loadingDiv').innerHTML = "";
   }
   
-  
+/**
+ * @desc - Checks that the value inputted is a valid time
+ * @author clemensam
+ */
 function checkValidTime(value) {
     trimmedValue = value.toLowerCase().trim();
     if (trimmedValue == "early" || trimmedValue == "mid" ||  trimmedValue == "late") {
@@ -111,7 +117,12 @@ function checkValidTime(value) {
    
 
 }
-  
+
+/**
+ * @desc - Checks the boxes for being ticked
+ * @author sondermanjj
+ * @return - Boolean value of whether at least one box is ticked or not
+ */
 function checkCheckBoxes(name, value) {
   var inputElements = document.getElementsByName(name);
   var oneChecked = false;
@@ -129,7 +140,11 @@ function checkCheckBoxes(name, value) {
       return true;
   }  
 }
-  
+
+/**
+ * @desc - Turns the search table on or off
+ * @author sondermanjj
+ */
 function toggleSearchTable() {
     var x = document.getElementById('searchTable');
     if (x.style.display === 'block') {
@@ -139,19 +154,10 @@ function toggleSearchTable() {
     }
 }
 
-function clearSearchOptions() {
-    clearRadioList("house");
-    clearRadioList("day");
-    clearRadioList("time");
-    document.getElementById('Table').value = "";
-}
-
-function clearRadioList(field) {
-    var ele = document.getElementsByName(field);
-    for(var i=0;i<ele.length;i++)
-    ele[i].checked = false;
-}
-
+/**
+ * @desc - Checks the radio buttons for a certain value being checked
+ * @author sondermanjj
+ */
 function findSelection(field) {
 var radios = document.getElementsByName(field);
 
@@ -165,6 +171,10 @@ return "";
 
 }
 
+ /**
+ * @desc - Event handler for the enter key, when you push enter it handles starting the prompt when within text boxes.
+ * @author sondermanjj
+ */
  function handle(e){
    if(e.keyCode === 13){
        e.preventDefault(); // Ensure it is only this code that rusn

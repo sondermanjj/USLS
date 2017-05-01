@@ -1,10 +1,12 @@
+//JSHint verified 4/3/2017 sondermanjj
+
 /**
 @desc Main application for assigning students to their lunch tables each day.
 @funtional - yes
 @author - dicksontc
 */
 function assignStudentLunchDays() {
-  var sheet = SpreadsheetApp.getActiveSheet();
+
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
   
@@ -13,6 +15,7 @@ function assignStudentLunchDays() {
   
   var pValues = primaryData.getValues();
   var tValues = teacherData.getValues();
+  var stu;
   
   var pNumRows = primaryData.getNumRows();
   var pNumColumns = primaryData.getNumColumns();
@@ -34,7 +37,7 @@ function assignStudentLunchDays() {
   //Checks to see if each student has a lunch for each day, adds students with an early lunch
   //to an array, and do the table assignments for late lunches
   for(var i = 0; i < students.length; i++){
-    var stu = students[i];
+    stu = students[i];
     if(stu.fName == "First Name") {
       //Do Nothing
     } else {
@@ -114,7 +117,7 @@ function assignStudentLunchDays() {
 
   if(students8Plus.length > 0){
     var message = "These Students have conflicting lunches:\n";
-    for(var i = 0; i < students8Plus.length; i++){
+    for(i = 0; i < students8Plus.length; i++){
       var bad = students8Plus[i];
       message += "" + bad.fName + " " + bad.lName + ": " + bad.lunches.length + " lunches\n";
     }
@@ -130,8 +133,8 @@ function assignStudentLunchDays() {
   var G = [];
   var H = [];
   
-  for(var i = 0; i < pEarlyStudents.length; i++){
-    var stu = pEarlyStudents[i].stuEarly;
+  for(i = 0; i < pEarlyStudents.length; i++){
+    stu = pEarlyStudents[i].stuEarly;
     var time = stu.lunches[pEarlyStudents[i].lunch].day;
     if(time == "A")
       A.push(pEarlyStudents[i]);
@@ -265,11 +268,9 @@ function parseStudentChanges(){
   var tValues = teacherData.getValues();
   
   var pNumRows = primaryData.getNumRows();
-  var pNumColumns = primaryData.getNumColumns();
   var cNumRows = changeData.getNumRows();
   var cNumColumns = changeData.getNumColumns();
   var tNumRows = teacherData.getNumRows();
-  var tNumColumns = teacherData.getNumColumns();
   
   var students = [];
   var changes = [];
@@ -317,7 +318,7 @@ function parseStudentChanges(){
                       k = zelmStudents.length;
                     }
                   }
-                  if(affectedStu == null){
+                  if(affectedStu === null){
                     SpreadsheetApp.getUi().alert("Not enough students to switch into/out of early lunch!");
                     return;
                   }
@@ -401,7 +402,7 @@ function getChanges(cVals, cRow, cCol){
     }
   }
   
-  for(var i = 1; i < cRow; i+= 3){
+  for(i = 1; i < cRow; i+= 3){
     var change = {fName: cVals[i][fNameCol], lName: cVals[i][lNameCol], oldTime: cVals[i][timeCol], oldDay: cVals[i][dayCol],
                   oldTable: cVals[i][tableCol], newTime: cVals[i+1][timeCol], newDay: cVals[i+1][dayCol], newTable: cVals[i+1][tableCol]};
     changes.push(change);
@@ -445,8 +446,6 @@ primary - the sheet the students are being printed to
 */
 function printStudentsToSheet(students, primary){
   var userProperties = PropertiesService.getUserProperties();
-  var primaryData = primary.getDataRange();
-  var pValues = primaryData.getValues();
   var pushArray;
   var finalArray = [];
   var count = 0;
@@ -486,7 +485,6 @@ function printStudentsToSheet(students, primary){
       var title = lunch.title;
       
       if(lunch.time == 'mid')
-        table = '';     
       pushArray = new Array(19);
       pushArray[sFNameCol] = fin.fName;
       pushArray[sLNameCol] = fin.lName;
@@ -498,7 +496,7 @@ function printStudentsToSheet(students, primary){
       pushArray[genderCol] = gender;
       pushArray[advisorCol] =  advisor;
       pushArray[dobCol] = dob;
-      if(title == undefined || (title.length == 4 && title.indexOf("z") != -1)){
+      if(title === undefined || (title.length == 4 && title.indexOf("z") != -1)){
         pushArray[cTitleCol] =  zelm;
         pushArray[cCodeCol] =  "";
         pushArray[cLengthCol] = "";
@@ -637,7 +635,7 @@ function getStudents(pValues, pNumRows, teachers){
     
     for(var j = 0; j < teachers.length; j++){
       var teach = teachers[j];
-      if(teacherFName == '' && teacherLName == ''){
+      if(teacherFName === '' && teacherLName === ''){
         if(time != "late" && time != "early")
           time = 'mid';
         j = teachers.length;
@@ -657,19 +655,21 @@ function getStudents(pValues, pNumRows, teachers){
                     length: length, cID: cID, sID: sID, block: block, tableHead: tableHead, title: title,
                     teacherFName: teacherFName, teacherLName: teacherLName};
     
-    if(temp.length == 0){      
-      var lunches = [];
+    var lunches;
+    
+    if(temp.length === 0){      
+      lunches = [];
       lunches.push(lunchObj);
       temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house,
                  advisor: advisor, dob: dob, gender: gender});
     }else{
-      for(var j = 0; j < temp.length; j++){
+      for(j = 0; j < temp.length; j++){
         if(temp[j].fName == fname && temp[j].lName == lname){
           temp[j].lunches.push(lunchObj);
           j = temp.length;
         }
         if(j == temp.length - 1){
-          var lunches = [];
+          lunches = [];
           lunches.push(lunchObj);
           temp.push({fName: fname, lName: lname, grade: grad, lunches: lunches, zelm: 0, house: house,
                      advisor: advisor, dob: dob, gender: gender});
@@ -688,11 +688,9 @@ function getStudents(pValues, pNumRows, teachers){
 @author - dicksontc
 */
 function colorBackgrounds(column){
-  var sheet = SpreadsheetApp.getActiveSheet();
   var stuData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   var ran = stuData.getRange(1, column + 1, stuData.getDataRange().getNumRows());
   var vals = ran.getValues();
-  var col = ran.getNumColumns();
   var ro = ran.getNumRows();
   var rowColors = [];
   var time = false;
@@ -719,22 +717,22 @@ function colorBackgrounds(column){
     ran.setBackgrounds(rowColors);
   }else if(table){
     var fonts = [];
-    for(var i = 0; i < ro; i++){
-      rowColors[i] = [];
-      fonts[i] = [];
-      if(vals[i] == "Ledger"){
-        rowColors[i].push("#660066");
-        fonts[i].push("YELLOW");
+    for(var k = 0; k < ro; k++){
+      rowColors[k] = [];
+      fonts[k] = [];
+      if(vals[k] == "Ledger"){
+        rowColors[k].push("#660066");
+        fonts[k].push("YELLOW");
       }else{
-        if(vals[i] == "Academy")
-          fonts[i].push("#3366ff");
-        else if(vals[i] == "Arrow")
-          fonts[i].push("#008000");
-        else if(vals[i] == "Crest")
-          fonts[i].push("#ff0000");
+        if(vals[k] == "Academy")
+          fonts[k].push("#3366ff");
+        else if(vals[k] == "Arrow")
+          fonts[k].push("#008000");
+        else if(vals[k] == "Crest")
+          fonts[k].push("#ff0000");
         else
-          fonts[i].push("BLACK");
-        rowColors[i].push("WHITE");
+          fonts[k].push("BLACK");
+        rowColors[k].push("WHITE");
       }
     }
     ran.setFontColors(fonts);
@@ -778,14 +776,15 @@ function getTeachers(tValues, tNumRows){
   var lNameCol = parseInt(userProperties.getProperty("tLNameColumn"));
   var lunchTimeCol = parseInt(userProperties.getProperty("tLunchTimeColumn"));
   var lunchDayCol = parseInt(userProperties.getProperty("tLunchDayColumn"));
-
+	var lunches;
+  
   for(var i = 0; i < tNumRows; i++){
     var fname = tValues[i][fNameCol];
     var lname = tValues[i][lNameCol];
     var val = tValues[i][lunchTimeCol];
     var day = tValues[i][lunchDayCol];
-    if(teachers.length == 0){
-      var lunches = [];
+    if(teachers.length === 0){
+      lunches = [];
       lunches.push({day: day, time: val});
       teachers.push({fName: fname, lName: lname, lunches: lunches});
     }else{
@@ -795,7 +794,7 @@ function getTeachers(tValues, tNumRows){
           j = teachers.length;
         }
         if(j == teachers.length - 1){
-          var lunches = [];
+          lunches = [];
           lunches.push({day: day, time: val});
           teachers.push({fName: fname, lName: lname, lunches: lunches});
           j = teachers.length;
@@ -876,6 +875,8 @@ function doRandomAssignment(students){
   var gTen = [];
   var gEleven = [];
   var gTwelve = [];
+  var student;
+  var lunch;
   
   for(var i = 0; i < students.length; i++){
     var stu = students[i].stuEarly;
@@ -890,7 +891,7 @@ function doRandomAssignment(students){
   }
   
   var nums = [];
-  for(var i = 0; i < 133; i++){
+  for(i = 0; i < 133; i++){
     nums.push(i%19+1);
   }
   var numIndex = -1;
@@ -900,28 +901,28 @@ function doRandomAssignment(students){
   shuffleArray(gEleven);
   shuffleArray(gTwelve);
   
-  for(var i = 0; i < gNine.length; i++){
+  for(i = 0; i < gNine.length; i++){
     numIndex++;
-    var student = gNine[i].stuEarly;
-    var lunch = gNine[i].lunch;
+    student = gNine[i].stuEarly;
+    lunch = gNine[i].lunch;
     student.lunches[lunch].table = nums[numIndex];
   }
-  for(var i = 0; i < gTen.length; i++){
+  for(i = 0; i < gTen.length; i++){
     numIndex++;
-    var student = gTen[i].stuEarly;
-    var lunch = gTen[i].lunch;
+    student = gTen[i].stuEarly;
+    lunch = gTen[i].lunch;
     student.lunches[lunch].table = nums[numIndex];
   }
-  for(var i = 0; i < gEleven.length; i++){
+  for(i = 0; i < gEleven.length; i++){
     numIndex++;
-    var student = gEleven[i].stuEarly;
-    var lunch = gEleven[i].lunch;
+    student = gEleven[i].stuEarly;
+    lunch = gEleven[i].lunch;
     student.lunches[lunch].table = nums[numIndex];
   }
-  for(var i = 0; i < gTwelve.length; i++){
+  for(i = 0; i < gTwelve.length; i++){
     numIndex++;
-    var student = gTwelve[i].stuEarly;
-    var lunch = gTwelve[i].lunch;
+    student = gTwelve[i].stuEarly;
+    lunch = gTwelve[i].lunch;
     student.lunches[lunch].table = nums[numIndex];
   } 
 }
