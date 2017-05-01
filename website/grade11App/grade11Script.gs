@@ -11,7 +11,7 @@ var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/1/
 * @return HtmlOutput object containing the HTML to be displayed
 */
 function doGet() {
-  return HtmlService.createTemplateFromFile('website/grade11App/Display').evaluate();
+  return HtmlService.createTemplateFromFile('Display').evaluate();
 }
 
 /**
