@@ -12,40 +12,34 @@ function getStatisticsHTML(){
  * @author - hendersonam
  */
 function getStatistics() {
-  updatedStats = false;
-  statshtml = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStudentStatistics();
-  statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getTeacherStatistics();
-  updatedStats = true;
-  Logger.log("Stats: " + statshtml);
+  var statshtml = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
+  statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getStats(false);
   return statshtml;
 }
 
 /**
  * @desc - Returns an html table with current student statistics
+ * @param - Boolean - True if getting student statistics, Fals if getting teacher statistics
  * @return - An html table with the number of students in each lunch on each day
  * @author - hendersonam
  */
-function getStudentStatistics() {
-  var time = ["Early", "Mid", "Late"];
-  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var tableValues = statistics(time, day, getFinalStudentDataValues(), true);
+function getStats(students) {
+
+  var properties = PropertiesService.getDocumentProperties();
+  var days = JSON.parse(properties.getProperty("letterDays"));
+  var times = JSON.parse(properties.getProperty("lunchTimes"));
+  var values = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.getProperty("studentData"))
+                  .getDataRange()
+                  .getValues();
+                  
+  var tableValues = statistics(times, days, values, students);
   
-  return "<table id='studentStatsTable'>" + getHTMLTable(time, day, tableValues);
+  return "<table id='studentStatsTable'>" + getHTMLTable(times, days, tableValues);
   
 }
 
-/**
- * @desc - Returns an html table with current teacher statistics
- * @return - An html table with the number of teachers in each lunch on each day
- * @author - hendersonam
- */
-function getTeacherStatistics() {
-  var time = ["Early", "Mid", "Late"];
-  var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var tableValues = statistics(time, day, getFinalStudentDataValues(), false);
-  
-  return "<table id='teacherStatsTable'>" + getHTMLTable(time, day, tableValues);
-}
 
 /**
  * @desc- Returns an html table with the given data
@@ -87,7 +81,9 @@ function getHTMLTable(columns, rows, values) {
  */
 function statistics(time, day, values, students) {
 
+
   var stats = [];
+
   for (var i = 0; i < day.length; i++) {
     stats[i] = [];
   }
@@ -97,169 +93,48 @@ function statistics(time, day, values, students) {
     }
   }
   
+  var properties = PropertiesService.getDocumentProperties();
   
-  var listOfColumns = getListOfColumns(values);
-  var lunchDayColumn = getColumnIndex(listOfColumns, "Lunch Day");
-  var gradeColumn = getColumnIndex(listOfColumns, "Grade Level");
-  var lunchTimeColumn = getColumnIndex(listOfColumns, "Lunch Time");
+  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
+  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
+  var flag;
   var lunchDay;
   var lunchTime;
+  var count;
   
-  for( var k = 1; k < values.length; k++) {
+  for( var k = 0; k < values.length; k++) {
   
-    lunchDay = values[k][lunchDayColumn].toString().toUpperCase();
+    lunchDay = values[k][lunchDayColumn].toString().toLowerCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
     
     if( (values[k][gradeColumn] !== "") == students) {
     
-      switch (lunchDay) {
-      
-        case 'A':
-          lunchDay = 0;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        case 'B':
-            lunchDay = 1;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        case 'C':
-            lunchDay = 2;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        case 'D':
-            lunchDay = 3;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        case 'E':
-            lunchDay = 4;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        case 'F':
-            lunchDay = 5;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        case 'G':
-            lunchDay = 6;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        case 'H':
-            lunchDay = 7;
-          switch (lunchTime) {
-            case 'early':
-              lunchTime = 0;
-              break;
-            case 'mid':
-              lunchTime = 1;
-              break;
-            case 'late':
-              lunchTime = 2;
-              break;
-            default:
-              //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch time");
-              break;
-          }
-          break;
-        default:
-          //SpreadsheetApp.getUi().alert("Row " + k + " has an incorrect lunch day");
-          break;  
+      count = 0;
+      while( isNaN(lunchDay) ) {
+        lunchDay == day[count].toString().toLowerCase() ? lunchDay = count : count++;
+        if (count == day.length) break;
       }
+      
+      count = 0;
+      while ( isNaN(lunchTime) ) {
+        lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
+        if (count == time.length) break;
+      }
+      
       if (!isNaN(lunchDay) && !isNaN(lunchTime)) { 
         stats[lunchDay][lunchTime] += 1;
+        if (count == time.length) break;
+      }
+      
+      if (isNaN(lunchDay) && lunchDay != "lunch day" ) {
+        SpreadsheetApp.getUi().alert("Alert! Row " + (k+1) + " has an incorrect lunch day value!");
+      }
+      
+      if (isNaN(lunchTime) && lunchTime != "lunch time") {
+        SpreadsheetApp.getUi().alert("Alert! Row " + (k+1) + " has an incorrect lunch time value!");
       }
     }
   }
   return stats;
 }
-
-

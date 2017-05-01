@@ -1,4 +1,4 @@
-//JSHint verified 4/3/2017 sondermanjj
+
 var dropdownhtml;
 
 /**
@@ -14,10 +14,10 @@ function getDropdownHTML(){
  * @author - hendersonam
  */
 function getDropdownList() {
-  var list = getListOfColumns(getFinalStudentDataValues());
+  var properties = PropertiesService.getDocumentProperties();
+  var list = getListOfColumns(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues());
   return getHTMLDropdown(list);
 }
-
 
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
@@ -55,8 +55,10 @@ function sortSheetBy(sheet, sorts) {
  * @author - hendersonam
  */
 function hideValues(filter, column) {
-  var map;
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+
+  var properties = PropertiesService.getDocumentProperties()
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+
   if( column == "All") {
     map = searchAll(filter);
   } else {
@@ -73,7 +75,8 @@ function hideValues(filter, column) {
  * @author - hendersonam
  */
 function searchAll(filter) {
-  var values = getFinalStudentDataValues();
+  var properties = PropertiesService.getDocumentProperties();
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
   var count = 0;
   var index = 0;  
   var map = {};
@@ -102,7 +105,8 @@ function searchAll(filter) {
  * @author - hendersonam
  */
 function searchColumn(filter, column) {
-  var values = getFinalStudentDataValues();
+  var properties = PropertiesService.getDocumentProperties();
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
   var columnIndex = getColumnIndex(getListOfColumns(values), column);
   var count = 0;
   var index = 0;  
@@ -130,24 +134,12 @@ function searchColumn(filter, column) {
  * @author - hendersonam
  */
 function showAllValues() {
-  var values = getFinalStudentDataValues();
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
+ var properties = PropertiesService.getDocumentProperties();
+ var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+  var values = sheet.getDataRange().getValues();
+  
 
   sheet.showRows(1, values.length);
-}
-
-/**
- * @desc - Returns the data values from the Final Student Data sheet
- * @return Object[][] - the data values
- * @author - hendersonam
- */
-function getFinalStudentDataValues() {
-  return SpreadsheetApp
-    .getActiveSpreadsheet()
-    .getSheetByName("Final Student Data")
-    .getDataRange()
-    .getValues();
-  
 }
 
 /**
@@ -170,15 +162,16 @@ function getColumnIndex(values, name) {
 
 /**
  * @desc - Gets a list of the column names saved in an array
- * @param - Object[][] - 2D Array of data, columns should be in the 0 index
+ * @param - Object[][] - 2D Array of data
  * @return - Array[] - List of the column names in the given data
  */
-function getListOfColumns(headers) {
+function getListOfColumns(data) {
   var list = [];
+
   var row = -1;
-  for (var i = 0; i < headers.length; i++) {
-    for( var j = 0; j < headers[0].length; j++) {
-      if(headers[i][j] == 'First Name') {
+  for (var i = 0; i < data.length; i++) {
+    for( var j = 0; j < data[0].length; j++) {
+      if(data[i][j] == 'First Name') {
         row = i;
       } 
     }
@@ -186,8 +179,113 @@ function getListOfColumns(headers) {
   if (row == -1) {
     SpreadsheetApp.getUi().alert("There is no 'First Name' column. Please make sure it is spelt exactly as shown.");
   }
-  for(i = 0; i < headers[row].length; i++) {
-    list.push(headers[row][i].toString());
+
+  for( j = 0; j < data[row].length; j++) {
+    list.push(data[row][j].toString());
+
   }
   return list;
+}
+
+/**
+ * @desc - Prompts the user to enter the name of a sheet they would like to create
+ * @param - String - The message you would like to give the user so they know what the sheet is being created for
+ * @functional - yes
+ * @author - hendersonam
+ */
+function promptForNewSheet(msg) {
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.prompt('New Sheet', msg, ui.ButtonSet.OK_CANCEL);
+
+  if (response.getSelectedButton() == ui.Button.OK) {
+    var sheetName = response.getResponseText();
+    var sheet = ss.getSheetByName(sheetName);
+    if(sheet == null) {
+      ss.insertSheet(sheetName);
+      sheet = ss.getSheetByName(sheetName);
+    } else {
+      response = ui.alert('Alert!', "That sheet already exists. Are you sure you want to use it?", ui.ButtonSet.YES_NO);
+      if (response == ui.Button.YES) {
+        ss.deleteSheet(sheet);
+        ss.insertSheet(sheetName);
+        sheet = ss.getSheetByName(sheetName);
+      } else {
+        sheet = promptForNewSheet(msg);
+      }
+    }
+  } 
+  
+  return sheet;
+}
+
+/**
+ * @desc - Prompts the user to enter the name of a sheet they would like to use
+ * @param - String - The message you would like to give the user so they know what the sheet is being used for
+ * @author - hendersonam
+ */
+function promptForSettingSheetProperty(msg) {
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.prompt('Setting Properties...', msg, ui.ButtonSet.OK_CANCEL);
+
+  if (response.getSelectedButton() == ui.Button.OK) {
+    var sheetName = response.getResponseText();
+    var sheet = ss.getSheetByName(sheetName);
+    if(sheet == null) {
+      response = ui.alert('Alert!', "That sheet does not exist. Would you like to create it?", ui.ButtonSet.YES_NO);
+      if (response == ui.Button.YES) {
+        ss.insertSheet(sheetName);
+        sheet = ss.getSheetByName(sheetName);
+        } else {
+        sheet = promptForSettingSheetProperty(msg);
+      }
+    }
+  } 
+  
+  return sheet;
+}
+
+/**
+ * @desc - adds a column to a given 2d Array for a Google Sheet
+ * @param - Object[][] - 2D Array of values to add the column name to
+ *          name - name of the column
+ * @functional - YES
+ * @author - hendersonam, sondermanjj
+ */
+function addColumnName(values, name) {
+  var numColumns = values[0].length;
+  var exists = false;
+ 
+  for (var i = 0; i <= numColumns - 1; i++) {
+    var column = values[0][i];
+    if (column == name) {
+      exists = true;
+    }
+  }
+  if (!exists) {
+    values[0][numColumns] = name;
+    for (var j = 1; j < values.length; j++) {
+      values[j][numColumns] = "";
+    }
+  }
+  return values;
+}
+
+/**
+ * @desc - returns a function that compares values from a certain column index
+ * @param - Int - the index of the column to compare by
+ * @return - Function
+*/
+function compareByColumnIndex(index) {
+  return function(a,b){
+    if (a[index] === b[index]) {
+        return 0;
+    }
+    else {
+        return (a[index] < b[index]) ? -1 : 1;
+    }
+  }
 }

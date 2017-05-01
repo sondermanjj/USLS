@@ -29,47 +29,61 @@
         }
       }
     }
-    promptForChanges();
+    if ( changes.length != 0) {
+      promptForChanges();
+    }
     updatedChanges = true;
     return changeshtml;
   }
+
+
+/**
+ * @desc - Creates/Updates the Scanned Data and Student Schedule Changes sheets and returns the differences
+ *         between the Final Student Data and Scanned Data to be displayed in the UI as schedule changes
+ * @return - An array of the schedule changes from the previously scanned data to the current data
+ * @author - hendersonam
+ */
+function scheduleChanges() {
   
-  /**
-  * @desc - Creates/Updates the Scanned Data and Student Schedule Changes sheets and returns the differences
-  *         between the Final Student Data and Scanned Data to be displayed in the UI as schedule changes
-  * @return - An array of the schedule changes from the previously scanned data to the current data
-  * @author - hendersonam
-  */
-  function scheduleChanges() {
-    
-    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    sortSheetBy(spreadsheet.getSheetByName("Final Student Data"), ["Lunch Day", "Last Name", "First Name"]);
-    var currentValues = getFinalStudentDataValues();
-    
-    var scannedSheet = spreadsheet.getSheetByName("Scanned Data");
-    if (scannedSheet === null) {
-      spreadsheet.insertSheet("Scanned Data");
-      scannedSheet = spreadsheet.getSheetByName("Scanned Data");
-      scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
-    }
-    
-    var changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
-    if (changesSheet === null) {
-      spreadsheet.insertSheet("Student Schedule Changes");
-      changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
-      changesSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
-      changesSheet.clear();
-      changesSheet.appendRow(getListOfColumns(currentValues));
-    }
-    
-    sortSheetBy(scannedSheet, ["Lunch Day", "Last Name", "First Name"]);
-    var scannedValues = scannedSheet.getDataRange().getValues();
-    
-    var changes = findChanges(scannedValues, currentValues, changesSheet);
-    scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
-    
-    return changes;
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var properties = PropertiesService.getDocumentProperties();
+  var currentValues = ss.getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
+  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
+  var firstNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
+  var lastNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
+  
+  currentValues.sort(compareByColumnIndex(lunchDayColumn));
+  currentValues.sort(compareByColumnIndex(lastNameColumn));
+  currentValues.sort(compareByColumnIndex(firstNameColumn))
+  
+  var scannedSheet = ss.getSheetByName("Scanned Data");
+  if (scannedSheet == null) {
+    ss.insertSheet("Scanned Data");
+    scannedSheet = ss.getSheetByName("Scanned Data");
+    scannedSheet.hideSheet();
+  
+  var changesSheet = ss.getSheetByName("Student Schedule Changes");
+  if (changesSheet == null) {
+    ss.insertSheet("Student Schedule Changes");
+    changesSheet = ss.getSheetByName("Student Schedule Changes");
+    changesSheet.hideSheet();
+    changesSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
+    changesSheet.clear();
+    changesSheet.appendRow(getListOfColumns(currentValues));
   }
+  
+  var scannedValues = scannedSheet.getDataRange().getValues();
+  scannedValues.sort(compareByColumnIndex(lunchDayColumn));
+  scannedValues.sort(compareByColumnIndex(lastNameColumn));
+  scannedValues.sort(compareByColumnIndex(firstNameColumn));
+  
+  var changes = findChanges(scannedValues, currentValues, changesSheet);
+  
+  scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
+  
+  return changes;
+}
+
 
 /**
  * @desc - Finds the differences between the 2 arrays given and adds them to the given sheet
@@ -81,17 +95,20 @@
  */
 function findChanges(oldValues, newValues, changesSheet) {
   
-  var newColumnList = getListOfColumns(newValues);
-  var firstNameColumn = getColumnIndex(newColumnList, "First Name");
-  var lastNameColumn = getColumnIndex(newColumnList, "Last Name");
-  var newLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
-  var newLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
-  var newTableColumn = getColumnIndex(newColumnList, "Lunch Table");
+  var changesSheetArray = changesSheet.getDataRange().getValues();
   
-  var oldColumnList = getListOfColumns(oldValues);
-  var oldLunchTimeColumn = getColumnIndex(oldColumnList, "Lunch Time");
-  var oldLunchDayColumn = getColumnIndex(oldColumnList, "Lunch Day");
-  var oldTableColumn = getColumnIndex(oldColumnList, "Lunch Table");
+  var emptyRow = []
+  for(var i = 0; i < changesSheetArray[0].length; i++) {
+    emptyRow.push(["\t"]);
+  }
+  
+  var properties = PropertiesService.getDocumentProperties();
+  
+  var firstNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
+  var lastNameColumn =  parseInt(properties.getProperty("pSLNameColumn"));
+  var LunchTimeColumn =  parseInt(properties.getProperty("pLunchTimeColumn"));
+  var LunchDayColumn =  parseInt(properties.getProperty("pLunchDayColumn"));
+  var TableColumn =  parseInt(properties.getProperty("pTableColumn"));
   
   var changes = [];
 
@@ -103,48 +120,50 @@ function findChanges(oldValues, newValues, changesSheet) {
       
       changes.push( [newValues[count][firstNameColumn],
                      newValues[count][lastNameColumn],
-                     newValues[count][newLunchDayColumn],
-                     newValues[count][newLunchTimeColumn]]);
+                     newValues[count][LunchDayColumn],
+                     newValues[count][LunchTimeColumn]]);
     }
-    var k = 0;
-    var i = 0;
+  }
+  var k = 0;
+  var i = 0;
+  
+  for ( i ; i < newValues.length; i++, k++) {
+  
+    if ( oldValues[i][0] == "First Name" ) {
+      i++;
+    }
     
-    for ( i ; i < newValues.length; i++) {
-      if ( oldValues[i][0] == "First Name" ) {
-        i++;
-      }
-      
-      if ( newValues[k][0] == "First Name" ) {
-        k++;
-      }
-      
-      if(oldValues[i] === null) {
-        changes.push( [newValues[k][firstNameColumn],
-                       newValues[k][lastNameColumn],
-                       newValues[k][newLunchDayColumn],
-                       newValues[k][newLunchTimeColumn],
-                       newValues[k][newTableColumn]]);
-        
-      } else if ( !newValues[k].toString().equals(oldValues[i].toString())) {
-        
-        changesSheet.appendRow(oldValues[i]);
-        changesSheet.appendRow(newValues[k]);
-        changesSheet.appendRow(["\t"]);
-        
-        changes.push( [newValues[k][firstNameColumn],
-                       newValues[k][lastNameColumn],
-                       oldValues[i][oldLunchDayColumn],
-                       oldValues[i][oldLunchTimeColumn],
-                       newValues[k][newLunchDayColumn],
-                       newValues[k][newLunchTimeColumn],
-                       oldValues[i][oldTableColumn],
-                       newValues[k][newTableColumn]]);
-      }
+    if ( newValues[k][0] == "First Name" ) {
       k++;
     }
     
-    return changes;
+    if(oldValues[i] === null) {
+      changes.push( [newValues[k][firstNameColumn],
+                     newValues[k][lastNameColumn],
+                     newValues[k][LunchDayColumn],
+                     newValues[k][LunchTimeColumn],
+                     newValues[k][TableColumn]]);
+      
+    } else if ( !newValues[k].toString().equals(oldValues[i].toString())) {
+      
+      changesSheetArray.push(oldValues[i]);
+      changesSheetArray.push(newValues[k]);
+      changesSheetArray.push(emptyRow);
+      changes.push( [newValues[k][firstNameColumn],
+                     newValues[k][lastNameColumn],
+                     oldValues[i][LunchDayColumn],
+                     oldValues[i][LunchTimeColumn],
+                     newValues[k][LunchDayColumn],
+                     newValues[k][LunchTimeColumn],
+                     oldValues[i][TableColumn],
+                     newValues[k][TableColumn]]);
+    }
+    
   }
+  
+  changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
+  return changes;
+}
 
 function getChangesHTML(){
   return changeshtml;

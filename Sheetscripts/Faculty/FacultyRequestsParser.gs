@@ -6,9 +6,12 @@
  * @author - dicksontc
  */
 function parseRequests() {
-
+  var properties = PropertiesService.getDocumentProperties();
+  var sheet = SpreadsheetApp.getActiveSheet();
   var responses = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1");
-  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices"));
+  
+  //var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
   
   var responseData = responses.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -35,12 +38,12 @@ function parseRequests() {
   var rLateColumn;
   var rCommentsColumn;
   
-  var tFNameColumn;
-  var tLNameColumn;
-  var tLunchDayColumn;
-  var tLunchPreferenceColumn;
-  var tCommentsColumn;
-  var tSectionColumn;
+  var tFNameColumn = properties.getProperty("tFNameColumn");
+  var tLNameColumn = properties.getProperty("tLNameColumn");
+  var tLunchDayColumn = properties.getProperty("tLunchDayColumn");
+  var tLunchPreferenceColumn = properties.getProperty("tLunchPreferenceColumn");
+  var tCommentsColumn = properties.getProperty("tCommentsColumn");
+  var tSectionColumn = properties.getProperty("tSectionColumn");
   
   var finalRows = [];
   var column;
@@ -78,9 +81,11 @@ function parseRequests() {
       rCommentsColumn = i;
     }
   }
-  
-  for(i = 0; i < tNumColumns; i++){
-    column = tValues[0][i];
+
+  /*
+  for(var i = 0; i < tNumColumns; i++){
+    var column = tValues[0][i];
+
     if(column == 'Lunch Day') {
       tLunchDayColumn = i ;
     }else if(column == 'First Name'){
@@ -97,6 +102,7 @@ function parseRequests() {
       tLunchDayColumn = i;
     }
   }
+  */
   
   var count = 0;
   for(i = 1; i < rNumRows; i++){

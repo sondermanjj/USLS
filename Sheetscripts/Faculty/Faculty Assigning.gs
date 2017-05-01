@@ -7,11 +7,9 @@
   @param
   */
   function addFacultyTables() {
-    addTeachersToTableList(SpreadsheetApp.getActiveSpreadsheet().getId());
+    addTeachersToTableList();
   }
-  
-  var numberOfTables = 19; //NUmber of tables in the early lunch
-  var letterDays = ["A","B","C","D","E","F","G","H"]; //Letter days
+ 
   var earlyCount = 0; //Number of teachers for early lunch
   
   /**
@@ -21,16 +19,19 @@
   @return NULL
   @param id: The sheet ID to be edited
   */
-  function addTeachersToTableList(id) {
+  function addTeachersToTableList() {
     
     Logger.clear();
-    
-    populateTableList(id);
+    var documentProperties = PropertiesService.getDocumentProperties();
+    populateTableList();
     
     Logger.log("Adding teachers begun");
-    var tableList =   SpreadsheetApp.openById(id).getSheetByName("Faculty Table List");
-    var teacherList = SpreadsheetApp.openById(id).getSheetByName("Faculty Choices");
-    var dodListsheet = SpreadsheetApp.openById(id).getSheetByName("DOD List");
+
+    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherTables"));
+    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherChoices"));
+    var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("DODList"));
+    var letterDays = JSON.parse(documentProperties.getProperty("letterDays"));
+
     
     var teacherRow;
     
@@ -66,8 +67,9 @@
     //Assign random numbers to all the early teachers
     var lastRow = teacherList.getLastRow();
   
-    for (i = 0; i <= lastRow; i++) {
-      if (allTeachersLunch[i] == "early") {
+    for (var i = 0; i < lastRow; i++) {
+      if (allTeachersLunch[i].toString().toLowerCase() == "early") {
+
         earlyTeachersRows.push(i+1);
         earlyCount++;
       }
@@ -120,7 +122,7 @@
           if (tablesAssigned[z+startingRow] != "1") {
             teacherRow[t][5] = z+1;
             teacherRow[t][7]++;
-            teacherValues = [teacherRow[t]];
+            var teacherValues = [teacherRow[t]];
             tableList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
             teacherList.getRange((t+1+offset), 1, 1, 8).setValues(teacherValues);
             tablesAssigned[startingRow+z] = 1;
@@ -163,8 +165,9 @@
   @return returns the formatted teacher data, with all tables assigned
   @functional YES
   */
-  function copyTeacherDataToPrimary(id) {
-    var teacherList = SpreadsheetApp.openById(id).getSheetByName("Faculty Choices");
+  function copyTeacherDataToPrimary() {
+    var documentProperties = PropertiesService.getDocumentProperties();
+    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherChoices"));
     teacherList.sort(1);
     teacherList.getRange(2, 11, teacherList.getLastRow(), 15).clear();
     var teacherData = teacherList.getRange(2, 1, teacherList.getLastRow(), 6).getValues();
@@ -206,10 +209,14 @@
   @returns True if process was succesful
   @functional YES
   */
-  function populateTableList(id) {
-    createNewSheets(null, "Faculty Table List", id);
-    var tableList = SpreadsheetApp.openById(id).getSheetByName("Faculty Table List");
+  function populateTableList() {
+  
+    var documentProperties = PropertiesService.getDocumentProperties();
+     
+    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherTables"));
     var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
+    var numberOfTables = documentProperties.getProperty("numberOfTables");
+    var letterDays = JSON.parse(documentProperties.getProperty("letterDays"));
     
     tableList.getRange("A1:F1").setValues(headerList);
     
@@ -232,7 +239,9 @@
   @param data: Data to be inserted into the sheet
   name: Name of the sheet
   id: id of the sheet to be edited.
+  @Functional YES
   */
+
   function createNewSheets(data, name, id) {
     var sheet = SpreadsheetApp.openById(id);
     var ts = sheet.getSheetByName(name); //Target sheet
@@ -249,3 +258,4 @@
       ts.getRange(1, 1, data.length, data[0].length).setValues(data);
     }
   }
+  */

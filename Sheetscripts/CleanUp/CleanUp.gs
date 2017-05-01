@@ -1,60 +1,35 @@
-//JSHint verified 4/3/2017 sondermanjj
-
-/**
- * @desc - Runs all three of the clean up and assigning scripts at once
- * @author - sondermanjj
-*/
-function startTableAssigning() {
-  startCleanUp();
-  assignStudentLunchDays();
-  addFacultyTables();
-}
-
-/**
- * @desc - checks what sheet should be cleaned up
- * @author - hendersam
- */
-function sheetCleanupPrompt(){
-  var ui = SpreadsheetApp.getUi();
-  var response = ui.prompt('Data Clean-Up', 'Please enter the name of the sheet you would like to clean up. \n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
-  if(response.getSelectedButton() == ui.Button.OK){
-    var sheetName = response.getResponseText();
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-    if(sheet !== null){
-      showDialog('clean, ' + sheetName);
-    }
-    else {
-      ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
-    }
-  }
-}
-
 /**
  * @desc - Prompts the user to enter the name of the sheet they would like to clean
  * @functional - yes
  * @author - hendersonam
  */
-function startCleanUp() {
+function sheetCleanupPrompt(){
+
+  var cleanedSheet;
+  
   var ui = SpreadsheetApp.getUi();
-  //Prompt the user for a sheet name to clean
-  var response = ui.prompt('Data Cleanup', 'Please enter the name of the sheet you would like to clean up.\nNote: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
-
-  // Process the user's response.
-  if (response.getSelectedButton() == ui.Button.OK) {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(response.getResponseText());
-    if(sheet !== null) {
-      var cleaned = false;
-      cleaned = true;
-      cleanUp(sheet);
-      if(cleaned) {
-        ui.alert("Finished cleaning.");
+  var response = ui.alert('Preparing to clean raw data sheet...', 'Is this the raw student data sheet?', ui.ButtonSet.YES_NO);
+  if(response == ui.Button.YES) {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    setStudentSheet(sheet);
+    cleanedSheet = cleanUp(SpreadsheetApp.getActiveSheet().getName());
+    //showDialog('clean, ' + SpreadsheetApp.getActiveSheet().getName());
+  } else if (response == ui.Button.NO) {
+    response = ui.prompt('Preparing to clean raw data sheet...', 'Please enter the name of the raw data sheet.\n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
+    if(response.getSelectedButton() == ui.Button.OK){
+      var sheetName = response.getResponseText();
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+      if(sheet != null){
+        setStudentSheet(sheet);
+        cleanedSheet = cleanUp(sheetName);
       }
-    } else {
-      ui.alert("Woops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
+      else {
+        ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
+      }
     }
-  } 
+  }
+  return cleanedSheet;
 }
-
 
 /**
  * @desc - Takes the relevant data from the RAW file and adds it to the "Final Student Data" sheet
@@ -65,23 +40,15 @@ function startCleanUp() {
  */
 function cleanUp(sheetName) {
   
-  var raw = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var oldValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();;
   
-  //Get active spreadsheet
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var masterList = promptForNewSheet("Please enter the name of the sheet you would like to save the cleaned student information to.");
   
-  //Create a new sheet to write the cleaned data to (if it doesn't already exist)
-  var masterList = spreadsheet.getSheetByName("Final Student Data");
-  if (masterList === null) {
-    spreadsheet.insertSheet("Final Student Data");
-    masterList = spreadsheet.getSheetByName("Final Student Data");
-  }
-  
-  var rawValues = raw.getDataRange().getValues();
   var newValues = masterList.getDataRange().getValues();
+  
    
   //Remove irrelevant data
-  newValues = removeIrrelevantData(rawValues, newValues);
+  newValues = removeIrrelevantData(oldValues, newValues);
  
   //Add New Columns
   newValues = addColumnName(newValues, "Table Head");
@@ -94,7 +61,10 @@ function cleanUp(sheetName) {
   newValues = populateLunchDay(newValues);
 
   masterList.clearContents();
-  masterList.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);  
+  masterList.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
+  
+  return masterList;
+  
 }
 
 /**
@@ -107,42 +77,31 @@ function cleanUp(sheetName) {
  */
 function removeIrrelevantData(oldValues, newValues) {
 
-  var numRows = oldValues.length;
-  var numColumns = oldValues[0].length;
   
   //Create a new array for the cleaned data
-  var revisedValues = [];
+  var revisedValues = new Array();
+  var headers = getListOfColumns(oldValues);
+  var blockColumn = getColumnIndex(headers, "Block");
+
+      
+  //Add the column titles to the new data array
+  revisedValues.push(headers);
   
-  var found = false;
-  //Search for the 'Block' column
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = oldValues[0][i];
-    if (column == 'Block') {
-      found = true;
+  //Grab any relevant rows (courses that meet during lunch times)
+  //and push them to the new data array
+  for (var j = 0; j < oldValues.length - 1; j++) {
+    var row = oldValues[j][blockColumn];
+    if(row == "1" || row == "2" || 
+       row == "3" || row == "4" || 
+       row == "5" || row == "6" || 
+       row == "7" || row == "8" || 
+       row == "E1" || row == "G2" || 
+       row == "A3" || row == "C4" || 
+       row == "F5" || row == "H6" || 
+       row == "B7" || row == "D8") {
       
-      //Add the column titles to the new data array
-      revisedValues.push(oldValues[0]);
-      
-      //Grab any relevant rows (courses that meet during lunch times)
-      //and push them to the new data array
-      for (var j = 0; j < numRows - 1; j++) {
-        var row = oldValues[j][i];
-        if(row == "1" || row == "2" || 
-              row == "3" || row == "4" || 
-              row == "5" || row == "6" || 
-              row == "7" || row == "8" || 
-              row == "E1" || row == "G2" || 
-              row == "A3" || row == "C4" || 
-              row == "F5" || row == "H6" || 
-              row == "B7" || row == "D8") {
-              
-          revisedValues.push(oldValues[j]);
-        }
-      }
-    } 
-  }
-  if (!found) {
-    SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row to remove irrelevant data!");
+      revisedValues.push(oldValues[j]);
+    }
   }
   
   return revisedValues;
@@ -156,26 +115,15 @@ function removeIrrelevantData(oldValues, newValues) {
  * @author - hendersonam
  */
 function populateLunchDay(values) {
-
-  var blockFound = false;
-  var lunchDayFound = false;
+  
+  var headers = getListOfColumns(values);
+  var blockColumn = getColumnIndex(headers, "Block");
+  var lunchDayColumn = getColumnIndex(headers, "Lunch Day");
   
   //Get necessary data 
   var numRows = values.length;
   var numColumns = values[0].length;
-  //Get the indices for the 'Block' and 'Lunch Day' columns
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == 'Block') {
-      blockFound = true;
-      blockColumn = i ;
-    }
-    if (column == 'Lunch Day') {
-      lunchDayFound = true;
-      lunchDayColumn = i ;
-    }
-  }
-  
+
   
     //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
   for (var j = 0; j <= numRows - 1; j++) {
@@ -213,39 +161,5 @@ function populateLunchDay(values) {
     }
   }
   
-  if (!blockFound) {
-    SpreadsheetApp.getUi().alert("Could not find the 'Block' column in the first row to fill in the Lunch Days!");
-  }
-  if (!lunchDayFound) {
-    SpreadsheetApp.getUi().alert("Could not find the 'Lunch Day' column in the first row to fill in the Lunch Days!");
-  }
-  
-  return values;
-}
-
-
-/**
- * @desc - adds a column to a given 2d Array for a Google Sheet
- * @param - Object[][] - 2D Array of values to add the column name to
- *          name - name of the column
- * @functional - YES
- * @author - hendersonam, sondermanjj
- */
-function addColumnName(values, name) {
-  var numColumns = values[0].length;
-  var exists = false;
- 
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == name) {
-      exists = true;
-    }
-  }
-  if (!exists) {
-    values[0][numColumns] = name;
-    for (var j = 1; j < values.length; j++) {
-      values[j][numColumns] = "";
-    }
-  }
   return values;
 }
