@@ -267,7 +267,7 @@
     }
     
     /*
-    * @desc - same as above method, but used on button press instead up enter key press
+    * @desc - same as above method, but used on press instead up enter key press
     */
     function search(){
       var filter = document.getElementById('filter').value.toLowerCase();
@@ -377,6 +377,7 @@
      
      <div id="cleanPage">
        <button id="cleanButton" class="action" onclick="google.script.run.sheetCleanupPrompt();">Clean Up</button>
+       <button id="exportButton" class="action" onclick="google.script.run.exportToWebsite();">Export</button>
      </div>
      
      <div id="statsPage">
