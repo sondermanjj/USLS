@@ -1,3 +1,4 @@
+//JSHint verified 4/3/2017 sondermanjj
 
   var changeshtml = "";
   var updatedChanges = false;
@@ -46,14 +47,14 @@
     var currentValues = getFinalStudentDataValues();
     
     var scannedSheet = spreadsheet.getSheetByName("Scanned Data");
-    if (scannedSheet == null) {
+    if (scannedSheet === null) {
       spreadsheet.insertSheet("Scanned Data");
       scannedSheet = spreadsheet.getSheetByName("Scanned Data");
       scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
     }
     
     var changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
-    if (changesSheet == null) {
+    if (changesSheet === null) {
       spreadsheet.insertSheet("Student Schedule Changes");
       changesSheet = spreadsheet.getSheetByName("Student Schedule Changes");
       changesSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
@@ -65,53 +66,50 @@
     var scannedValues = scannedSheet.getDataRange().getValues();
     
     var changes = findChanges(scannedValues, currentValues, changesSheet);
-    
     scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
     
     return changes;
   }
+
+/**
+ * @desc - Finds the differences between the 2 arrays given and adds them to the given sheet
+ * @param - Object[][] - the oldValues that were previously saved
+ *          Object[][] - the newValues that have schedule changes
+ *          Sheet - The changes sheet to save schedule changes to as records
+ * @return - The differences between the 2 arrays
+ * @author - hendersonam
+ */
+function findChanges(oldValues, newValues, changesSheet) {
   
-  /**
-  * @desc - Finds the differences between the 2 arrays given and adds them to the given sheet
-  * @param - Object[][] - the oldValues that were previously saved
-  *          Object[][] - the newValues that have schedule changes
-  *          Sheet - The changes sheet to save schedule changes to as records
-  * @return - The differences between the 2 arrays
-  * @author - hendersonam
-  */
-  function findChanges(oldValues, newValues, changesSheet) {
-    
-    var newColumnList = getListOfColumns(newValues);
-    var firstNameColumn = getColumnIndex(newColumnList, "First Name");
-    var lastNameColumn = getColumnIndex(newColumnList, "Last Name");
-    var newLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
-    var newLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
-    var newTableColumn = getColumnIndex(newColumnList, "Lunch Table");
-    
-    var oldColumnList = getListOfColumns(oldValues);
-    var oldLunchTimeColumn = getColumnIndex(oldColumnList, "Lunch Time");
-    var oldLunchDayColumn = getColumnIndex(oldColumnList, "Lunch Day");
-    var oldTableColumn = getColumnIndex(oldColumnList, "Lunch Table");
-    
-    var changes = new Array();
-    
-    if ( oldValues.length != newValues.length) {
-      var count = oldValues.length;
-      for( count ; count < newValues.length; count++) {
-        
-        oldValues.push(newValues[count]);
-        
-        changes.push( [newValues[count][firstNameColumn],
-                       newValues[count][lastNameColumn],
-                       newValues[count][newLunchDayColumn],
-                       newValues[count][newLunchTimeColumn]]);
-      }
+  var newColumnList = getListOfColumns(newValues);
+  var firstNameColumn = getColumnIndex(newColumnList, "First Name");
+  var lastNameColumn = getColumnIndex(newColumnList, "Last Name");
+  var newLunchTimeColumn = getColumnIndex(newColumnList, "Lunch Time");
+  var newLunchDayColumn = getColumnIndex(newColumnList, "Lunch Day");
+  var newTableColumn = getColumnIndex(newColumnList, "Lunch Table");
+  
+  var oldColumnList = getListOfColumns(oldValues);
+  var oldLunchTimeColumn = getColumnIndex(oldColumnList, "Lunch Time");
+  var oldLunchDayColumn = getColumnIndex(oldColumnList, "Lunch Day");
+  var oldTableColumn = getColumnIndex(oldColumnList, "Lunch Table");
+  
+  var changes = [];
+
+  if ( oldValues.length != newValues.length) {
+    var count = oldValues.length;
+    for( count ; count < newValues.length; count++) {
+      
+      oldValues.push(newValues[count]);
+      
+      changes.push( [newValues[count][firstNameColumn],
+                     newValues[count][lastNameColumn],
+                     newValues[count][newLunchDayColumn],
+                     newValues[count][newLunchTimeColumn]]);
     }
     var k = 0;
     var i = 0;
     
     for ( i ; i < newValues.length; i++) {
-      
       if ( oldValues[i][0] == "First Name" ) {
         i++;
       }
@@ -120,7 +118,7 @@
         k++;
       }
       
-      if(oldValues[i] == null) {
+      if(oldValues[i] === null) {
         changes.push( [newValues[k][firstNameColumn],
                        newValues[k][lastNameColumn],
                        newValues[k][newLunchDayColumn],

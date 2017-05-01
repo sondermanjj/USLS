@@ -1,3 +1,9 @@
+//JSHint verified 4/3/2017 sondermanjj
+
+/**
+ * @desc - tests the Faculty Sorting for errors
+ * @author - sondermanjj
+ */
 function runFacultyTests() {  
   
   // Here's where we actually run the tests:
@@ -15,9 +21,9 @@ function runFacultyTests() {
     } catch (e) {
       exit = 0;
       errorCheck = e;      
-      t.errorSpot(("\r\nMessage: " + e.message
-                 + "\r\nFile: " + e.fileName
-                 + "\r\nLine: " + e.lineNumber), false);
+      t.errorSpot(("\r\nMessage: " + e.message +
+                  "\r\nFile: " + e.fileName +
+                  "\r\nLine: " + e.lineNumber), false);
     }
     
     
@@ -34,7 +40,7 @@ function runFacultyTests() {
     var matches = 0;
     var arrayLength = names.length;
     for (var i = 0; i < arrayLength; i++) {
-      if (names[i][0]!= "") {
+      if (names[i][0]!== "") {
         for (var f = 0; f < arrayLength; f++) {
           if ((names[i][0] == names[f][0])&&(f != i)) {
             matches++; 
@@ -51,8 +57,8 @@ function runFacultyTests() {
     var tableNumbers = testSheet2.getRange(2, 7, testSheet.getLastRow(), 2).getValues();
     arrayLength = tableNumbers.length;
     matches = 0;
-    for (var i = 0; i < arrayLength; i++) {
-      if (tableNumbers[i][0] == undefined) {
+    for (i = 0; i < arrayLength; i++) {
+      if (tableNumbers[i][0] === undefined) {
         t.errorSpot(("ERROR MATCH: "+tableNumbers[i][0]), false);
         matches++;
       } else {

@@ -1,3 +1,4 @@
+//JSHint verified 4/3/2017 sondermanjj
 var dropdownhtml;
 
 /**
@@ -5,7 +6,7 @@ var dropdownhtml;
 */
 function getDropdownHTML(){
   return dropdownhtml;
-}
+
 
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
@@ -54,11 +55,12 @@ function sortSheetBy(sheet, sorts) {
  * @author - hendersonam
  */
 function hideValues(filter, column) {
+  var map;
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   if( column == "All") {
-    var map = searchAll(filter);
+    map = searchAll(filter);
   } else {
-    var map = searchColumn(filter, column);
+    map = searchColumn(filter, column);
   }
   for (var i in map) {
     sheet.hideRows(i, map[i]);
@@ -78,9 +80,9 @@ function searchAll(filter) {
   
 
   for (var i = 1; i <= values.length; i++) { 
-    while ( i <= values.length && (values[i-1].toString().toLowerCase().search(filter) == -1 
-                                    && values[i-1].toString().toLowerCase().search("first name") == -1)) {
-      if ( count == 0) {
+    while ( i <= values.length && (values[i-1].toString().toLowerCase().search(filter) == -1 && 
+                                   values[i-1].toString().toLowerCase().search("first name") == -1)) {
+      if ( count === 0) {
         index = i;
       }
       count++;
@@ -107,9 +109,9 @@ function searchColumn(filter, column) {
   var map = {};
 
   for (var i = 1; i <= values.length; i++) { 
-    while ( i <= values.length  && (values[i-1][columnIndex].toString().toLowerCase().search(filter.toString().toLowerCase()) == -1
-     && values[i-1][columnIndex].toString().toLowerCase().search(column.toString().toLowerCase()) == -1)) {
-      if ( count == 0) {
+    while ( i <= values.length  && (values[i-1][columnIndex].toString().toLowerCase().search(filter.toString().toLowerCase()) == -1 &&
+     	values[i-1][columnIndex].toString().toLowerCase().search(column.toString().toLowerCase()) == -1)) {
+      if ( count === 0) {
         index = i;
       }
       count++;
@@ -162,7 +164,7 @@ function getColumnIndex(values, name) {
         index = j ;
       }
     }
-  if(index == null ) { SpreadsheetApp.getUi().alert(name + " column does not exist!");}
+  if(index === null ) { SpreadsheetApp.getUi().alert(name + " column does not exist!");}
   return index;
 }
 
@@ -172,7 +174,7 @@ function getColumnIndex(values, name) {
  * @return - Array[] - List of the column names in the given data
  */
 function getListOfColumns(headers) {
-  var list = new Array();
+  var list = [];
   var row = -1;
   for (var i = 0; i < headers.length; i++) {
     for( var j = 0; j < headers[0].length; j++) {
@@ -184,8 +186,8 @@ function getListOfColumns(headers) {
   if (row == -1) {
     SpreadsheetApp.getUi().alert("There is no 'First Name' column. Please make sure it is spelt exactly as shown.");
   }
-  for( j = 0; j < headers[row].length; j++) {
-    list.push(headers[row][j].toString());
+  for(i = 0; i < headers[row].length; i++) {
+    list.push(headers[row][i].toString());
   }
   return list;
 }
