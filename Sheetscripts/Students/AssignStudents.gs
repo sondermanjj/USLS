@@ -759,6 +759,7 @@ z, # early lunches, # late lunches, # mid lunches
 @author - dicksontc
 */
 function assignZelm(stu){
+  stu.zelm = 0;
   for(var m = 0; m < stu.lunches.length; m++){
     if(stu.lunches[m].time == 'early')
       stu.zelm += 100;
