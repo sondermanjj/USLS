@@ -1,5 +1,3 @@
-//JSHint verified 4/3/2017 sondermanjj
-
 //ID of the Google spreadsheet being accessed
 var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
 var tab = "1";
@@ -10,17 +8,24 @@ var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" 
 /**
 * Tells the script how to serve the page when a GET request is made
 * @return HtmlOutput object containing the HTML to be displayed
-* @author clemensam
 */
-function doGet() {
-  return HtmlService.createTemplateFromFile('website/searchApp/Base').evaluate();
+function doGet(e) {
+  var params = JSON.stringify(e);
+  var apphtml = HtmlService.createTemplateFromFile('website/searchApp/Base').evaluate();
+  var paramhtml = HtmlService.createHtmlOutput(params);
+  
+  Logger.log(params);
+  
+  return apphtml;
+}
+
+function doPost(e){
 }
 
 /**
 * Creates an HTML template from the file pointed to so that it can be included in other pages
 * @param filename Name of the HTML file to be generated as a template
 * @return partial HTML template of the page passed in
-* @author clemensam
 */
 function include(filename) {
   return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
@@ -29,7 +34,6 @@ function include(filename) {
 /**
 * Retrieves the sheet data from the global URL as a JSON String
 * @return JSON String of the sheets data
-* @author clemensam
 */
 function getJSON() {
    var json = UrlFetchApp.fetch(url);
@@ -50,6 +54,12 @@ function getJSON() {
 function getData() {
   return SpreadsheetApp.openById(spreadsheetID).getActiveSheet().getDataRange().getValues();
 }
+
+/**
+*
+*/
+
+
 
   
 

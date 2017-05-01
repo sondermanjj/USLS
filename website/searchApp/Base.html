@@ -1,16 +1,13 @@
-
 <Module>
 <ModulePrefs title="Search Script" /> 
 <Content type="html">
 <?!= include('website/searchApp/CSS'); ?>
 <script type="text/javascript"> 
 
-//JSHint verified 4/5/2017 sondermanjj
-
+//verified with JSHint 4/26/2017 by sondermanjj
   /**
   * Method to be called when the Search button is pressed
   * @param json the JSON string returned when calling getJSON from the script file
-  * @author sondermanjj
   */
   function formSubmit(json){
   
@@ -18,7 +15,6 @@
     * Takes in a string and capitalizes each word in the string
     * @param string the string to capitalize
     * @return the capitalized version of the string
-    * @author clemensam
     */
     function capitalize(string){
     
@@ -37,7 +33,7 @@
     var nameDiv = document.getElementById('nameDiv');
     var schedDiv = document.getElementById('schedDiv');
     var subHeadingDiv = document.getElementById('subHeadingDiv');
-    var nameEntered = document.getElementById('Name').value.toString().toLowerCase();
+    var nameEntered = document.getElementById('Name').value.toString().trim().toLowerCase();
     var tableEntered = document.getElementById('Table').value.toString().trim().toLowerCase();
     var heading = "";
     var subHeading = "";
@@ -49,21 +45,27 @@
     
     var length = json.length;
     
+    //Check for any non-word characters
+    if(/[<>]/.test(nameEntered)) {
+      nameEntered = "Invalid Name";
+    }
+    
     heading = capitalize(nameEntered);
     subHeading = "Search Results";
     strSched = "<table><tr><th>Name</th><th>Day</th><th>Lunch Time</th><th>Block</th><th>Table</th><th>House</th</tr>";
     
     for(var index=0; index<length; index++){
     
-        var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'')
+        var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
         var day = json[index].gsx$lunchday.$t;
-        var house = json[index].gsx$house.$t;
+        var house = json[index].gsx$house.$t.trim();
         var time = json[index].gsx$eml.$t;
-        var table = json[index].gsx$table.$t;
+        var table = json[index].gsx$table.$t.toLowerCase();
         var block = json[index].gsx$block.$t;
         
-        if (name.toLowerCase().includes(nameEntered) && checkCheckBoxes("house", house) 
-                && checkCheckBoxes("time", time)  && (tableEntered.trim() == "" || table == tableEntered) && checkCheckBoxes("day", day) ) {
+        if (name.toLowerCase().includes(nameEntered) && checkCheckBoxes("house", house) && 
+            checkCheckBoxes("time", time)  && (tableEntered.trim() === "" || table == tableEntered) && 
+            checkCheckBoxes("day", day) ) {
             console.log("Match Found");
             if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
               var dayArray = [];
@@ -71,7 +73,7 @@
               dayArray.push(day);
               dayArray.push(time);
               dayArray.push(block);
-              dayArray.push(table);
+              dayArray.push(capitalize(table));
               dayArray.push(house);
               resultsArray.push(dayArray);   
             }
@@ -92,8 +94,8 @@
     
     strSched += "</table>";
     
-    if(resultsArray.length == 0){
-      strSched = "Invalid Search. No Results Found."
+    if(resultsArray.length === 0){
+      strSched = "Invalid Search. No Results Found.";
     }
     
     //Set the inner HTML of the necessary components to the proper contents
@@ -103,12 +105,9 @@
     document.getElementById('loadingDiv').innerHTML = "";
   }
   
-/**
- * @desc - Checks that the value inputted is a valid time
- * @author clemensam
- */
+  
 function checkValidTime(value) {
-    trimmedValue = value.toLowerCase().trim();
+    var trimmedValue = value.toLowerCase().trim();
     if (trimmedValue == "early" || trimmedValue == "mid" ||  trimmedValue == "late") {
         return true;
     } else {
@@ -117,12 +116,7 @@ function checkValidTime(value) {
    
 
 }
-
-/**
- * @desc - Checks the boxes for being ticked
- * @author sondermanjj
- * @return - Boolean value of whether at least one box is ticked or not
- */
+  
 function checkCheckBoxes(name, value) {
   var inputElements = document.getElementsByName(name);
   var oneChecked = false;
@@ -140,11 +134,7 @@ function checkCheckBoxes(name, value) {
       return true;
   }  
 }
-
-/**
- * @desc - Turns the search table on or off
- * @author sondermanjj
- */
+  
 function toggleSearchTable() {
     var x = document.getElementById('searchTable');
     if (x.style.display === 'block') {
@@ -154,10 +144,19 @@ function toggleSearchTable() {
     }
 }
 
-/**
- * @desc - Checks the radio buttons for a certain value being checked
- * @author sondermanjj
- */
+function clearSearchOptions() {
+    clearRadioList("house");
+    clearRadioList("day");
+    clearRadioList("time");
+    document.getElementById('Table').value = "";
+}
+
+function clearRadioList(field) {
+    var ele = document.getElementsByName(field);
+    for(var i=0;i<ele.length;i++)
+    ele[i].checked = false;
+}
+
 function findSelection(field) {
 var radios = document.getElementsByName(field);
 
@@ -171,10 +170,6 @@ return "";
 
 }
 
- /**
- * @desc - Event handler for the enter key, when you push enter it handles starting the prompt when within text boxes.
- * @author sondermanjj
- */
  function handle(e){
    if(e.keyCode === 13){
        e.preventDefault(); // Ensure it is only this code that rusn
@@ -183,6 +178,14 @@ return "";
        document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
     }
  }
+ 
+ function printPage() {
+   var header = document.getElementById('nameDiv').innerHTML;
+   var schedToPrint = header + document.getElementById('schedDiv').innerHTML;
+   var printhtml = 'https://sites.google.com/site/usmlunch/jarfunklemcree/printpage?schedule=' + schedToPrint + '&tmpl=/system/app/templates/print';
+   window.open(printhtml);
+ }
+
 
 </script>
 
@@ -235,9 +238,12 @@ return "";
   </form>
 </div>
 <hr>
+<div id="printButtonDiv"><input id="printButton" onclick="window.print()" type="button" value=" " /> </div>
 <div id="loadingDiv"></div>
-<div id="nameDiv"></div>
-<div id="subHeadingDiv"></div>
-<div id="schedDiv"></div>
+<div id="printDiv">
+  <div id="nameDiv"></div>
+  <div id="subHeadingDiv"></div>
+  <div id="schedDiv"></div>
+</div>
 </Content>
 </Module>
