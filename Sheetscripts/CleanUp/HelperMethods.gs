@@ -14,7 +14,7 @@ function getDropdownHTML(){
  */
 function getDropdownList() {
   var list = getListOfColumns(getFinalStudentDataValues());
-  getHTMLDropdown(list);
+  return getHTMLDropdown(list);
 }
 
 
@@ -29,7 +29,7 @@ function getHTMLDropdown(list) {
   for(var i = 0; i < list.length; i++) {
     dropdownhtml += "<option value=\"" + list[i] + "\">" + list[i] + "</option>";
   }
-  //return html;
+  return dropdownhtml;
 }
 
 /**
