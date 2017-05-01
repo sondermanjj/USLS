@@ -94,7 +94,7 @@ function statistics(time, day, values, students) {
   var lunchTime;
   var count;
   
-  for( var k = 1; k < values.length; k++) {
+  for( var k = 0; k < values.length; k++) {
   
     lunchDay = values[k][lunchDayColumn].toString().toLowerCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
@@ -104,18 +104,26 @@ function statistics(time, day, values, students) {
       count = 0;
       while( isNaN(lunchDay) ) {
         lunchDay == day[count].toString().toLowerCase() ? lunchDay = count : count++;
-        if (count > day.length) break;
+        if (count == day.length) break;
       }
       
       count = 0;
       while ( isNaN(lunchTime) ) {
         lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
-        if (count > time.length) break;
+        if (count == time.length) break;
       }
       
       if (!isNaN(lunchDay) && !isNaN(lunchTime)) { 
         stats[lunchDay][lunchTime] += 1;
-        if (count > time.length) break;
+        if (count == time.length) break;
+      }
+      
+      if (isNaN(lunchDay) && lunchDay != "lunch day" ) {
+        SpreadsheetApp.getUi().alert("Alert! Row " + (k+1) + " has an incorrect lunch day value!");
+      }
+      
+      if (isNaN(lunchTime) && lunchTime != "lunch time") {
+        SpreadsheetApp.getUi().alert("Alert! Row " + (k+1) + " has an incorrect lunch time value!");
       }
     }
   }

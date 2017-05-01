@@ -255,10 +255,11 @@ function assignStudentLunchDays() {
 @author - dicksontc
 */
 function parseStudentChanges(){
+  var properties = PropertiesService.getDocumentProperties();
   var changesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
   var scanSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
-  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
-  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
+  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices"));
   
   var changeData = changesSheet.getDataRange();
   var primaryData = primarySheet.getDataRange();
@@ -367,7 +368,7 @@ function parseStudentChanges(){
     }
     scanSheet.clear();
     sortSheetBy(primarySheet, ["Lunch Day", "Last Name", "First Name"]);
-    var currentValues = getFinalStudentDataValues();
+    var currentValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues()
     scanSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
   }else{
     message = "No changes have been made";

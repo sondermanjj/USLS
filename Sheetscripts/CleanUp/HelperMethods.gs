@@ -153,12 +153,12 @@ function getColumnIndex(values, name) {
  * @param - Object[][] - 2D Array of data
  * @return - Array[] - List of the column names in the given data
  */
-function getListOfColumns(headers) {
+function getListOfColumns(data) {
   var list = new Array();
   var row = -1;
-  for (var i = 0; i < headers.length; i++) {
-    for( var j = 0; j < headers[0].length; j++) {
-      if(headers[i][j] == 'First Name') {
+  for (var i = 0; i < data.length; i++) {
+    for( var j = 0; j < data[0].length; j++) {
+      if(data[i][j] == 'First Name') {
         row = i;
       } 
     }
@@ -166,8 +166,8 @@ function getListOfColumns(headers) {
   if (row == -1) {
     SpreadsheetApp.getUi().alert("There is no 'First Name' column. Please make sure it is spelt exactly as shown.");
   }
-  for( j = 0; j < headers[row].length; j++) {
-    list.push(headers[row][j].toString());
+  for( j = 0; j < data[row].length; j++) {
+    list.push(data[row][j].toString());
   }
   return list;
 }

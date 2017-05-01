@@ -1,8 +1,4 @@
-function testIt() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
-  var lastRow = sheet.getDataRange().getLastRow();
-  Logger.log(lastRow);
-}
+
 
 /**
  * @desc - Gets the html for the schedule updates
@@ -29,7 +25,9 @@ function getScheduleChanges() {
       }
     }
   }
-  promptForChanges();
+  if ( changes.length != 0) {
+    promptForChanges();
+  }
   return html;
 }
 
@@ -92,7 +90,13 @@ function scheduleChanges() {
  */
 function findChanges(oldValues, newValues, changesSheet) {
   
-  var changesSheetArray = [];
+  var changesSheetArray = changesSheet.getDataRange().getValues();
+  
+  var emptyRow = []
+  for(var i = 0; i < changesSheetArray[0].length; i++) {
+    emptyRow.push(["\t"]);
+  }
+  
   var properties = PropertiesService.getDocumentProperties();
   
   var firstNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
@@ -139,7 +143,7 @@ function findChanges(oldValues, newValues, changesSheet) {
       
       changesSheetArray.push(oldValues[i]);
       changesSheetArray.push(newValues[k]);
-      changesSheetArray.push(["\t"]);
+      changesSheetArray.push(emptyRow);
       changes.push( [newValues[k][firstNameColumn],
                      newValues[k][lastNameColumn],
                      oldValues[i][LunchDayColumn],
@@ -152,9 +156,16 @@ function findChanges(oldValues, newValues, changesSheet) {
     
   }
   
-  var dataRange = changesSheet.getDataRange();
-  changesSheet.getRange(dataRange.getLastRow(), dataRange.getLastColumn(), changesSheetArray.length, changesSheetArray[0].length)
-    .setValues(changesSheetArray);
+  var dataRange = changesSheet.getDataRange()
+  var lastRow = dataRange.getLastRow();
+  var lastColumn = dataRange.getLastColumn();
+  var rows = changesSheetArray.length
+  var columns = changesSheetArray[0].length
+  
+  changesSheet.getRange(1, 1, 
+  changesSheetArray.length, 
+  changesSheetArray[0].length)
+  .setValues(changesSheetArray);
   return changes;
 }
 

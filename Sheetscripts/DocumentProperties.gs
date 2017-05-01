@@ -1,8 +1,8 @@
 
 
 function testting() {
-  setLunchTimes(["early", "mid", "late"]);
- Logger.log(PropertiesService.getDocumentProperties().getProperties());
+  
+ Logger.log(JSON.parse(getHeaderColumnNames()));
 }
 
  /*****************************************************************************************************************
@@ -62,6 +62,29 @@ function initialization() {
   assignStudentLunchDays();
   addFacultyTables();
   
+  var oldData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
+  if (oldData != null ) {
+    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldData);
+  }
+  var oldChanges = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
+  if (oldChanges != null ) {
+    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
+  }
+  
+  
+}
+
+function setHeaderColumnNames() {
+  var properties = PropertiesService.getDocumentProperties();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var studentSheet = ss.getSheetByName(properties.getProperty("studentData"));
+  var data = studentSheet.getDataRange().getValues();
+  var headers = getListOfColumns(data);
+  properties.setProperty("headers", JSON.stringify(headers));
+}
+
+function getHeaderColumnNames() {
+  return PropertiesService.getDocumentProperties().getProperty("headers");
 }
 
 /**
@@ -77,6 +100,8 @@ function setProperties() {
   setTeacherColumnIndices(properties.getProperty("teacherChoices"));
   setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
   setLunchTimes(["early", "mid", "late"]);
+  setAssignedLunches([["early", 133]]);
+  setNonAssignedLunches(["mid", "late"]);
   setNumberOfTables(19);
   
 }
@@ -90,6 +115,29 @@ function setLetterDays(value) {
   PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
 }
 
+/**
+ * @desc - Sets the document property for the assigned lunch times as a JSON.stringify value
+ * @param - Array[][] - 2D array with the lunch time and the amonut of students for that lunch
+ * @author - hendersonam
+ */
+function setAssignedLunches(value) {
+  PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+}
+
+/**
+ * @desc - Sets the document property for the non-assigned lunch times as a JSON.stringify value
+ * @param - Array[] - the lunch times that do not have 
+ * @author - hendersonam
+ */
+function setNonAssignedLunches(value) {
+  PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+}
+
+/**
+ * @desc - Sets the document property for the lunch times as a JSON.stringify value
+ * @param - Array[] - the letters for each day
+ * @author - hendersonam
+ */
 function setLunchTimes(value) {
   PropertiesService.getDocumentProperties().setProperty("lunchTimes", JSON.stringify(value));
 }
