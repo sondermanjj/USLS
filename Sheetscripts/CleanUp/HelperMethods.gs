@@ -1,4 +1,12 @@
 //JSHint verified 4/3/2017 sondermanjj
+var dropdownhtml;
+
+/**
+*
+*/
+function getDropdownHTML(){
+  return dropdownhtml;
+
 
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
@@ -18,11 +26,11 @@ function getDropdownList() {
  * @author - hendersonam
  */
 function getHTMLDropdown(list) {
-  var html = "<option value=\"All\">All</option>";
+  dropdownhtml = "<option value=\"All\">All</option>";
   for(var i = 0; i < list.length; i++) {
-    html += "<option value=\"" + list[i] + "\">" + list[i] + "</option>";
+    dropdownhtml += "<option value=\"" + list[i] + "\">" + list[i] + "</option>";
   }
-  return html;
+  return dropdownhtml;
 }
 
 /**
