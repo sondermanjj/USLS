@@ -49,6 +49,30 @@ public class WebsiteSearchTest {
 	}
 	
 	@Test
+	public void testNameWithWhiteSpaceYieldsCorrectOutput(){
+		System.out.println("Starting test " + new Object(){}.getClass().getEnclosingMethod().getName());
+		driver.switchTo().frame(0);
+		driver.switchTo().frame(0);
+		driver.switchTo().frame(0);
+		WebElement nameBox = driver.findElement(By.id("Name"));
+		nameBox.click();
+		nameBox.sendKeys(" Frederick  Lange ");
+		WebElement submitButton = driver.findElement(By.id("student"));
+		submitButton.click();
+
+		WebElement table = driver.findElement(By.id("schedDiv"));
+		ArrayList<WebElement> trs = (ArrayList<WebElement>) table.findElements(By.tagName("tr"));
+		ArrayList<WebElement> ths = (ArrayList<WebElement>) trs.get(0).findElements(By.tagName("th"));
+		int name = getElementByText(ths, "Name");
+		int count = trs.size();
+		for(int i = 1; i < count; i++){
+			ArrayList<WebElement> tds = (ArrayList<WebElement>) trs.get(i).findElements(By.tagName("td"));
+			Assert.assertEquals("Frederick Lange", tds.get(name).getText());
+		}
+		System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
+	}
+	
+	@Test
 	public void testLedgerYieldsCorrectOutput(){
 		System.out.println("Starting test " + new Object(){}.getClass().getEnclosingMethod().getName());
 		driver.switchTo().frame(0);
@@ -715,6 +739,27 @@ public class WebsiteSearchTest {
 			}
 		}
 		Assert.assertTrue(check);
+		System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
+	}
+	
+	@Test
+	public void testHTMLYieldsNothing(){
+		System.out.println("Starting test " + new Object(){}.getClass().getEnclosingMethod().getName());
+		driver.switchTo().frame(0);
+		driver.switchTo().frame(0);
+		driver.switchTo().frame(0);
+		WebElement nameBox = driver.findElement(By.id("Name"));
+		nameBox.click();
+		nameBox.sendKeys("<img src=\"http://seprof.sebern.com/sebern1.jpg\">");
+		WebElement submitButton = driver.findElement(By.id("student"));
+		submitButton.click();
+
+		WebElement table = driver.findElement(By.id("nameDiv"));
+		ArrayList<WebElement> h1s = (ArrayList<WebElement>) table.findElements(By.tagName("h1"));
+		int count = h1s.size();
+		for(int i = 0; i < count; i++){
+			Assert.assertEquals("Invalid Name", h1s.get(i).getText());
+		}
 		System.out.println("Ending test " + new Object(){}.getClass().getEnclosingMethod().getName());
 	}
 	
