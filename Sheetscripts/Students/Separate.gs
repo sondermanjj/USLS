@@ -1,5 +1,3 @@
-//JSHint verified 4/3/2017 sondermanjj
-
 /**
 @desc Retrieves the information from Final Student Data to place students
 into separate sheets based on house.
@@ -7,6 +5,7 @@ into separate sheets based on house.
 @author - dicksontc
 */
 function splitIntoNewSheets(){
+  var sheet = SpreadsheetApp.getActiveSheet();
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Final Student Data");
   
   var primaryData = primary.getDataRange();
@@ -59,7 +58,7 @@ function createNewSheet(data, name) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet();
   var ts = sheet.getSheetByName(name); //Target sheet
   
-  if (ts === null) {
+  if (ts == null) {
     sheet.insertSheet(name);
     ts = sheet.getSheetByName(name); //Target sheet
   }
@@ -156,7 +155,7 @@ function doTableSheets(lunchTimeColumn,lunchTableColumn,fNameColumn,lNameColumn,
     }
   } 
   
-  for(i = 0; i < 19; i++){
+  for(var i = 0; i < 19; i++){
     var name = "Table " + (i+1);
     createNewSheet(tables[i], name);
   }

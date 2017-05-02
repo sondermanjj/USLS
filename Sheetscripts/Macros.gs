@@ -1,5 +1,3 @@
-//JSHint verified 4/3/2017 sondermanjj
-
 /**
 * Universal search methos that determines which sort to do based on letter passed in which represents the buton that was pressed
 * @ author - clemensam

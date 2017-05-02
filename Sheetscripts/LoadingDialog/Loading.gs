@@ -1,10 +1,4 @@
-//JSHint verified 4/3/2017 sondermanjj
 
-/*
-* @desc - Shows the loading dialog to the users, stopping them from doing input.
-* @params - x Dialog that will be shown
-* @author - clemensam
-*/
 function showDialog(x) {
   var button = x;
   var html = HtmlService.createHtmlOutputFromFile('LoadingDialog')
@@ -15,10 +9,6 @@ function showDialog(x) {
   .showModalDialog(html, ' '); 
 }
 
-/*
-* @desc - Imports the item into the HTML Service, allowing the use of the dialog.
-* @author - clemensam
-*/
 function doGet() {
   return HtmlService.createTemplateFromFile('LoadingDialog').evaluate()
       .setTitle('Simple Tasks')
@@ -33,6 +23,7 @@ function doGet() {
 */
 function callMethod(args) {
   var params = args.split(", ");
+  Logger.log(params);
   var button = params[0];
   switch(button){
     case 'l': case 'n': case 'j': case 'k': case 't': case 'g': case 'p':
@@ -45,7 +36,9 @@ function callMethod(args) {
       break;
     case 'sc':
       updateChanges();
+      Logger.log("Updated");
       getStatistics();
+      Logger.log("Got Statistics");
       var stats = getStatisticsHTML();
       break;
     case 'search':

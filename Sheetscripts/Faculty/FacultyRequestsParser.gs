@@ -1,12 +1,10 @@
-//JSHint verified 4/3/2017 sondermanjj
-
 /**
  * @desc - Parses through the responses from the Faculty Google Form
  * @functional - YES
  * @author - dicksontc
  */
 function parseRequests() {
-
+  var sheet = SpreadsheetApp.getActiveSheet();
   var responses = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
   
@@ -18,8 +16,11 @@ function parseRequests() {
   
   var rNumRows = responseData.getNumRows();
   var rNumColumns = responseData.getNumColumns();
+  var tNumRows = teacherData.getNumRows();
   var tNumColumns = teacherData.getNumColumns();
   
+  var rLunchTimeColumn;
+  var rLunchDayColumn;
   var rFNameColumn;
   var rLNameColumn;
   var rADayColumn;
@@ -43,10 +44,9 @@ function parseRequests() {
   var tSectionColumn;
   
   var finalRows = [];
-  var column;
   
   for(var i = 0; i < rNumColumns; i++){
-    column = rValues[0][i];
+    var column = rValues[0][i];
     
     if(column == "First Name") {
       rFNameColumn = i ;
@@ -79,8 +79,8 @@ function parseRequests() {
     }
   }
   
-  for(i = 0; i < tNumColumns; i++){
-    column = tValues[0][i];
+  for(var i = 0; i < tNumColumns; i++){
+    var column = tValues[0][i];
     if(column == 'Lunch Day') {
       tLunchDayColumn = i ;
     }else if(column == 'First Name'){
@@ -99,7 +99,7 @@ function parseRequests() {
   }
   
   var count = 0;
-  for(i = 1; i < rNumRows; i++){
+  for(var i = 1; i < rNumRows; i++){
     var A = [];
     var B = [];
     var C = [];
@@ -138,7 +138,7 @@ function parseRequests() {
        tempArray[4] = "";
        tempArray[6] = comments;
        
-       if(j === 0){
+       if(j == 0){
          tempArray[2] = "A";
          if(aSect != "Off")
            tempArray[3] = A.toString();
@@ -247,7 +247,7 @@ function checkDays(early, mid, late, A, B, C, D, E, F, G, H){
       H.push("early");
     }
   }
-  for(j = 0; j < mid.length; j++){
+  for(var j = 0; j < mid.length; j++){
     if(mid[j] == "A"){
       a = true;
       A.push("mid");
@@ -274,7 +274,7 @@ function checkDays(early, mid, late, A, B, C, D, E, F, G, H){
       H.push("mid");
     }
   }
-  for(j = 0; j < late.length; j++){
+  for(var j = 0; j < late.length; j++){
     if(late[j] == "A"){
       a = true;
       A.push("late");

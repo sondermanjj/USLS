@@ -85,6 +85,23 @@
       border-top: 5px solid #0d47a1;
     }
     
+    #changes li{
+      float: left;
+      display: block;
+      color: #000;
+      text-align: center;
+      padding: 5px 10px;
+      text-decoration: none;
+      margin: 0 5px 5px 0;
+      border-radius: 10px;
+      background-color: #e6e6e6;
+    }
+    
+    #changes li:hover {
+      background-color: #e6e6e6;
+      color: #000;
+    }
+    
     ul {
       list-style-type: none;
       margin: 0;
@@ -98,15 +115,12 @@
       display: block;
       color: #000;
       text-align: center;
-
       padding: 5px 10px;
-
       text-decoration: none;
       margin: 0 5px 0 0;
       border-radius: 0 0 8px 8px;
       background-color: #e6e6e6;
-      font-weight: bold;
-      
+      font-weight: bold; 
     }
     
     li:hover {
@@ -269,7 +283,7 @@
     }
     
     /*
-    * @desc - same as above method, but used on press instead up enter key press
+    * @desc - same as above method, but used on button press instead up enter key press
     */
     function search(){
       var filter = document.getElementById('filter').value.toLowerCase();
@@ -379,7 +393,6 @@
      
      <div id="cleanPage">
        <button id="cleanButton" class="action" onclick="google.script.run.sheetCleanupPrompt();">Clean Up</button>
-       <button id="exportButton" class="action" onclick="google.script.run.exportToWebsite();">Export</button>
      </div>
      
      <div id="statsPage">

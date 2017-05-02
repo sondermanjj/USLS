@@ -1,8 +1,6 @@
-//JSHint verified 4/3/2017 sondermanjj
 
 /**
-* @desc - runs clean up, then runs tests and puts them into messages for the main tester
-* @hendersam
+*
 */
 function runCleanUpTests() {
   
@@ -21,15 +19,12 @@ function runCleanUpTests() {
   
 }
 
-/**
-* @desc - Checks the blocks and make sure all are correct
-* @hendersam
-*/
 function runCorrectBlockDataTest() {  
   
   // Here's where we actually run the tests:
   return allTests(function(t) {
     
+    var errors = 0;
     //Check the framework is working
     t.areEqual(1,1);
     //Get necessary data 
@@ -39,7 +34,7 @@ function runCorrectBlockDataTest() {
     .getDataRange();
     
     var values = range.getValues();
-    var blockColumn;
+    
     var numRows = values.length;
     var numColumns = values[0].length;
     
@@ -47,7 +42,7 @@ function runCorrectBlockDataTest() {
       var column = values[0][i];
       if (column == 'Block') {
         blockFound = true;
-        blockColumn = i ;
+        var blockColumn = i ;
       }
     }
     
@@ -73,10 +68,6 @@ function runCorrectBlockDataTest() {
   });
 }
 
-/**
-* @desc - checks that the day is correct for the lunch day
-* @hendersam
-*/
 function runCorrectLunchDayDataTest() {  
   
   // Here's where we actually run the tests:
@@ -92,8 +83,6 @@ function runCorrectLunchDayDataTest() {
     .getSheetByName("Final Student Data")
     .getDataRange();
     
-    var blockColumn;
-    var lunchDayColumn;
     var values = range.getValues();
     
     var numRows = values.length;
@@ -104,12 +93,12 @@ function runCorrectLunchDayDataTest() {
       var column = values[0][i];
       if (column == 'Block') {
         blockFound = true;
-        blockColumn = i ;
+        var blockColumn = i ;
       }
       
       if (column == 'Lunch Day') {
         lunchDayFound = true;
-        lunchDayColumn = i ;
+        var lunchDayColumn = i ;
       }
     }
     

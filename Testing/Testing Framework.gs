@@ -1,10 +1,6 @@
-//JSHint verified 4/3/2017 sondermanjj
-
 /**
-*Initial Framework taken from Daniel Bernier in http://engineering.continuity.net/test-for-google-apps-script/
-*Adapted to our own use
-* @desc - acts as framework for other tests, allows messages and certain tests to be used by other functions
-* @author - sondermanjj
+Initial Framework taken from Daniel Bernier in http://engineering.continuity.net/test-for-google-apps-script/
+Adapted to our own use
 */
 function allTests(thisFnWrapsAllYourTests) {
   var successes = 0;
@@ -13,7 +9,7 @@ function allTests(thisFnWrapsAllYourTests) {
   
   var msgInScope = function(msg) {
     return scopes.concat([msg]).join(": ");
-  };
+  }
   
   var doTheseListsMatch = function(expected, actual) {
     if (expected.length != actual.length) {
@@ -31,7 +27,7 @@ function allTests(thisFnWrapsAllYourTests) {
       }
     }
     return true;
-  };
+  }
   
   function runTestAndRecordResult(message, fn) {
     try {

@@ -1,4 +1,3 @@
-//JSHint verified 4/3/2017 sondermanjj
 var statshtml = "";
 var updatedStats = false;
 
@@ -16,7 +15,7 @@ function getStatistics() {
   statshtml = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStudentStatistics();
   statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getTeacherStatistics();
   updatedStats = true;
-  Logger.log("Stats: " + statshtml);
+  //Logger.log("Stats: " + statshtml);
   return statshtml;
 }
 
@@ -87,11 +86,11 @@ function getHTMLTable(columns, rows, values) {
  */
 function statistics(time, day, values, students) {
 
-  var stats = [];
+  var stats = new Array();
   for (var i = 0; i < day.length; i++) {
-    stats[i] = [];
+    stats[i] = new Array();
   }
-  for (i = 0; i < day.length; i++) {
+  for (var i = 0; i < day.length; i++) {
     for( var j = 0; j < time.length; j++) { 
       stats[i][j] = 0;
     }
@@ -102,6 +101,7 @@ function statistics(time, day, values, students) {
   var lunchDayColumn = getColumnIndex(listOfColumns, "Lunch Day");
   var gradeColumn = getColumnIndex(listOfColumns, "Grade Level");
   var lunchTimeColumn = getColumnIndex(listOfColumns, "Lunch Time");
+  var flag;
   var lunchDay;
   var lunchTime;
   
@@ -110,7 +110,7 @@ function statistics(time, day, values, students) {
     lunchDay = values[k][lunchDayColumn].toString().toUpperCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
     
-    if( (values[k][gradeColumn] !== "") == students) {
+    if( (values[k][gradeColumn] != "") == students) {
     
       switch (lunchDay) {
       

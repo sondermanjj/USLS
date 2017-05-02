@@ -1,9 +1,3 @@
-//JSHint verified 4/3/2017 sondermanjj
-
-/**
- * @desc - Checks the correct number of teachers and students are in the sheets.
- * @author dicksontc
- */
 function runStatisticsTests() {
   var time = ["Early", "Mid", "Late"];
   var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
@@ -57,12 +51,6 @@ function runStatisticsTests() {
   
 }
 
-/**
- * @desc - Checks the correct number of teachers are in the sheets.
- * @param actualData - The real data you are checking is true
-          data - The data that is the baseline
- * @author dicksontc
- */
 function testCorrectNumberOfTeachers(actualData, data) {
   var time = "";
   var day = "";
@@ -77,7 +65,7 @@ function testCorrectNumberOfTeachers(actualData, data) {
       }
       if(failed) {
          
-        if(i===0) {
+        if(i==0) {
           day = "A";
         } else if (i==1) {
           day = "B";
@@ -95,7 +83,7 @@ function testCorrectNumberOfTeachers(actualData, data) {
           day = "H";
         }
         
-        if (j === 0) {
+        if (j == 0) {
           time = "early";
         }else if (j == 1) {
           time = "mid";
@@ -108,10 +96,6 @@ function testCorrectNumberOfTeachers(actualData, data) {
   }
 }
 
-/**
- * @desc - Checks the correct number of students are in the sheets.
- * @author dicksontc
- */
 function testCorrectNumberOfStudents(actualData, data) {
   var time = "";
   var day = "";
@@ -125,7 +109,7 @@ function testCorrectNumberOfStudents(actualData, data) {
       }
       if(failed) {
         
-        if(i===0) {
+        if(i==0) {
           day = "A";
         } else if (i==1) {
           day = "B";
@@ -143,7 +127,7 @@ function testCorrectNumberOfStudents(actualData, data) {
           day = "H";
         }
         
-        if (j === 0) {
+        if (j == 0) {
           time = "early";
         }else if (j == 1) {
           time = "mid";
@@ -151,6 +135,7 @@ function testCorrectNumberOfStudents(actualData, data) {
           time = "late";
         }
         Logger.log("Test for " + time + " student count on " + day + " days failed");
+        
       }
     }
   }

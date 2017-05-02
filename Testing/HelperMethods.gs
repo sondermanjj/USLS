@@ -1,8 +1,5 @@
-//JSHint verified 4/3/2017 sondermanjj
-
 /**
-* @desc - Wraps the testSorting function in message that can be used.
-* @author - hendersonam
+*
 */
 function runHelperMethodTests() {
 
@@ -23,7 +20,9 @@ function runHelperMethodTests() {
 function testSorting() {
 
   return allTests(function(t) {
-        
+    
+    var errors = 0;
+    
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Testing Sheet");
     sortSheetBy(sheet, ["First Name"]);
     var values = sheet.getDataRange().getValues();

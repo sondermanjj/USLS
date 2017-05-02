@@ -1,26 +1,19 @@
-//JSHint verified 4/3/2017 sondermanjj
 
-/**
- * @desc - Runs all three of the clean up and assigning scripts at once
- * @author - sondermanjj
-*/
 function startTableAssigning() {
+  
   startCleanUp();
   assignStudentLunchDays();
   addFacultyTables();
+  
 }
 
-/**
- * @desc - checks what sheet should be cleaned up
- * @author - hendersam
- */
 function sheetCleanupPrompt(){
   var ui = SpreadsheetApp.getUi();
   var response = ui.prompt('Data Clean-Up', 'Please enter the name of the sheet you would like to clean up. \n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
   if(response.getSelectedButton() == ui.Button.OK){
     var sheetName = response.getResponseText();
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-    if(sheet !== null){
+    if(sheet != null){
       showDialog('clean, ' + sheetName);
     }
     else {
@@ -42,7 +35,7 @@ function startCleanUp() {
   // Process the user's response.
   if (response.getSelectedButton() == ui.Button.OK) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(response.getResponseText());
-    if(sheet !== null) {
+    if(sheet != null) {
       var cleaned = false;
       cleaned = true;
       cleanUp(sheet);
@@ -72,7 +65,8 @@ function cleanUp(sheetName) {
   
   //Create a new sheet to write the cleaned data to (if it doesn't already exist)
   var masterList = spreadsheet.getSheetByName("Final Student Data");
-  if (masterList === null) {
+  if (masterList == null) {
+    var values = raw.getDataRange().getValues();
     spreadsheet.insertSheet("Final Student Data");
     masterList = spreadsheet.getSheetByName("Final Student Data");
   }
@@ -107,11 +101,13 @@ function cleanUp(sheetName) {
  */
 function removeIrrelevantData(oldValues, newValues) {
 
+  var completed = false;
+
   var numRows = oldValues.length;
   var numColumns = oldValues[0].length;
   
   //Create a new array for the cleaned data
-  var revisedValues = [];
+  var revisedValues = new Array();
   
   var found = false;
   //Search for the 'Block' column
@@ -163,19 +159,19 @@ function populateLunchDay(values) {
   //Get necessary data 
   var numRows = values.length;
   var numColumns = values[0].length;
+  
   //Get the indices for the 'Block' and 'Lunch Day' columns
   for (var i = 0; i <= numColumns - 1; i++) {
     var column = values[0][i];
     if (column == 'Block') {
       blockFound = true;
-      blockColumn = i ;
+      var blockColumn = i ;
     }
     if (column == 'Lunch Day') {
       lunchDayFound = true;
-      lunchDayColumn = i ;
+      var lunchDayColumn = i ;
     }
   }
-  
   
     //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
   for (var j = 0; j <= numRows - 1; j++) {
