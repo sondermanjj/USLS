@@ -6,7 +6,7 @@ var dropdownhtml;
 */
 function getDropdownHTML(){
   return dropdownhtml;
-
+}
 
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
