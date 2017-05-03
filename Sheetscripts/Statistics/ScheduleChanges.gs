@@ -83,6 +83,7 @@ function scheduleChanges() {
   
   return changes;
 }
+}
 
 
 /**
@@ -168,7 +169,4 @@ function findChanges(oldValues, newValues, changesSheet) {
 function getChangesHTML(){
   return changeshtml;
 }
-
-
-
 
