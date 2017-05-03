@@ -3,6 +3,7 @@
 function testting() {
  setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
  Logger.log(PropertiesService.getDocumentProperties().getProperties());
+ setHeaderColumnNames();
 }
 
  /*****************************************************************************************************************
@@ -112,6 +113,7 @@ function setProperties() {
   setAssignedLunches([["early", 133]]);
   setNonAssignedLunches(["mid", "late"]);
   setNumberOfTables(19);
+  setHeaderColumnNames();
   
 }
 

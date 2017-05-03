@@ -144,7 +144,7 @@
       */
     function scanData() {
       google.script.run.withSuccessHandler(scanBoth).showDialog('sc');
-      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
+      //google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
     }
     
     /**
@@ -398,7 +398,7 @@
        <select onload="listHeaders" id="dropdownfilter">
         
          <script>
-            google.script.run.withSuccessHandler(listHeaders).getHeaderColumnNames();
+           google.script.run.withSuccessHandler(listHeaders).getHeaderColumnNames();
            function listHeaders(list) {  
              var html = document.getElementById('dropdownfilter');
              var headers = JSON.parse(list);

@@ -44,7 +44,7 @@
  * @author - hendersonam
  */
 function scheduleChanges() {
-  
+  Logger.log("Hi");
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var properties = PropertiesService.getDocumentProperties();
   var currentValues = ss.getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
@@ -61,6 +61,8 @@ function scheduleChanges() {
     ss.insertSheet("Scanned Data");
     scannedSheet = ss.getSheetByName("Scanned Data");
     scannedSheet.hideSheet();
+    scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
+    }
   
   var changesSheet = ss.getSheetByName("Student Schedule Changes");
   if (changesSheet == null) {
@@ -82,7 +84,7 @@ function scheduleChanges() {
   scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
   
   return changes;
-}
+
 }
 
 
@@ -161,12 +163,18 @@ function findChanges(oldValues, newValues, changesSheet) {
     }
     
   }
-  
+   var dataRange = changesSheet.getDataRange()
+ var lastRow = dataRange.getLastRow();
+   var lastColumn = dataRange.getLastColumn();
+   var rows = changesSheetArray.length
+   var columns = changesSheetArray[0].length
+ 
+  Logger.log(rows);
   changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
+  
   return changes;
 }
 
-function getChangesHTML(){
+function getChangesHTML() {
   return changeshtml;
 }
-

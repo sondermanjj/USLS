@@ -455,11 +455,11 @@ function printStudentsToSheet(students, primary){
   var primaryData = primary.getDataRange();
   var pValues = primaryData.getValues();
 
-  var pushArray;
+  var pushArray ;
   var finalArray = [];
   var count = 0;
   
-  var sFNameCol = parseInt(documentProperties.getProperty("pSFNameColumn"));
+  var sFNameCol = parseInt(documentProperties.getProperty("pSFNameColumn"),10);
   var sLNameCol = parseInt(documentProperties.getProperty("pSLNameColumn"));
   var gradeCol = parseInt(documentProperties.getProperty("pGradeColumn"));
   var houseCol = parseInt(documentProperties.getProperty("pHouseColumn"));
@@ -488,13 +488,13 @@ function printStudentsToSheet(students, primary){
       dob = "" + dob.getMonth() + "/" + dob.getDay() + "/" + dob.getFullYear();
     var advisor = fin.advisor;
     var zelm = "z" + fin.zelm;
-    for(var lun = 0; lun < fin.lunches.length; lun++){
+    for(var lun = 0; lun < fin.lunches.length; lun++) {
       count++;
       var lunch = fin.lunches[lun];
       var title = lunch.title;
       
-      if(lunch.time == 'mid')
       pushArray = new Array(19);
+      
       pushArray[sFNameCol] = fin.fName;
       pushArray[sLNameCol] = fin.lName;
       pushArray[gradeCol] = fin.grade;
@@ -505,34 +505,37 @@ function printStudentsToSheet(students, primary){
       pushArray[genderCol] = gender;
       pushArray[advisorCol] =  advisor;
       pushArray[dobCol] = dob;
-      if(title === undefined || (title.length == 4 && title.indexOf("z") != -1)){
-        pushArray[cTitleCol] =  zelm;
-        pushArray[cCodeCol] =  "";
-        pushArray[cLengthCol] = "";
-        pushArray[cIDCol] =  "";
-        pushArray[sIDCol] = "";
-        pushArray[tFNameCol] = "";
-        pushArray[tLNameCol] = "";
-        pushArray[blockCol] = "";
-        pushArray[tableHeadCol] = "";
+        if(title === undefined || (title.length == 4 && title.indexOf("z") != -1)){
+          pushArray[cTitleCol] =  zelm;
+          pushArray[cCodeCol] =  "";
+          pushArray[cLengthCol] = "";
+          pushArray[cIDCol] =  "";
+          pushArray[sIDCol] = "";
+          pushArray[tFNameCol] = "";
+          pushArray[tLNameCol] = "";
+          pushArray[blockCol] = "";
+          pushArray[tableHeadCol] = "";
+        
       }else{
-        pushArray[cTitleCol] =  title;
-        pushArray[cCodeCol] =  lunch.code;
-        pushArray[cLengthCol] = lunch.length;
-        pushArray[cIDCol] =  lunch.cID;
-        pushArray[sIDCol] = lunch.sID;
-        pushArray[tFNameCol] = lunch.teacherFName;
-        pushArray[tLNameCol] = lunch.teacherLName;
-        pushArray[blockCol] = lunch.block;
-        pushArray[tableHeadCol] = lunch.tableHead;
-      }
+          pushArray[cTitleCol] =  title;
+          pushArray[cCodeCol] =  lunch.code;
+          pushArray[cLengthCol] = lunch.length;
+          pushArray[cIDCol] =  lunch.cID;
+          pushArray[sIDCol] = lunch.sID;
+          pushArray[tFNameCol] = lunch.teacherFName;
+          pushArray[tLNameCol] = lunch.teacherLName;
+          pushArray[blockCol] = lunch.block;
+          pushArray[tableHeadCol] = lunch.tableHead;
+       }
       finalArray.push(pushArray);
     }
   }
+  
   primary.clear();
   var sheetRange = primary.getRange(1, 1, count, 19);
   sheetRange.setValues(finalArray);
   
+
 }
 /**
 
