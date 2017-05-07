@@ -11,6 +11,9 @@
   function getScheduleChanges() {
     updatedChanges = false;
     changeshtml = "<h3>Student Lunch Changes:</h3>";
+    
+    //Get schedule changes, the changes array will have the following format:
+    //    [ [firstName, LastName, oldLunchDay, oldLunchTime, newLunchDay, newLunchTime, oldTable, newTable ] ]
     var changes = scheduleChanges();
     if(changes.length === 0) {
       changeshtml += "No Schedule changes to display.";
@@ -177,9 +180,13 @@ function findChanges(oldValues, newValues, changesSheet) {
   newValues.sort(compareByColumnIndex(lastNameColumn));
   newValues.sort(compareByColumnIndex(firstNameColumn));
   
+  //Changes sheet values that may/may not need updating
   var changesSheetArray = changesSheet.getDataRange().getValues();
+  
+  //Array to log the changes so they can be displayed on the Add-On
   var changes = [];
   
+  //Create an empty row we can use with the correct number of columns
   var emptyRow = [];
   for(var i = 0; i < changesSheetArray[0].length; i++) {
     emptyRow.push(["\t"]);
@@ -187,26 +194,25 @@ function findChanges(oldValues, newValues, changesSheet) {
   
   for ( var i = 0, k = 0; i < newValues.length; i++, k++) {
   
+    //If this is the header row of the old values, move to the next row
     if ( oldValues[i][0] == "First Name" ) {
       i++;
     }
     
+    //If this is the header row of the new values, move to the next row
     if ( newValues[k][0] == "First Name" ) {
       k++;
     }
     
-    if(oldValues[i] === null) {
-      changes.push( [newValues[k][firstNameColumn],
-                     newValues[k][lastNameColumn],
-                     newValues[k][LunchDayColumn],
-                     newValues[k][LunchTimeColumn],
-                     newValues[k][TableColumn]]);
+    // If the newValue row does not equal the oldValue row, a schedule change happened
+    if ( !newValues[k].toString().equals(oldValues[i].toString())) {
       
-    } else if ( !newValues[k].toString().equals(oldValues[i].toString())) {
-      
+      //Add the old value, new value, and an empty row to the changes sheet array
       changesSheetArray.push(oldValues[i]);
       changesSheetArray.push(newValues[k]);
       changesSheetArray.push(emptyRow);
+      
+      //Add the needed information to the changes array
       changes.push( [newValues[k][firstNameColumn],
                      newValues[k][lastNameColumn],
                      oldValues[i][LunchDayColumn],
