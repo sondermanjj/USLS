@@ -1,9 +1,10 @@
 
 
 function testting() {
- setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
- Logger.log(PropertiesService.getDocumentProperties().getProperties());
- setHeaderColumnNames();
+  var properties =  PropertiesService.getDocumentProperties()
+  //properties.deleteAllProperties();
+  Logger.log(properties.getProperties());
+  
 }
 
  /*****************************************************************************************************************
@@ -228,50 +229,15 @@ function setDODSheet(sheet) {
 */
 function setStudentColumnIndices(sheetName){
   
+  var properties = PropertiesService.getDocumentProperties();
   var studentValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
   var pHeaders = getListOfColumns(studentValues);
-
-  var properties = { pLunchTimeColumn: 0, 
-                     pLunchDayColumn: 0, 
-                     pSFNameColumn: 0,
-                     pSLNameColumn: 0, 
-                     pTFNameColumn: 0, 
-                     pTLNameColumn: 0,
-                     pAdvisorColumn: 0, 
-                     pGenderColumn: 0,
-                     pCourseTitleColumn: 0, 
-                     pCourseCodeColumn: 0, 
-                     pCourseLengthColumn: 0,
-                     pCourseIDColumn: 0, 
-                     pSectionIDColumn: 0, 
-                     pBlockColumn: 0, 
-                     pDOBColumn: 0,
-                     pTableHeadColumn: 0,
-                     pTableColumn: 0, 
-                     pGradeColumn: 0,
-                     pHouseColumn: 0};
   
-  properties.pLunchTimeColumn = getColumnIndex(pHeaders, "Lunch Time");
-  properties.pLunchDayColumn = getColumnIndex(pHeaders, "Lunch Day");
-  properties.pSFNameColumn = getColumnIndex(pHeaders, "First Name");
-  properties.pSLNameColumn = getColumnIndex(pHeaders, "Last Name");
-  properties.pTFNameColumn = getColumnIndex(pHeaders, "Faculty First Name");
-  properties.pTLNameColumn = getColumnIndex(pHeaders, "Faculty Last Name");
-  properties.pAdvisorColumn = getColumnIndex(pHeaders, "Advisor");
-  properties.pGenderColumn = getColumnIndex(pHeaders, "Gender");
-  properties.pCourseTitleColumn = getColumnIndex(pHeaders, "Course Title");
-  properties.pCourseCodeColumn = getColumnIndex(pHeaders, "Course Code");
-  properties.pCourseLengthColumn = getColumnIndex(pHeaders, "Course Length");
-  properties.pCourseIDColumn = getColumnIndex(pHeaders, "Course ID");
-  properties.pSectionIDColumn = getColumnIndex(pHeaders, "Section Identifier");
-  properties.pBlockColumn = getColumnIndex(pHeaders, "Block");
-  properties.pDOBColumn = getColumnIndex(pHeaders, "Date of Birth");
-  properties.pHouseColumn = getColumnIndex(pHeaders, "House");
-  properties.pTableHeadColumn = getColumnIndex(pHeaders, "Table Head");
-  properties.pTableColumn = getColumnIndex(pHeaders, "Lunch Table");
-  properties.pGradeColumn = getColumnIndex(pHeaders, "Grade Level");
-  
-  PropertiesService.getDocumentProperties().setProperties(properties);
+  for(var i = 0; i < pHeaders.length; i++) {
+  if (pHeaders != "") {
+      properties.setProperty(pHeaders[i], i);
+    }
+  }
 }
 
 /**
@@ -281,24 +247,13 @@ function setStudentColumnIndices(sheetName){
 */
 function setTeacherColumnIndices(sheetName) {
 
+  var properties = PropertiesService.getDocumentProperties();
   var teacherValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
   var tHeaders = getListOfColumns(teacherValues);
    
-  var properties = { tFNameColumn : 0,
-                     tLNameColumn : 0,
-                     tLunchDayColumn : 0,
-                     tLunchTimeColumn : 0,
-                     tLunchPreferenceColumn : 0,
-                     tCommentsColumn : 0,
-                     tSectionColumn : 0};
-  
-  properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
-  properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
-  properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
-  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
-  properties.tLunchPreferenceColumn = getColumnIndex(tHeaders, "Lunch Preference");
-  properties.tCommentsColumn = getColumnIndex(tHeaders, "Comments");
-  properties.tSectionColumn = getColumnIndex(tHeaders, "Section");
-  
-  PropertiesService.getDocumentProperties().setProperties(properties);
+  for(var i = 0; i < tHeaders.length; i++) {
+    if (tHeaders[i] != "") {
+      properties.setProperty(tHeaders[i], i);
+    }
+  }
 }
