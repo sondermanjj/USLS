@@ -5,6 +5,15 @@
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <style>
     .branding-below {
@@ -39,6 +48,15 @@
       width: 100%;
     }
     
+    .settingsBox {
+      width: 70px;
+      float: left;
+    }
+    
+    .rowLabel{
+      text-align: left;
+    }
+    
     body {
       margin-left: 10px;
     }
@@ -57,7 +75,7 @@
       padding: 8px 16px;
     }
     
-    #studentStatsTable th, #teacherStatsTable th{
+    #studentStatsTable th, #teacherStatsTable th {
       border: none;
       background-color: #e6e6e6;
       font-weight: bold;
@@ -67,6 +85,37 @@
       border: none;
       padding: 8px 0px;
       
+    }
+    
+    .table-striped tr:nth-child(2n+1) td {
+      background-color: #e6e6e6;
+    }
+    
+    #settingsTable, #settingsTable tr, #settingsTable td{
+      border: none;
+    }
+    
+    .daySettingsTable td, .daySettingsTable tr, .daySettingsTable {
+      background-color: inherit;
+      border: none;
+    }
+    
+    #settingsTable th {
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-weight: bold;
+      margin-top: 10px;
+      background-color: #0d47a1;
+      color: #fff;;
+    }
+    
+    #settingsTable {
+      width: 90%;
+    }
+    
+    .daySettingsTable {
+      width: 100%;
     }
     
     #sortButtons td, #customSort td {
@@ -83,6 +132,10 @@
     #tabs {
       background-color: white;
       border-top: 5px solid #0d47a1;
+    }
+    
+    #settingsButton {
+      float: right;
     }
     
      #changes li{
@@ -112,7 +165,7 @@
 
     li {
       float: left;
-      display: block;
+      display: inline;
       color: #000;
       text-align: center;
 
@@ -122,14 +175,11 @@
       margin: 0 5px 0 0;
       border-radius: 0 0 8px 8px;
       background-color: #e6e6e6;
-      font-weight: bold;
-      
+      font-size: 0.9em;
+      font-weight: bold;   
     }
     
     li:hover {
-      /*top color: background-color: #333;*/
-      /*button color: background-color: #4a8bf5;*/
-      /*school color: background-color: #002967;*/
       background-color: #0d47a1;
       color: #fff;
     }
@@ -139,11 +189,11 @@
       color: #fff;
     }
     
-    #statsPage, #searchPage {
+    #statsPage, #searchPage, #settingsPage {
       display: none;
     }
     
-    #statsPage, #searchPage, #cleanPage{
+    #statsPage, #searchPage, #cleanPage, #settingsPage{
       margin-top: 10px;
     }
     
@@ -330,6 +380,15 @@
     }
     
     /**
+    * @desc - Shows the contents of the settings page
+    * @author - clemensam
+    */
+    function showSettingsPage(){
+      var x = document.getElementById('settingsPage');
+      x.style.display = 'block';
+    }
+    
+    /**
     * @desc - Hides the clean page contents
     * @author - clemensam
     */
@@ -357,6 +416,15 @@
     }
     
     /**
+    * @desc - Hides the settings page contents
+    * @author - clemensam
+    */
+    function hideSettingsPage(){
+      var x = document.getElementById('settingsPage');
+      x.style.display = 'none';
+    }
+    
+    /**
     * @desc - Changes tab class names in order to highlight the active tab
     * @author - clemensam
     */
@@ -377,6 +445,10 @@
           document.getElementById('statsTab').className = 'inactive';
           document.getElementById('searchTab').className = 'active';
           break;
+        case 'settings':
+          document.getElementById('cleanTab').className = 'inactive';
+          document.getElementById('statsTab').className = 'inactive';
+          document.getElementById('searchTab').className = 'inactive';
       }
 }
     
@@ -386,11 +458,16 @@
     
       <!--Navbar; On menu Item click, hide or display appropriate data and buttons -->
       <div id="tabs">
+      <span>
       <ul>
-        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Clean-Up</li>
-        <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
-        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Search/Sort</li>
+        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Clean-Up</li>
+        <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideSettingsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
+        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Search/Sort</li>
      </ul>
+     </span>
+     <span>
+       <img id="settingsButton" onClick="showSettingsPage(); hideCleanupPage(); hideStatisticsPage(); hideSearchPage(); changeID('settings');" src="https://8f0924f2-a-62cb3a1a-s-sites.googlegroups.com/site/usmlunch/tinysettings.png?attachauth=ANoY7crc2QY618uAJn01SKJu8slTjWxOe6AEjkKSJmmv_qvMkhiOb5VVNgxLF_zwxfjzuzMYVnKLUVlijeDSTn7ev03WTqlIqKTweHtVCi1A8jjxWMGj3iXchwrGQPbqzRqOfbkJl2-bCD2NHwQk1J_9OCbTKpfUWfak4inWzdRVL-Tjoa04vfW-JGZW_Zbw0IEe8743FVS3_c0TDpKNPiUeyHtYYUHU6g%3D%3D&attredirects=0"/>
+     </span>
      </div>
      
      <div id="cleanPage">
@@ -477,6 +554,112 @@
        </table>
        
      </div>
+     
+     <div id="settingsPage">
+
+    <table id="settingsTable">
+        <tr>
+            <th colspan=2>Letter Days in Schedule</th>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day1" type="text" onkeypress="" name="a-day" value="A"/></td>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day2" type="text" onkeypress="" name="b-day" value="B"/></td>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day3" type="text" onkeypress="" name="c-day" value="C"/></td>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day4" type="text" onkeypress="" name="d-day" value="D"/></td>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day5" type="text" onkeypress="" name="e-day" value="E"/></td>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day6" type="text" onkeypress="" name="f-day" value="F"/></td>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day7" type="text" onkeypress="" name="g-day" value="G"/></td>
+        </tr>
+        <tr>
+            <td class="rowLabel">Letter: </td>
+            <td><input class="settingsBox" id="day8" type="text" onkeypress="" name="h-day" value="H"/></td>
+        </tr>
+        <tr>
+            <th colspan=2>Lunch Times</th>
+        </tr>
+        <tr>
+            <td>
+                <table class="table table-striped">
+                    <tr>
+                        <td colspan=2>
+                            <table class="daySettingsTable">
+                                <tr>
+                                    <td class="rowLabel">Time: </td>
+                                    <td><input class="settingsBox" id="early" type="text" onkeypress="" name="first" value="early"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="rowLabel">Number of Tables: </td>
+                                    <td><input class="settingsBox" id="earlytables" type="text" onkeypress="" name="t1" value="19"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="rowLabel">Number of Students: </td>
+                                    <td><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="s1" value="133"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <table class="daySettingsTable">
+                                <tr>
+                                    <td class="rowLabel">Time: </td>
+                                    <td><input class="settingsBox" id="mid" type="text" onkeypress="" name="second" value="mid"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="rowLabel">Number of Tables: </td>
+                                    <td><input class="settingsBox" id="midtables" type="text" onkeypress="" name="t2" value="19"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="rowLabel">Number of Students: </td>
+                                    <td><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="s2" value="133"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <table class="daySettingsTable">
+                                <tr>
+                                    <td class="rowLabel">Time: </td>
+                                    <td><input class="settingsBox" id="late" type="text" onkeypress="" name="third" value="late"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="rowLabel">Number of Tables: </td>
+                                    <td><input class="settingsBox" id="latetables" type="text" onkeypress="" name="t3" value="19"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="rowLabel">Number of Students: </td>
+                                    <td><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="s3" value="133"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+    </table>
+
+    <button class="action" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Save</button>
+
+</div>
       
     </body>
 </html>
