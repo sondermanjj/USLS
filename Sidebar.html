@@ -50,11 +50,19 @@
     
     .settingsBox {
       width: 70px;
-      float: left;
+      float: right;
     }
     
     .rowLabel{
       text-align: left;
+      float: left;
+    }
+    
+    .row {
+      overflow: hidden;
+      width: inherit;
+      margin-right: 0px;
+      margin-left: 0px;
     }
     
     body {
@@ -91,13 +99,28 @@
       background-color: #e6e6e6;
     }
     
+    .table-striped {
+      border: none;
+    }
+    
+    .inputSpan {
+      float: right;
+    }
+    
     #settingsTable, #settingsTable tr, #settingsTable td{
       border: none;
     }
     
-    .daySettingsTable td, .daySettingsTable tr, .daySettingsTable {
+    #fullWidth {
+      width: 100%;
+      text-align: left;
+      padding: 0px;
+    }
+    
+    .daySettingsTable, .daySettingsTable tr, .dyaSettingsTable td {
       background-color: inherit;
       border: none;
+      width: 100%;
     }
     
     #settingsTable th {
@@ -112,10 +135,6 @@
     
     #settingsTable {
       width: 90%;
-    }
-    
-    .daySettingsTable {
-      width: 100%;
     }
     
     #sortButtons td, #customSort td {
@@ -555,7 +574,9 @@
        
      </div>
      
-     <div id="settingsPage">
+<div id="settingsPage">
+
+  <h2> Settings</h2>
 
     <table id="settingsTable">
         <tr>
@@ -597,69 +618,98 @@
             <th colspan=2>Lunch Times</th>
         </tr>
         <tr>
-            <td>
+            <td id="fullWidth"colspan=2>
                 <table class="table table-striped">
                     <tr>
-                        <td colspan=2>
-                            <table class="daySettingsTable">
-                                <tr>
-                                    <td class="rowLabel">Time: </td>
-                                    <td><input class="settingsBox" id="early" type="text" onkeypress="" name="first" value="early"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="rowLabel">Number of Tables: </td>
-                                    <td><input class="settingsBox" id="earlytables" type="text" onkeypress="" name="t1" value="19"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="rowLabel">Number of Students: </td>
-                                    <td><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="s1" value="133"/></td>
-                                </tr>
-                            </table>
+                        <td>
+                            <div class="daySettingsTable">
+                                <div class="row">
+                                    <span class="rowLabel">Time: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="early" type="text" onkeypress="" name="first" value="early"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Tables: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlytables" type="text" onkeypress="" name="t1" value="19"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Students: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="s1" value="133"/></span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >
+                            <div class="daySettingsTable">
+                                <div class="row">
+                                    <span class="rowLabel">Time: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="mid" type="text" onkeypress="" name="second" value="mid"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Tables: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midtables" type="text" onkeypress="" name="t2" value="19"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Students: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="s2" value="133"/></span>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan=2>
-                            <table class="daySettingsTable">
-                                <tr>
-                                    <td class="rowLabel">Time: </td>
-                                    <td><input class="settingsBox" id="mid" type="text" onkeypress="" name="second" value="mid"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="rowLabel">Number of Tables: </td>
-                                    <td><input class="settingsBox" id="midtables" type="text" onkeypress="" name="t2" value="19"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="rowLabel">Number of Students: </td>
-                                    <td><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="s2" value="133"/></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan=2>
-                            <table class="daySettingsTable">
-                                <tr>
-                                    <td class="rowLabel">Time: </td>
-                                    <td><input class="settingsBox" id="late" type="text" onkeypress="" name="third" value="late"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="rowLabel">Number of Tables: </td>
-                                    <td><input class="settingsBox" id="latetables" type="text" onkeypress="" name="t3" value="19"/></td>
-                                </tr>
-                                <tr>
-                                    <td class="rowLabel">Number of Students: </td>
-                                    <td><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="s3" value="133"/></td>
-                                </tr>
-                            </table>
+                            <div class="daySettingsTable">
+                                <div class="row">
+                                    <span class="rowLabel">Time: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="late" type="text" onkeypress="" name="third" value="late"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Tables: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latetables" type="text" onkeypress="" name="t3" value="19"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Students: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="s3" value="133"/></span>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>
             </td>
+          </tr>
+          
+          
+          <tr>
+            <th colspan=2>Sheet Names</th>
+        </tr>
+        <tr>
+            <td id="fullWidth"colspan=2>
+                <table class="table table-striped">
+                    <tr>
+                        <td>
+                          <div class="row">
+                            <span class="rowLabel">Final Student Data: </span>
+                            <span class="inputSpan"><input class="settingsBox" id="studentData" type="text" onkeypress="" name="finalDataSheetName" value=""/></span>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          <div class="row">
+                            <span class="rowLabel">Faculty Choices: </span>
+                            <span class="inputSpan"><input class="settingsBox" id="facultyChoices" type="text" onkeypress="" name="facultyChoicesSheetName" value=""/></span>
+                          </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+          </tr>
     </table>
 
     <button class="action" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Save</button>
 
 </div>
+<br/>
       
-    </body>
+</body>
 </html>
