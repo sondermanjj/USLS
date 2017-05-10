@@ -7,7 +7,6 @@ function getDropdownHTML(){
   return dropdownhtml;
   }
 
-
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
  * @return - String(HTML) - HTML for a dropdown list of headers

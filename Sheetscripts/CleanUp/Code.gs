@@ -39,10 +39,12 @@ function doGet(request) {
 }
 
 /**
- */
+* Creates an HTML template from the file pointed to so that it can be included in other pages
+* @param filename Name of the HTML file to be generated as a template
+* @return partial HTML template of the page passed in
+*/
 function include(filename) {
-  return HtmlService.createHtmlOutputFromFile(filename)
-    .getContent();
+  return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
 }
 
 /**
