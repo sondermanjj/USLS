@@ -41,6 +41,7 @@ function testting() {
  *     tLunchDayColumn - Lunch Day
  *     tLunchTimeColumn - Lunch Time
  *     tTableColumn - Table Assignment
+ *     tHouseColumn - Teacher House
  *
  *     tLunchPreferenceColumn;
  *     tCommentsColumn;
