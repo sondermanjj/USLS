@@ -173,6 +173,8 @@ function getListOfColumns(data) {
     for( var j = 0; j < data[0].length; j++) {
       if(data[i][j] == 'First Name') {
         row = i;
+        j = data[0].length;
+        i = data.length;
       } 
     }
   }
@@ -211,7 +213,7 @@ function promptForNewSheet(msg) {
         ss.deleteSheet(sheet);
         ss.insertSheet(sheetName);
         sheet = ss.getSheetByName(sheetName);
-      } else {
+      } else if (response == ui.Button.NO) {
         sheet = promptForNewSheet(msg);
       }
     }
@@ -249,26 +251,49 @@ function promptForSettingSheetProperty(msg) {
 }
 
 /**
- * @desc - adds a column to a given 2d Array for a Google Sheet
+ * @desc - adds a column/columns to a given 2d Array for a Google Sheet
+ *         Assumes the header row has 'First Name' somewhere in it
  * @param - Object[][] - 2D Array of values to add the column name to
- *          name - name of the column
+ *          Array[] - names of the columns to add
  * @functional - YES
  * @author - hendersonam, sondermanjj
  */
-function addColumnName(values, name) {
+function addColumnNames(values, names) {
   var numColumns = values[0].length;
   var exists = false;
- 
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == name) {
-      exists = true;
+  var headerRow;
+  
+  for (var i = 0; i < values.length; i++) {
+    for ( var j = 0; j < values[0].length; i++) {
+      if (values[i][j] == "First Name") {
+        headerRow = i;
+        i = values.length;
+        j = values[0].length;
+      }
     }
   }
-  if (!exists) {
-    values[0][numColumns] = name;
-    for (var j = 1; j < values.length; j++) {
-      values[j][numColumns] = "";
+  
+  if (isNaN(headerRow)) {
+    return null;
+  }
+  
+  for ( var j = 0; j < names.length; j++) {
+    for (var i = 0; i < numColumns; i++) {
+      var column = values[headerRow][i];
+      if (column == names[j]) {
+        exists = true;
+      }
+    }
+    
+    if (!exists) {
+      exists = false;
+      values[headerRow][numColumns] = names[j];
+      for (var k = 0; k < values.length; k++) {
+        if( values[k][numColumns] != values[headerRow][numColumns]){
+          values[k][numColumns] = "";
+        }
+      }
+      numColumns += 1;
     }
   }
   return values;

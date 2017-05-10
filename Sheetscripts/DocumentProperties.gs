@@ -2,7 +2,10 @@
 
 function testting() {
   var properties =  PropertiesService.getDocumentProperties()
-  //properties.deleteAllProperties();
+  properties.deleteAllProperties();
+  var schoolDays = { 1 : 'A', 2 : 'B', 3 : 'C', 4 : 'D', 5 : 'E', 6 : 'F', 7 : 'G', 8 : 'H',
+                     A1 : 'A', B2 : 'B', C3 : 'C', D4 : 'D', E5 : 'E', F6 : 'F', G7 : 'G', H8 : 'H'};
+  setSchoolDays(schoolDays);
   Logger.log(properties.getProperties());
   
 }
@@ -76,17 +79,18 @@ function initialization() {
   
 }
 
+function setSchoolDays(schoolDays) {
+  var properties = PropertiesService.getDocumentProperties();
+  properties.setProperty('schoolDays', JSON.stringify(schoolDays));
+}
+
 /**
  * @desc - Sets the document property for the list of header columns in the student data sheet. Saves it as
  *         a Json.stringify(array)
  * @author - hendersonam
  */
-function setHeaderColumnNames() {
+function setHeaderColumnNames(headers) {
   var properties = PropertiesService.getDocumentProperties();
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var studentSheet = ss.getSheetByName(properties.getProperty("studentData"));
-  var data = studentSheet.getDataRange().getValues();
-  var headers = getListOfColumns(data);
   properties.setProperty("headers", JSON.stringify(headers));
 }
 
@@ -106,16 +110,35 @@ function setProperties() {
   
   var properties = PropertiesService.getDocumentProperties();
   
-  setSheets();
-  setStudentColumnIndices(properties.getProperty("studentData"));
-  setTeacherColumnIndices(properties.getProperty("teacherChoices"));
   setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
   setLunchTimes(["early", "mid", "late"]);
   setAssignedLunches([["early", 133]]);
   setNonAssignedLunches(["mid", "late"]);
   setNumberOfTables(19);
+  setSheets();
+  setStudentColumnIndices(properties.getProperty("studentData"));
+  setTeacherColumnIndices(properties.getProperty("teacherChoices"));
   setHeaderColumnNames();
   
+  
+}
+
+/**
+ * @desc - Sets the document properties for the sheets that will be used throughout the program
+ * @author - hendersonam
+ */
+function setSheets() {
+
+  var studentSheet = sheetCleanupPrompt();
+  var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet would you like to use for faculty lunch choices?");
+  var teacherTableSheet = promptForSettingSheetProperty("Which sheet would you like to use for faculty table data?");
+  var dodSheet = promptForSettingSheetProperty("Which sheet would you like to use for the DOD list?");
+  
+  setStudentSheet(studentSheet);
+  setTeacherChoicesSheet(teacherChoicesSheet);
+  setTeacherTableSheet(teacherTableSheet);
+  setDODSheet(dodSheet);
+ 
 }
 
 /**
@@ -164,24 +187,6 @@ function setNumberOfTables(value) {
 }
 
 /**
- * @desc - Sets the document properties for the sheets that will be used throughout the program
- * @author - hendersonam
- */
-function setSheets() {
-
-  var studentSheet = sheetCleanupPrompt();
-  var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet would you like to use for faculty lunch choices?");
-  var teacherTableSheet = promptForSettingSheetProperty("Which sheet would you like to use for faculty table data?");
-  var dodSheet = promptForSettingSheetProperty("Which sheet would you like to use for the DOD list?");
-  
-  setStudentSheet(studentSheet);
-  setTeacherChoicesSheet(teacherChoicesSheet);
-  setTeacherTableSheet(teacherTableSheet);
-  setDODSheet(dodSheet);
- 
-}
-
-/**
  * @desc - Sets the document property for the student data sheet as the sheet name
  * @param - sheet - the student data sheet
  * @author - hendersonam
@@ -227,15 +232,13 @@ function setDODSheet(sheet) {
  *@params - Object[][] - the array of the Final Student Data
  *@author - dicksontc, hendersonam
 */
-function setStudentColumnIndices(sheetName){
+function setStudentColumnIndices(pHeaders){
   
   var properties = PropertiesService.getDocumentProperties();
-  var studentValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
-  var pHeaders = getListOfColumns(studentValues);
   
   for(var i = 0; i < pHeaders.length; i++) {
   if (pHeaders != "") {
-      properties.setProperty(pHeaders[i], i);
+      properties.setProperty("Student " + pHeaders[i], i);
     }
   }
 }
@@ -245,15 +248,14 @@ function setStudentColumnIndices(sheetName){
  *@params - Object[][] - the array of the Faculty Choices dadta
  *@author - dicksontc, hendersonam
 */
-function setTeacherColumnIndices(sheetName) {
+function setTeacherColumnIndices(tHeaders) {
 
   var properties = PropertiesService.getDocumentProperties();
-  var teacherValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
-  var tHeaders = getListOfColumns(teacherValues);
+  
    
   for(var i = 0; i < tHeaders.length; i++) {
     if (tHeaders[i] != "") {
-      properties.setProperty(tHeaders[i], i);
+      properties.setProperty("Teacher " + tHeaders[i], i);
     }
   }
 }
