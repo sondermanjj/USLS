@@ -37,13 +37,17 @@ function parseRequests() {
   var rMidColumn;
   var rLateColumn;
   var rCommentsColumn;
+  var rHouseColumn;
   
-  var tFNameColumn = properties.getProperty("tFNameColumn");
-  var tLNameColumn = properties.getProperty("tLNameColumn");
-  var tLunchDayColumn = properties.getProperty("tLunchDayColumn");
-  var tLunchPreferenceColumn = properties.getProperty("tLunchPreferenceColumn");
-  var tCommentsColumn = properties.getProperty("tCommentsColumn");
-  var tSectionColumn = properties.getProperty("tSectionColumn");
+  var tFNameColumn = parseInt(properties.getProperty("tFNameColumn"));
+  var tLNameColumn = parseInt(properties.getProperty("tLNameColumn"));
+  var tLunchDayColumn = parseInt(properties.getProperty("tLunchDayColumn"));
+  var tLunchPreferenceColumn = parseInt(properties.getProperty("tLunchPreferenceColumn"));
+  var tLunchTimeColumn = parseInt(properties.getProperty("tLunchTimeColumn"));
+  var tCommentsColumn = parseInt(properties.getProperty("tCommentsColumn"));
+  var tSectionColumn = parseInt(properties.getProperty("tSectionColumn"));
+  var tHouseColumn = parseInt(properties.getProperty("tHouseColumn"));
+  var tLunchTableColumn = parseInt(properties.getProperty("tLunchTableColumn"));
   
   var finalRows = [];
   var column;
@@ -79,116 +83,104 @@ function parseRequests() {
       rLateColumn = i;
     }else if(column == "Comments"){
       rCommentsColumn = i;
+    }else if(column == "House"){
+      rHouseColumn = i;
     }
   }
-
-  /*
-  for(var i = 0; i < tNumColumns; i++){
-    var column = tValues[0][i];
-
-    if(column == 'Lunch Day') {
-      tLunchDayColumn = i ;
-    }else if(column == 'First Name'){
-      tFNameColumn = i;
-    }else if(column == 'Last Name'){
-      tLNameColumn = i;
-    }else if(column == 'Lunch Preference'){
-      tLunchPreferenceColumn = i;
-    }else if(column == 'Section'){
-      tSectionColumn = i;
-    }else if(column == 'Comments'){
-      tCommentsColumn = i;
-    }else if(column == 'Lunch Day'){
-      tLunchDayColumn = i;
-    }
-  }
-  */
   
   var count = 0;
   for(i = 1; i < rNumRows; i++){
-    var A = [];
-    var B = [];
-    var C = [];
-    var D = [];
-    var E = [];
-    var F = [];
-    var G = [];
-    var H = [];
-    
     var fname = rValues[i][rFNameColumn];
     var lname = rValues[i][rLNameColumn];
+    if(fname !== "" && lname !== ""){
+      var A = [];
+      var B = [];
+      var C = [];
+      var D = [];
+      var E = [];
+      var F = [];
+      var G = [];
+      var H = [];
     
-    var aSect = rValues[i][rADayColumn];
-    var bSect = rValues[i][rBDayColumn];
-    var cSect = rValues[i][rCDayColumn];
-    var dSect = rValues[i][rDDayColumn];
-    var eSect = rValues[i][rEDayColumn];
-    var fSect = rValues[i][rFDayColumn];
-    var gSect = rValues[i][rGDayColumn];
-    var hSect = rValues[i][rHDayColumn];
+      var aSect = rValues[i][rADayColumn];
+      var bSect = rValues[i][rBDayColumn];
+      var cSect = rValues[i][rCDayColumn];
+      var dSect = rValues[i][rDDayColumn];
+      var eSect = rValues[i][rEDayColumn];
+      var fSect = rValues[i][rFDayColumn];
+      var gSect = rValues[i][rGDayColumn];
+      var hSect = rValues[i][rHDayColumn];
+      
+      var comments = rValues[i][rCommentsColumn];
+      
+      var house = rValues[i][rHouseColumn];
+      
+      var early = rValues[i][rEarlyColumn].split(", ");
+      var mid = rValues[i][rMidColumn].split(", ");
+      var late = rValues[i][rLateColumn].split(", ");
     
-    var comments = rValues[i][rCommentsColumn];
-    
-    var early = rValues[i][rEarlyColumn].split(", ");
-    var mid = rValues[i][rMidColumn].split(", ");
-    var late = rValues[i][rLateColumn].split(", ");
-    
-    var everyDay = checkDays(early, mid, late, A, B, C, D, E, F, G, H);
-    if(everyDay){
-     for(var j = 0; j < 8; j++){
-       count++;
-       var tempArray = new Array(7);
-       tempArray[0] = fname;
-       tempArray[1] = lname;
-       tempArray[3] = "";
-       tempArray[4] = "";
-       tempArray[6] = comments;
-       
-       if(j === 0){
-         tempArray[2] = "A";
-         if(aSect != "Off")
-           tempArray[3] = A.toString();
-         tempArray[5] = aSect;
-       }else if(j == 1){
-         tempArray[2] = "B";
-         if(bSect != "Off")
-           tempArray[3] = B.toString();
-         tempArray[5] = bSect;
-       }else if(j == 2){
-         tempArray[2] = "C";
-         if(cSect != "Off")
-           tempArray[3] = C.toString();
-         tempArray[5] = cSect;
-       }else if(j == 3){
-         tempArray[2] = "D";
-         if(dSect != "Off")
-           tempArray[3] = D.toString();
-         tempArray[5] = dSect;
-       }else if(j == 4){
-         tempArray[2] = "E";
-         if(eSect != "Off")
-           tempArray[3] = E.toString();
-         tempArray[5] = eSect;
-       }else if(j == 5){
-         tempArray[2] = "F";
-         if(fSect != "Off")
-           tempArray[3] = F.toString();
-         tempArray[5] = fSect;
-       }else if(j == 6){
-         tempArray[2] = "G";
-         if(gSect != "Off")
-           tempArray[3] = G.toString();
-         tempArray[5] = gSect;
-       }else if(j == 7){
-         tempArray[2] = "H";
-         if(hSect != "Off")
-           tempArray[3] = H.toString();
-         tempArray[5] = hSect;
-       }
-       finalRows.push(tempArray);
-     }     
-    }else{
-      Logger.log("Row " + i + "does not have a lunch time picked for each day");
+      var everyDay = checkDays(early, mid, late, A, B, C, D, E, F, G, H);
+      if(everyDay){
+       for(var j = 0; j < 8; j++){
+         count++;
+         var tempArray = new Array(9);
+  
+         tempArray[tFNameColumn] = fname;
+         tempArray[tLNameColumn] = lname;
+         tempArray[tLunchDayColumn] = "";
+         tempArray[tLunchPreferenceColumn] = "";
+         tempArray[tLunchTimeColumn] = "";
+         tempArray[tLunchTableColumn] = "";
+         tempArray[tHouseColumn] = house;
+         tempArray[tSectionColumn] = "";
+         tempArray[tCommentsColumn] = comments;
+         
+         if(j === 0){
+           tempArray[tLunchDayColumn] = "A";
+           if(aSect != "Off")
+             tempArray[tLunchPreferenceColumn] = A.toString();
+           tempArray[tSectionColumn] = aSect;
+         }else if(j == 1){
+           tempArray[tLunchDayColumn] = "B";
+           if(bSect != "Off")
+             tempArray[tLunchPreferenceColumn] = B.toString();
+           tempArray[tSectionColumn] = bSect;
+         }else if(j == 2){
+           tempArray[tLunchDayColumn] = "C";
+           if(cSect != "Off")
+             tempArray[tLunchPreferenceColumn] = C.toString();
+           tempArray[tSectionColumn] = cSect;
+         }else if(j == 3){
+           tempArray[tLunchDayColumn] = "D";
+           if(dSect != "Off")
+             tempArray[tLunchPreferenceColumn] = D.toString();
+           tempArray[tSectionColumn] = dSect;
+         }else if(j == 4){
+           tempArray[tLunchDayColumn] = "E";
+           if(eSect != "Off")
+             tempArray[tLunchPreferenceColumn] = E.toString();
+           tempArray[tSectionColumn] = eSect;
+         }else if(j == 5){
+           tempArray[tLunchDayColumn] = "F";
+           if(fSect != "Off")
+             tempArray[tLunchPreferenceColumn] = F.toString();
+           tempArray[tSectionColumn] = fSect;
+         }else if(j == 6){
+           tempArray[tLunchDayColumn] = "G";
+           if(gSect != "Off")
+             tempArray[tLunchPreferenceColumn] = G.toString();
+           tempArray[tSectionColumn] = gSect;
+         }else if(j == 7){
+           tempArray[tLunchDayColumn] = "H";
+           if(hSect != "Off")
+             tempArray[tLunchPreferenceColumn] = H.toString();
+           tempArray[tSectionColumn] = hSect;
+         }
+         finalRows.push(tempArray);
+       }     
+      }else{
+        Logger.log("Row " + i + "does not have a lunch time picked for each day");
+      }
     }
   }
   
@@ -322,6 +314,6 @@ function checkDays(early, mid, late, A, B, C, D, E, F, G, H){
  * @author - dicksontc
  */
 function pushToSheet(sheet, rows, numRows){
-  var sheetRange = sheet.getRange(2, 1, numRows, 7);
+  var sheetRange = sheet.getRange(2, 1, numRows, 9);
   sheetRange.setValues(rows);
 }

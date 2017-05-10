@@ -40,9 +40,11 @@ function testting() {
  *     tLNameColumn - Last Name
  *     tLunchDayColumn - Lunch Day
  *     tLunchTimeColumn - Lunch Assignment (Lunch Time)
- *     tLunchPreferenceColumn;
- *     tCommentsColumn;
- *     tSectionColumn;
+ *     tLunchPreferenceColumn - List of Lunch Preferences;
+ *     tLunchTableColumn - Lunch Table
+ *     tCommentsColumn - Comments
+ *     tSectionColumn - Section (Free, Teaching, Off)
+ *     tHouseColumn - House
  *
  *   Others:
  *     numberOfTables - Number of tables in early lunch
@@ -289,8 +291,10 @@ function setTeacherColumnIndices(sheetName) {
                      tLunchDayColumn : 0,
                      tLunchTimeColumn : 0,
                      tLunchPreferenceColumn : 0,
+                     tLunchTableColumn : 0,
                      tCommentsColumn : 0,
-                     tSectionColumn : 0};
+                     tSectionColumn : 0,
+                     tHouseColumn : 0};
   
   properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
   properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
@@ -299,6 +303,8 @@ function setTeacherColumnIndices(sheetName) {
   properties.tLunchPreferenceColumn = getColumnIndex(tHeaders, "Lunch Preference");
   properties.tCommentsColumn = getColumnIndex(tHeaders, "Comments");
   properties.tSectionColumn = getColumnIndex(tHeaders, "Section");
+  properties.tHouseColumn = getColumnIndex(tHeaders, "House");
+  properties.tLunchTableColumn = getColumnIndex(tHeaders, "Lunch Table");
   
   PropertiesService.getDocumentProperties().setProperties(properties);
 }
