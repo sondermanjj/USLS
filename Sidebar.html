@@ -85,6 +85,23 @@
       border-top: 5px solid #0d47a1;
     }
     
+     #changes li{
+      float: left;
+      display: block;
+      color: #000;
+      text-align: center;
+      padding: 5px 10px;
+      text-decoration: none;
+      margin: 0 5px 5px 0;
+      border-radius: 10px;
+      background-color: #e6e6e6;
+    }
+    
+    #changes li:hover {
+      background-color: #e6e6e6;
+      color: #000;
+    }
+    
     ul {
       list-style-type: none;
       margin: 0;
@@ -144,7 +161,7 @@
       */
     function scanData() {
       google.script.run.withSuccessHandler(scanBoth).showDialog('sc');
-      //google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
+      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
     }
     
     /**
@@ -395,7 +412,7 @@
        <select onload="listHeaders" id="dropdownfilter">
         
          <script>
-           google.script.run.withSuccessHandler(listHeaders).getHeaderColumnNames();
+            google.script.run.withSuccessHandler(listHeaders).getHeaderColumnNames();
            function listHeaders(list) {  
              var html = document.getElementById('dropdownfilter');
              var headers = JSON.parse(list);

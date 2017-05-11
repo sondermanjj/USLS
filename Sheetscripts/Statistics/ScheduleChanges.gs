@@ -2,6 +2,15 @@
 
   var changeshtml = "";
   var updatedChanges = false;
+
+function updateChanges(){
+  var list = scheduleChanges();
+  var numChanges = 0;
+  for(var j=0; j<list.length; j++){
+    numChanges += 1;
+  }
+  Logger.log(numChanges);
+}
   
   /**
   * @desc - Gets the html for the schedule updates
@@ -10,30 +19,31 @@
   */
   function getScheduleChanges() {
     updatedChanges = false;
-    changeshtml = "<br>Student Lunch Changes:";
+    changeshtml = "<h3>Student Lunch Changes:</h3>";
     var changes = scheduleChanges();
     if(changes.length == 0) {
-      changeshtml += "<br> No Schedule changes to display.";
+      changeshtml += "No Schedule changes to display.";
     }  else {
+      changeshtml += "<ul id='changes'>";
       for ( i = 0; i < changes.length; i++) {
         if (changes[i].length < 6) {
-          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " added to the roster.";
+          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " added to the roster.</li>";
         } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
-          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
         } else if (changes[i][3] == 'early') {
-          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
         } else if (changes[i][5] == 'early') {
-          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
         } else {
-          changeshtml += "<br>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.";
+          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
         }
       }
+      changeshtml += "</ul>";
     }
     if ( changes.length != 0) {
       promptForChanges();
     }
     updatedChanges = true;
-    Logger.log("Schedule Changes Retrieved");
     return changeshtml;
   }
   
@@ -44,7 +54,7 @@
  * @author - hendersonam
  */
 function scheduleChanges() {
-  Logger.log("Hi");
+  
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var properties = PropertiesService.getDocumentProperties();
   var currentValues = ss.getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
@@ -62,7 +72,7 @@ function scheduleChanges() {
     scannedSheet = ss.getSheetByName("Scanned Data");
     scannedSheet.hideSheet();
     scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
-    }
+  }
   
   var changesSheet = ss.getSheetByName("Student Schedule Changes");
   if (changesSheet == null) {
@@ -84,8 +94,8 @@ function scheduleChanges() {
   scannedSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues); 
   
   return changes;
-
 }
+
 
 
 /**
@@ -162,18 +172,10 @@ function findChanges(oldValues, newValues, changesSheet) {
                      newValues[k][TableColumn]]);
     }
   }
-   var dataRange = changesSheet.getDataRange()
-   var lastRow = dataRange.getLastRow();
-   var lastColumn = dataRange.getLastColumn();
-   var rows = changesSheetArray.length
-   var columns = changesSheetArray[0].length
- 
-  Logger.log(rows);
   changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
-  
   return changes;
 }
 
-function getChangesHTML() {
+function getChangesHTML(){
   return changeshtml;
 }
