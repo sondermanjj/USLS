@@ -120,7 +120,7 @@ function populateLunchDay(values) {
   }
   
   if (badRows.length > 0) {
-    SpreadsheetApp.getUi().alert("Error setting lunch days on rows: " + badRows);
+    SpreadsheetApp.getUi().alert("Error setting lunch days on rows: \n" + badRows);
   }
   
   return values;

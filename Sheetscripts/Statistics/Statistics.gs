@@ -81,18 +81,6 @@ function getHTMLTable(columns, rows, values) {
  */
 function statistics(time, day, values, students) {
 
-
-  var stats = [];
-
-  for (var i = 0; i < day.length; i++) {
-    stats[i] = [];
-  }
-  for (i = 0; i < day.length; i++) {
-    for( var j = 0; j < time.length; j++) { 
-      stats[i][j] = 0;
-    }
-  }
-  
   var properties = PropertiesService.getDocumentProperties();
   
   var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
@@ -102,39 +90,65 @@ function statistics(time, day, values, students) {
   var lunchDay;
   var lunchTime;
   var count;
+  var stats = [];
+  var incorrectLunchDays = [];
+  var incorrectLunchTimes = [];
+
+  //Create rows for each day in the stats array
+  for (var i = 0; i < day.length; i++) {
+    stats[i] = [];
+    //Create columns for each time in the stats array
+    for( var j = 0; j < time.length; j++) { 
+      stats[i][j] = 0;
+    }
+  }
   
+  //For each row in the data...
   for( var k = 0; k < values.length; k++) {
   
+    //Get this row's lunch day and time
     lunchDay = values[k][lunchDayColumn].toString().toLowerCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
     
+    //If student, grade column can't be empty
     if( (values[k][gradeColumn] !== "") == students) {
     
       count = 0;
       while( isNaN(lunchDay) ) {
         lunchDay == day[count].toString().toLowerCase() ? lunchDay = count : count++;
-        if (count == day.length) break;
+        if (count == day.length) {
+          //If the value in the cell is not a lunch day...
+          if (isNaN(lunchDay) && lunchDay != "lunch day" ) {
+            incorrectLunchDays.push([k+1]);
+          }
+          break; 
+        }
       }
       
       count = 0;
       while ( isNaN(lunchTime) ) {
         lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
-        if (count == time.length) break;
+        if (count == time.length) {
+          //If the value in the cell is not a lunch time...
+          if (isNaN(lunchTime) && lunchTime != "lunch time") {
+            incorrectLunchTimes.push([k+1]);
+          }
+          break;
+        }
       }
       
       if (!isNaN(lunchDay) && !isNaN(lunchTime)) { 
         stats[lunchDay][lunchTime] += 1;
         if (count == time.length) break;
-      }
-      
-      if (isNaN(lunchDay) && lunchDay != "lunch day" ) {
-        SpreadsheetApp.getUi().alert("Alert! Row " + (k+1) + " has an incorrect lunch day value!");
-      }
-      
-      if (isNaN(lunchTime) && lunchTime != "lunch time") {
-        SpreadsheetApp.getUi().alert("Alert! Row " + (k+1) + " has an incorrect lunch time value!");
-      }
+      }     
     }
+  }
+  
+  if (incorrectLunchTimes.length > 0) {
+    SpreadsheetApp.getUi().alert("Following rows did not have a correct lunch time!: \n" + incorrectLunchTimes);
+  }
+  if (incorrectLunchDays.length > 0) {
+      SpreadsheetApp.getUi().alert("Following rows did not have a correct lunch days!: \n" + incorrectLunchDays);
   }
   return stats;
 }

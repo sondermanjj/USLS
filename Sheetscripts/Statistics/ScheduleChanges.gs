@@ -20,8 +20,10 @@
     }  else {
       changeshtml += "<ul id='changes'>";
       for (var i = 0; i < changes.length; i++) {
-        if (changes[i].length < 2 ) {
+        if (changes[i].length == 1 ) {
           changeshtml += "<li> Some values in row " + changes[i][0] + " were changed, but course title was not.</li>";
+        } else if (changes[i].length == 2 ) {
+          changeshtml += "<li> Lunch time in row " + changes[i][0] + " is misspelt. Currently says " + changes[i][1] + ".</li>";
         } else if (changes[i].length < 6) {
           changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " added to the roster.</li>";
         } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
@@ -175,6 +177,7 @@ function findChanges(oldValues, newValues, changesSheet) {
   var LunchDayColumn =  parseInt(properties.getProperty("Student Lunch Day"));
   var TableColumn =  parseInt(properties.getProperty("Student Lunch Table"));
   var courseColumn = parseInt(properties.getProperty("Student Course Title"));
+  var times = JSON.parse(properties.getProperty("lunchTimes"));
   
   oldValues.sort(compareByColumnIndex(LunchDayColumn));
   oldValues.sort(compareByColumnIndex(lastNameColumn));
@@ -185,43 +188,35 @@ function findChanges(oldValues, newValues, changesSheet) {
   
   //Changes sheet values that may/may not need updating
   var changesSheetArray = changesSheet.getDataRange().getValues();
-  
   //Array to log the changes so they can be displayed on the Add-On
   var changes = [];
-  
   //Create an empty row we can use with the correct number of columns
   var emptyRow = [];
   for(var i = 0; i < changesSheetArray[0].length; i++) {
     emptyRow.push(["\t"]);
   }
-  
   for ( var i = 0, k = 0; i < newValues.length; i++, k++) {
-  
     //If this is the header row of the old values, move to the next row
     if ( oldValues[i][0] == "First Name" ) {
       i++;
     }
-    
     //If this is the header row of the new values, move to the next row
     if ( newValues[k][0] == "First Name" ) {
       k++;
     }
-    
     var newRow = newValues[k].toString().toLowerCase();
     var oldRow = oldValues[i].toString().toLowerCase();
-    
     // If the newValue row does not equal the oldValue row, a schedule change happened
     if ( !newRow.equals(oldRow)) {
-      
       if ( newRow[courseColumn] == oldRow[courseColumn] ) {
         changes.push([k+1]);
+      } else if (!times.includes(newRow[LunchTimeColumn]) ){
+        changes.push([k+1, newRow[LunchTimeColumn]]);
       } else {
-      
         //Add the old value, new value, and an empty row to the changes sheet array
         changesSheetArray.push(oldValues[i]);
         changesSheetArray.push(newValues[k]);
         changesSheetArray.push(emptyRow);
-        
         //Add the needed information to the changes array
         changes.push( [newValues[k][firstNameColumn],
                        newValues[k][lastNameColumn],
@@ -233,11 +228,8 @@ function findChanges(oldValues, newValues, changesSheet) {
                        newValues[k][TableColumn]]);
       }
     }
-    
   }
-  
   changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
-  
   return changes;
 }
 

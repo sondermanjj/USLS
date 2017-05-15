@@ -59,8 +59,8 @@ function testting() {
   var letterDays = ["A", "B", "C", "D", "E", "F", "G", "H"];
   var lunchTimes = ["early", "mid", "late"];
   var numberOfTables = 19;
-  var schoolDays = { 1 : 'A', 2 : 'B', 3 : 'C', 4 : 'D', 5 : 'E', 6 : 'F', 7 : 'G', 8 : 'H',
-                     E1 : 'A', G2 : 'B', A3 : 'C', C4 : 'D', F5 : 'E', H6 : 'F', B7 : 'G', D8 : 'H'};
+  var schoolDays = { 1 : 'E', 2 : 'G', 3 : 'A', 4 : 'C', 5 : 'F', 6 : 'H', 7 : 'B', 8 : 'D',
+                     E1 : 'E', G2 : 'G', A3 : 'A', C4 : 'C', F5 : 'F', H6 : 'H', B7 : 'B', D8 : 'D'};
   
   
   var properties = PropertiesService.getDocumentProperties();
