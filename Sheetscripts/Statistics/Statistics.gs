@@ -28,25 +28,16 @@ function getStats(students) {
   var properties = PropertiesService.getDocumentProperties();
   var days = JSON.parse(properties.getProperty("letterDays"));
   var times = JSON.parse(properties.getProperty("lunchTimes"));
-
-  if (students) {
   var values = SpreadsheetApp
                   .getActiveSpreadsheet()
                   .getSheetByName(properties.getProperty("studentData"))
                   .getDataRange()
                   .getValues();
                   
-  } else {
-  
-  var values = SpreadsheetApp
-                  .getActiveSpreadsheet()
-                  .getSheetByName(properties.getProperty("teacherChoices"))
-                  .getDataRange()
-                  .getValues();
-  }
-
   var tableValues = statistics(times, days, values, students);
+  
   return "<table id='studentStatsTable'>" + getHTMLTable(times, days, tableValues);
+  
 }
 
 
@@ -104,19 +95,9 @@ function statistics(time, day, values, students) {
   
   var properties = PropertiesService.getDocumentProperties();
   
-  if (students) {
   var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
   var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
   var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
-  Logger.log("Finding Student stats...");
-
-  } else {
-  var lunchDayColumn = parseInt(properties.getProperty("tLunchDayColumn"));
-  var gradeColumn = values[0].length+1;
-  var lunchTimeColumn = parseInt(properties.getProperty("tLunchTimeColumn"));
-  Logger.log("Finding Teacher stats...");
-  }
-  
   var flag;
   var lunchDay;
   var lunchTime;
@@ -126,6 +107,8 @@ function statistics(time, day, values, students) {
   
     lunchDay = values[k][lunchDayColumn].toString().toLowerCase();
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
+    
+    if( (values[k][gradeColumn] !== "") == students) {
     
       count = 0;
       while( isNaN(lunchDay) ) {
@@ -151,7 +134,7 @@ function statistics(time, day, values, students) {
       if (isNaN(lunchTime) && lunchTime != "lunch time") {
         SpreadsheetApp.getUi().alert("Alert! Row " + (k+1) + " has an incorrect lunch time value!");
       }
+    }
   }
-
   return stats;
 }

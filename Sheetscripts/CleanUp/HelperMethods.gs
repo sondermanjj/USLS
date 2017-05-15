@@ -41,15 +41,13 @@ function getHTMLDropdown(list) {
 * @author - clemensam
 */
 function sheetExists(name){
-  var sheetExist;
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
   if(sheet !== null){
-    sheetExist = true;
+    return true;
   }
   else {
-    sheetExist = false;
+    return false;
   }
-  return sheetExist;
 }
 
 /**

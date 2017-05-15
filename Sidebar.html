@@ -80,14 +80,24 @@
       //consoleDisplay("Non: " + JSON.stringify(nonAssignedLunchList) + ", Assigned: " + JSON.stringify(assignedLunchList));
     }
     
+    /**
+    * @desc - saves faculty choices and final student data sheet names from settings tab into properties
+    * @author - clemensam
+    */
     function saveSheetNames(){
-      saveTeacherSheet();
-      saveStudentSheet();
+      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
+      var studentDataSheet = document.getElementById('studentDataSheetName').value;
+      google.script.run.withSuccessHandler(saveTeacherSheet).sheetExists(teacherChoicesSheet);
+      google.script.run.withSuccessHandler(saveStudentSheet).sheetExists(studentDataSheet);
     }
     
-    function saveTeacherSheet(){
-      var teacherChoicesSheet = document.getElementById('facultyChoices').value;
-      if(google.script.run.sheetExists(teacherChoicesSheet)){
+    /**
+    * @desc - saves faculty choices sheet name property
+    * @author - clemensam
+    */
+    function saveTeacherSheet(valid){
+      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
+      if(valid){
         google.script.run.setTeacherChoicesSheetByName(teacherChoicesSheet);
       }
       else {
@@ -95,14 +105,18 @@
       }
     }
     
-    function saveStudentSheet(){
-      var studentDataSheet = document.getElementById('studentData').value;
-      if(google.script.run.sheetExists(studentDataSheet)){
-        google.script.run.setStudentSheetByName(sheet);
+    /**
+    * @desc - saves final student data sheet name property
+    * @author - clemensam
+    */
+    function saveStudentSheet(valid){
+      var studentDataSheet = document.getElementById('studentDataSheetName').value;
+      if(valid){
+        google.script.run.setStudentSheetByName(studentDataSheet);
       }
       else {
         google.script.run.showMessage("Whoops! The Final Student Data Sheet name that you entered does not exist. This setting could not be saved.");
-      }
+      } 
     }
     
     
@@ -339,8 +353,11 @@
      </div>
      
      <div id="cleanPage">
+
        <button id="cleanButton" class="action" onclick="google.script.run.initialization();">Initialize</button>
-       <button id="exportButton" class="action" onclick="google.script.run.exportToWebsitePrompt();">Export</button>
+
+       <button id="exportButton" class="action" onclick="google.script.run.exportToWebsite();">Export</button>
+
      </div>
      
      <div id="statsPage">
@@ -440,6 +457,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day1" type="text" onkeypress="" name="a-day" value="A"/></span>
+                            <span><input class="dayNumberBox" id="day1num" type="text" onkeypress="" name="a-day" value="1"/></span>
                         </div>
                     </td>
                 </tr>
@@ -448,6 +466,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day2" type="text" onkeypress="" name="b-day" value="B"/></span>
+                            <span><input class="dayNumberBox" id="day2num" type="text" onkeypress="" name="b-day" value="2"/></span>
                         </div>
                     </td>
                 </tr>
@@ -456,6 +475,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day3" type="text" onkeypress="" name="c-day" value="C"/></span>
+                            <span><input class="dayNumberBox" id="day3num" type="text" onkeypress="" name="c-day" value="3"/></span>
                         </div>
                     </td>
                 </tr>
@@ -464,6 +484,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day4" type="text" onkeypress="" name="d-day" value="D"/></span>
+                            <span><input class="dayNumberBox" id="day4num" type="text" onkeypress="" name="d-day" value="4"/></span>
                         </div>
                     </td>
                 </tr>
@@ -472,6 +493,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day5" type="text" onkeypress="" name="e-day" value="E"/></span>
+                            <span><input class="dayNumberBox" id="day5num" type="text" onkeypress="" name="e-day" value="5"/></span>
                         </div>
                     </td>
                 </tr>
@@ -480,6 +502,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day6" type="text" onkeypress="" name="f-day" value="F"/></span>
+                            <span><input class="dayNumberBox" id="day6num" type="text" onkeypress="" name="f-day" value="6"/></span>
                         </div>
                     </td>
                 </tr>
@@ -488,6 +511,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day7" type="text" onkeypress="" name="g-day" value="G"/></span>
+                            <span><input class="dayNumberBox" id="day7num" type="text" onkeypress="" name="g-day" value="7"/></span>
                         </div>
                     </td>
                 </tr>
@@ -496,6 +520,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day8" type="text" onkeypress="" name="h-day" value="H"/></span>
+                            <span><input class="dayNumberBox" id="day8num" type="text" onkeypress="" name="h-day" value="8"/></span>
                         </div>
                     </td>
                 </tr>
@@ -601,7 +626,7 @@
                         <td>
                             <div class="row">
                                 <span class="rowLabel">Final Student Data: </span>
-                                <span class="inputSpan"><input class="settingsBox" id="studentData" type="text" onkeypress="" name="finalDataSheetName" value=""/></span>
+                                <span class="inputSpan"><input class="settingsBox" id="studentDataSheetName" type="text" onkeypress="" name="finalDataSheetName" value=""/></span>
                             </div>
                         </td>
                     </tr>
@@ -609,7 +634,7 @@
                         <td>
                             <div class="row">
                                 <span class="rowLabel">Faculty Choices: </span>
-                                <span class="inputSpan"><input class="settingsBox" id="facultyChoices" type="text" onkeypress="" name="facultyChoicesSheetName" value=""/></span>
+                                <span class="inputSpan"><input class="settingsBox" id="facultyChoicesSheetName" type="text" onkeypress="" name="facultyChoicesSheetName" value=""/></span>
                             </div>
                         </td>
                     </tr>
