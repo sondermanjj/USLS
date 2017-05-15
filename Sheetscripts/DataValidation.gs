@@ -1,10 +1,3 @@
-/**
- * This is to be used in conjunction with the University School of Milwaukee
- * Spreadsheet data to make sure all lunch times, lunch days, and table numbers are valid.
- */
-
-
-
 function validateData(sheetData) {
   validateLunchTimes(sheetData);
   validateLunchDays(sheetData);

@@ -5,7 +5,7 @@
  */
 function sheetCleanupPrompt(){
 
-  var cleanedSheet;
+  var cleaned = false;
   
   var ui = SpreadsheetApp.getUi();
   response = ui.prompt('Preparing to clean raw data sheet...', 'Please enter the name of the raw data sheet.\n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
@@ -14,13 +14,18 @@ function sheetCleanupPrompt(){
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
     if(sheet != null){
       cleanedSheet = cleanUp(sheet);
-      return cleanedSheet;
+      if (cleanedSheet != null ){
+        cleaned = true;
+        return cleaned;
+      } else {
+        return cleaned;
+      }  
     } else {
       ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
       sheetCleanupPrompt();
     }
   }
-  return null;
+  return cleaned;
 }
 
 /**
@@ -35,18 +40,11 @@ function cleanUp(sheet) {
   var oldValues = sheet.getDataRange().getValues();
   var masterList = promptForNewSheet("Please enter the name of the sheet you would like to save the cleaned student information to.");
   
-  setStudentSheet(masterList);
-  setHeaderColumnNames(getListOfColumns(oldValues));
-  setStudentColumnIndices(getListOfColumns(oldValues));
-  
   //Remove irrelevant data
   var newValues = removeIrrelevantData(oldValues);
   
   //Add new columns
   newValues = addColumnNames(newValues, ["Table Head", "Lunch Day", "Lunch Time", "Lunch Table", "House"]);
-  
-  setHeaderColumnNames(getListOfColumns(newValues));
-  setStudentColumnIndices(getListOfColumns(newValues));
   
   //Populate the Lunch Day Table
   newValues = populateLunchDay(newValues);
@@ -66,17 +64,20 @@ function cleanUp(sheet) {
  * @author - hendersonam
  */
 function removeIrrelevantData(oldValues) {
-
-  //Create a new array for the cleaned data
+  
+  //Get necessary properties
   var properties = PropertiesService.getDocumentProperties();
   var schoolDays = JSON.parse(properties.getProperty('schoolDays'));
+  
+  //Create a new array for the cleaned data
   var revisedValues = [];
-  var headers = JSON.parse(properties.getProperty('headers'));
-  var blockColumn = parseInt(properties.getProperty('Student Block'));
-
-      
+  
   //Add the column titles to the new data array
-  revisedValues.push(headers);
+  var oldHeaders = getListOfColumns(oldValues);
+  revisedValues.push(oldHeaders);
+  
+  //Get necessary column indices
+  var blockColumn = getColumnIndex(oldHeaders, "Block");
   
   //Grab any relevant rows (courses that meet during lunch times)
   //and push them to the new data array
@@ -100,14 +101,26 @@ function populateLunchDay(values) {
   
   var properties = PropertiesService.getDocumentProperties();
   var schoolDays = JSON.parse(properties.getProperty('schoolDays'));
-  var blockColumn = parseInt(properties.getProperty('Student Block'));
-  var lunchDayColumn = parseInt(properties.getProperty('Student Lunch Day'));
+  var headers = getListOfColumns(values);
+  var blockColumn = getColumnIndex(headers, "Block");
+  var lunchDayColumn = getColumnIndex(headers, "Lunch Day");
+  
+  var badRows = [];
 
   //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
   for (var j = 0; j < values.length; j++) {
     if(values[j][lunchDayColumn] != "Lunch Day") {
-      values[j][lunchDayColumn] = schoolDays[values[j][blockColumn]];
+      var day = schoolDays[values[j][blockColumn]];
+      if( day === null) {
+        badRows.push(j+1);
+      } else {
+        values[j][lunchDayColumn] = schoolDays[values[j][blockColumn]];
+      }
     }
+  }
+  
+  if (badRows.length > 0) {
+    SpreadsheetApp.getUi().alert("Error setting lunch days on rows: " + badRows);
   }
   
   return values;

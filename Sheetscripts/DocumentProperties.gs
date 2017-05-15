@@ -5,7 +5,7 @@ function testting() {
   properties.deleteAllProperties();
   var schoolDays = { 1 : 'A', 2 : 'B', 3 : 'C', 4 : 'D', 5 : 'E', 6 : 'F', 7 : 'G', 8 : 'H',
                      A1 : 'A', B2 : 'B', C3 : 'C', D4 : 'D', E5 : 'E', F6 : 'F', G7 : 'G', H8 : 'H'};
-  setSchoolDays(schoolDays);
+  
   Logger.log(properties.getProperties());
   
 }
@@ -55,30 +55,57 @@ function testting() {
  *
  *
  *****************************************************************************************************************/
-
-/**
- * @desc - Sets the properties for the document, cleans the raw file, assigns students, assigns
- *         faculty tables, and scans the data to retrieve statistics and to prepare for schedule changes
+ 
+ /**
+ * @desc - Sets the document properties for the letter days, lunch times, number of tables, and school days
  * @author - hendersonam
  */
-function initialization() {
-
-  setProperties();
-  assignStudentLunchDays();
-  addFacultyTables();
+ function setLunchProperties() {
+  var letterDays = ["A", "B", "C", "D", "E", "F", "G", "H"];
+  var lunchTimes = ["early", "mid", "late"];
+  var numberOfTables = 19;
+  var schoolDays = { 1 : 'A', 2 : 'B', 3 : 'C', 4 : 'D', 5 : 'E', 6 : 'F', 7 : 'G', 8 : 'H',
+                     A1 : 'A', B2 : 'B', C3 : 'C', D4 : 'D', E5 : 'E', F6 : 'F', G7 : 'G', H8 : 'H'};
   
-  var oldData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
-  if (oldData != null ) {
-    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldData);
-  }
-  var oldChanges = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
-  if (oldChanges != null ) {
-    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
-  }
   
+  var properties = PropertiesService.getDocumentProperties();
+  setLetterDays(letterDays);
+  setLunchTimes(lunchTimes);
+  //setAssignedLunches([["early", 133]]);
+  //setNonAssignedLunches(["mid", "late"]);
+  setNumberOfTables(numberOfTables);
+  setSchoolDays(schoolDays);
   
 }
 
+/**
+ * @desc - Sets the document properties for the sheets that will be used throughout the program inlcuding column indices
+ * @author - hendersonam
+ */
+function setSheetProperties() {
+
+  var properties = PropertiesService.getDocumentProperties();
+
+  var studentSheet = promptForSettingSheetProperty("Which sheet has the cleaned student data?");
+  var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet has the  faculty lunch choices?");
+  var teacherTableSheet = promptForSettingSheetProperty("Which sheet has the faculty table data?");
+  var dodSheet = promptForSettingSheetProperty("Which sheet has the DOD list?");
+  
+  setStudentSheet(studentSheet);
+  setTeacherChoicesSheet(teacherChoicesSheet);
+  setTeacherTableSheet(teacherTableSheet);
+  setDODSheet(dodSheet);
+  
+  //Needs to run after setting sheets
+  setStudentColumnIndices(properties.getProperty("studentData"));
+  setTeacherColumnIndices(properties.getProperty("teacherChoices"));
+}
+
+/**
+ * @desc - Sets the document property for the pairing of numbers and letters for school days. Saves it as
+ *         a Json.stringify(map)
+ * @author - hendersonam
+ */
 function setSchoolDays(schoolDays) {
   var properties = PropertiesService.getDocumentProperties();
   properties.setProperty('schoolDays', JSON.stringify(schoolDays));
@@ -100,45 +127,6 @@ function setHeaderColumnNames(headers) {
  */
 function getHeaderColumnNames() {
   return PropertiesService.getDocumentProperties().getProperty("headers");
-}
-
-/**
- * @desc - Runs the raw data sheet cleanup and then initializes the document properties with the proper sheet names and studet adn teacher data
- * @author - hendersonam
- */
-function setProperties() {
-  
-  var properties = PropertiesService.getDocumentProperties();
-  
-  setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
-  setLunchTimes(["early", "mid", "late"]);
-  setAssignedLunches([["early", 133]]);
-  setNonAssignedLunches(["mid", "late"]);
-  setNumberOfTables(19);
-  setSheets();
-  setStudentColumnIndices(properties.getProperty("studentData"));
-  setTeacherColumnIndices(properties.getProperty("teacherChoices"));
-  setHeaderColumnNames();
-  
-  
-}
-
-/**
- * @desc - Sets the document properties for the sheets that will be used throughout the program
- * @author - hendersonam
- */
-function setSheets() {
-
-  var studentSheet = sheetCleanupPrompt();
-  var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet would you like to use for faculty lunch choices?");
-  var teacherTableSheet = promptForSettingSheetProperty("Which sheet would you like to use for faculty table data?");
-  var dodSheet = promptForSettingSheetProperty("Which sheet would you like to use for the DOD list?");
-  
-  setStudentSheet(studentSheet);
-  setTeacherChoicesSheet(teacherChoicesSheet);
-  setTeacherTableSheet(teacherTableSheet);
-  setDODSheet(dodSheet);
- 
 }
 
 /**
