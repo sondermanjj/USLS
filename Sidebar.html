@@ -18,21 +18,15 @@
     <?!= include('SidebarCSS.html'); ?>
     
     <script>
+    //JSHint Verified 5/14/17
     
-    /**
-    * @desc - retrieves the currently saved lunch letter days from the document properties
-    * @author - clemensam
-    */
-    function getLetterDays(){
-      var lunchDays = properties.getProperty("letterDays");
-    }
     
     /**
     * @desc - displays current day settings to the sidebar
     * @author - clemensam
     */
     function displayLetterDays(){
-      var days = getLetterDays();
+      var days = google.script.run.getLetterDays();
       document.getElementById('currentDays').innerHTML = days;  
     }
     
@@ -47,7 +41,7 @@
         daysList.push(dayBoxes[i].value);
       }
       google.script.run.setLetterDays(daysList);
-      
+      //consoleDisplay(JSON.stringify(google.script.run.getLetterDays()));  
     }
     
     function consoleDisplay(toPrint){
@@ -62,29 +56,55 @@
     function saveLunchTimes(){
       var lunchTimeBoxes = document.getElementsByName("timeBox");
       var assignedBoxes = document.getElementsByClassName('assignedBox');
-      var assignedLunchList = [];
-      var nonAssignedLunchList = [];
+      var numTableBoxes = document.getElementsByName('tableBox');
+      var numStudentsBoxes = document.getElementsByName('studentsBox');
+      var assignedLunchList = {};
+      var nonAssignedLunchList = {};
+      var lunchtimes = []; var timeObj;
       var i = 0;
       for(var j = 0; j < assignedBoxes.length; j+=2) {
         if(assignedBoxes[j].checked){
-          assignedLunchList.push(lunchTimeBoxes[i].value);
+          timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": true};
+          assignedLunchList[lunchTimeBoxes[i].value] = timeObj;
         }
         else{
-          nonAssignedLunchList.push(lunchTimeBoxes[i].value);
+          timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": false};
+          nonAssignedLunchList[lunchTimeBoxes[i].value] = timeObj;
         }
+        lunchtimes.push(lunchTimeBoxes[i].value);
         i++;
       }
       google.script.run.setNonAssignedLunches(nonAssignedLunchList);
       google.script.run.setAssignedLunches(assignedLunchList);
-      consoleDisplay("Non: " + nonAssignedLunchList + "Assigned: " + assignedLunchList);
+      google.script.run.setLunchTimes(lunchtimes);
+      //consoleDisplay("Non: " + JSON.stringify(nonAssignedLunchList) + ", Assigned: " + JSON.stringify(assignedLunchList));
     }
     
     function saveSheetNames(){
-      var teacherChoicesSheet = document.getElementById('facultyChoices').value;
-      var studentDataSheet = document.getElementById('studentData').value;
+      saveTeacherSheet();
+      saveStudentSheet();
     }
     
-   
+    function saveTeacherSheet(){
+      var teacherChoicesSheet = document.getElementById('facultyChoices').value;
+      if(google.script.run.sheetExists(teacherChoicesSheet)){
+        google.script.run.setTeacherChoicesSheetByName(teacherChoicesSheet);
+      }
+      else {
+        google.script.run.showMessage("Whoops! The Faculty Choices Sheet name that you entered does not exist. This setting could not be saved.");
+      }
+    }
+    
+    function saveStudentSheet(){
+      var studentDataSheet = document.getElementById('studentData').value;
+      if(google.script.run.sheetExists(studentDataSheet)){
+        google.script.run.setStudentSheetByName(sheet);
+      }
+      else {
+        google.script.run.showMessage("Whoops! The Final Student Data Sheet name that you entered does not exist. This setting could not be saved.");
+      }
+    }
+    
     
     function showMenus(){
       scanBoth();
@@ -164,60 +184,6 @@
         var column = document.getElementById('dropdownfilter').value;
         google.script.run.showDialog('search, ' + filter + ', ' + column);
       }
-    }
-
-    /**
-    * @desc - Shows the contents relating to sheet clean up
-    * @author - clemensam
-    */
-    function showCleanupPage(){
-      var x = document.getElementById('cleanPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Shows the contents relating to the sheet's statistics
-    * @author - clemensam
-    */
-    function showStatisticsPage(){
-      var x = document.getElementById('statsPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Shows the contents relating to the search function for the sheet
-    * @author - clemensam
-    */
-    function showSearchPage(){
-      var x = document.getElementById('searchPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Hides the clean page contents
-    * @author - clemensam
-    */
-    function hideCleanupPage(){
-      var x = document.getElementById('cleanPage');
-      x.style.display = 'none';
-    }
-    
-    /**
-    * @desc - Hides the statistics page contents
-    * @author - clemensam
-    */
-    function hideStatisticsPage(){
-      var x = document.getElementById('statsPage');
-      x.style.display = 'none';
-    }
-    
-    /**
-    * @desc - Hides the search page contents
-    * @author - clemensam
-    */
-    function hideSearchPage(){
-      var x = document.getElementById('searchPage');
-      x.style.display = 'none';
     }
     
     /*
@@ -553,11 +519,11 @@
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Number of Tables: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="earlytables" type="text" onkeypress="" name="t1" value="19"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlytables" type="text" onkeypress="" name="tableBox" value="19"/></span>
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Number of Students: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="s1" value="133"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Assigned Tables? </span>
@@ -580,11 +546,11 @@
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Number of Tables: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midtables" type="text" onkeypress="" name="t2" value="19"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midtables" type="text" onkeypress="" name="tableBox" value="19"/></span>
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Number of Students: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="s2" value="133"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Assigned Tables? </span>
@@ -607,11 +573,11 @@
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Number of Tables: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latetables" type="text" onkeypress="" name="t3" value="19"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latetables" type="text" onkeypress="" name="tableBox" value="19"/></span>
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Number of Students: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="s3" value="133"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Assigned Tables? </span>
