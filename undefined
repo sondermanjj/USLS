@@ -1,11 +1,8 @@
 
-
 function testting() {
- setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
+  setLunchTimes(["early", "mid", "late"]);
  Logger.log(PropertiesService.getDocumentProperties().getProperties());
- setHeaderColumnNames();
 }
-
  /*****************************************************************************************************************
  * Properties:
  *   Sheets:
@@ -14,7 +11,7 @@ function testting() {
  *     teacherTables - Faculty Table List
  *     dodList - DOD List
  *    
- *   Column Indices for Students:
+ *   Column Inidices for Students:
  *     pLunchTimeColumn - Lunch Time
  *     pLunchDayColumn - Lunch Day
  *     pSFNameColumn - First Name
@@ -39,19 +36,7 @@ function testting() {
  *     tFNameColumn - First Name
  *     tLNameColumn - Last Name
  *     tLunchDayColumn - Lunch Day
- *     tLunchTimeColumn - Lunch Time
- *     tTableColumn - Table Assignment
- *     tHouseColumn - Teacher House
- *
- *     tLunchPreferenceColumn;
- *     tCommentsColumn;
- *     tSectionColumn;
- *
- *
- *   Others:
- *     numberOfTables - Number of tables in early lunch
- *     letterDays - A list of the letter days for the school
- *     lunchTimes - A list of the lunch times for the school
+ *     tLunchTimeColumn - Lunch Assignment (Lunch Time)
  *
  *
  *****************************************************************************************************************/
@@ -67,38 +52,6 @@ function initialization() {
   assignStudentLunchDays();
   addFacultyTables();
   
-  var oldData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
-  if (oldData != null ) {
-    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldData);
-  }
-  var oldChanges = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
-  if (oldChanges != null ) {
-    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
-  }
-  
-  
-}
-
-/**
- * @desc - Sets the document property for the list of header columns in the student data sheet. Saves it as
- *         a Json.stringify(array)
- * @author - hendersonam
- */
-function setHeaderColumnNames() {
-  var properties = PropertiesService.getDocumentProperties();
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var studentSheet = ss.getSheetByName(properties.getProperty("studentData"));
-  var data = studentSheet.getDataRange().getValues();
-  var headers = getListOfColumns(data);
-  properties.setProperty("headers", JSON.stringify(headers));
-}
-
-/**
- * @desc - Return the list of header column names from the property service
- * @author - hendersonam
- */
-function getHeaderColumnNames() {
-  return PropertiesService.getDocumentProperties().getProperty("headers");
 }
 
 /**
@@ -114,10 +67,7 @@ function setProperties() {
   setTeacherColumnIndices(properties.getProperty("teacherChoices"));
   setLetterDays(["A", "B", "C", "D", "E", "F", "G", "H"]);
   setLunchTimes(["early", "mid", "late"]);
-  setAssignedLunches([["early", 133]]);
-  setNonAssignedLunches(["mid", "late"]);
   setNumberOfTables(19);
-  setHeaderColumnNames();
   
 }
 
@@ -130,29 +80,6 @@ function setLetterDays(value) {
   PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
 }
 
-/**
- * @desc - Sets the document property for the assigned lunch times as a JSON.stringify value
- * @param - Array[][] - 2D array with the lunch time and the amonut of students for that lunch
- * @author - hendersonam
- */
-function setAssignedLunches(value) {
-  //PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
-}
-
-/**
- * @desc - Sets the document property for the non-assigned lunch times as a JSON.stringify value
- * @param - Array[] - the lunch times that do not have 
- * @author - hendersonam
- */
-function setNonAssignedLunches(value) {
-  //PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
-}
-
-/**
- * @desc - Sets the document property for the lunch times as a JSON.stringify value
- * @param - Array[] - the letters for each day
- * @author - hendersonam
- */
 function setLunchTimes(value) {
   PropertiesService.getDocumentProperties().setProperty("lunchTimes", JSON.stringify(value));
 }
@@ -224,6 +151,7 @@ function setDODSheet(sheet) {
   PropertiesService.getDocumentProperties().setProperty("DODList", value);
 }
 
+
 /**
  *@desc Sets the documnet properties for the final student data column header indices to be used as global variables
  *@params - Object[][] - the array of the Final Student Data
@@ -290,22 +218,12 @@ function setTeacherColumnIndices(sheetName) {
   var properties = { tFNameColumn : 0,
                      tLNameColumn : 0,
                      tLunchDayColumn : 0,
-                     tLunchTimeColumn : 0,
-                     tLunchPreferenceColumn : 0,
-                     tCommentsColumn : 0,
-                     tTableColumn : 0,
-                     tHouseColumn : 0,
-                     tSectionColumn : 0};
+                     tLunchTimeColumn : 0};
   
   properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
   properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
   properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
-  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Time");
-  properties.tLunchPreferenceColumn = getColumnIndex(tHeaders, "Lunch Preference");
-  properties.tCommentsColumn = getColumnIndex(tHeaders, "Comments");
-  properties.tTableColumn = getColumnIndex(tHeaders, "Table");
-  properties.tHouseColumn = getColumnIndex(tHeaders, "House");
-  properties.tSectionColumn = getColumnIndex(tHeaders, "Section");
-
+  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
+  
   PropertiesService.getDocumentProperties().setProperties(properties);
 }
