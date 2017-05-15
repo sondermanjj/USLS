@@ -71,7 +71,6 @@ function studentTester(){
     }
   }
   
-  
   var messages = [];  
   messages[0] = "TestForFilledEarlyLunches: " + testForFilledEarlyLunches(students);
   messages[1] = "TestAllStudentsHaveLunchForEachDay: " + testAllStudentsHaveALunchForEachDay(students);
@@ -247,11 +246,46 @@ function testForFilledEarlyLunches(students) {
         }
       }
     }
-    if(A.length == 133 && B.length == 133 && C.length == 133 && D.length == 133 && E.length == 133 && F.length == 133 && G.length == 133 && H.length == 133){
-      t.errorSpot("All lunch numbers ok!", true);
+    if (A.length==133) {
+      t.errorSpot("A Lunch numbers OK", true);
     }else{
-      t.errorSpot("testForFilledEarlyLunches failed!", false);
+      t.errorSpot("A Lunch numbers incorrect, is "+A.length+", should be 133", false);
     }
+    if (B.length==133) {
+      t.errorSpot("B Lunch numbers OK", true);
+    }else{
+      t.errorSpot("B Lunch numbers incorrect, is "+B.length+", should be 133", false);
+    }    
+    if (C.length==133) {
+      t.errorSpot("C Lunch numbers OK", true);
+    }else{
+      t.errorSpot("C Lunch numbers incorrect, is "+C.length+", should be 133", false);
+    }
+    if (D.length==133) {
+      t.errorSpot("D Lunch numbers OK", true);
+    }else{
+      t.errorSpot("D Lunch numbers incorrect, is "+D.length+", should be 133", false);
+    }
+    if (E.length==133) {
+      t.errorSpot("E Lunch numbers OK", true);
+    }else{
+      t.errorSpot("E Lunch numbers incorrect, is "+E.length+", should be 133", false);
+    }
+    if (F.length==133) {
+      t.errorSpot("F Lunch numbers OK", true);
+    }else{
+      t.errorSpot("F Lunch numbers incorrect, is "+F.length+", should be 133", false);
+    }
+    if (G.length==133) {
+      t.errorSpot("G Lunch numbers OK", true);
+    }else{
+      t.errorSpot("G Lunch numbers incorrect, is "+G.length+", should be 133", false);
+    }
+    if (H.length==133) {
+      t.errorSpot("H Lunch numbers OK", true);
+    }else{
+      t.errorSpot("H Lunch numbers incorrect, is "+H.length+", should be 133", false);
+    }    
   });
 }
 
@@ -271,6 +305,8 @@ function testAllStudentsHaveALunchForEachDay(students){
     for(var n = 0; n < students.length; n++){
       var stu = students[n];
       if(stu.lunches.length == 8){
+        t.errorSpot("Student " + stu.fName + " " + stu.lName + " has 8 lunches, as they should!", true);
+ 
         var a = false;
         var b = false;
         var c = false;
@@ -300,6 +336,8 @@ function testAllStudentsHaveALunchForEachDay(students){
         if(!(a && b && c && d && e && f && g && h)){
           t.errorSpot("Student " + stu.fName + " " + stu.lName + " has 8 lunches, but does not have a lunch for every day!", false);
           count++;
+        }else{
+          t.errorSpot("Student " + stu.fname + " " + stu.lName + "has the correct number of lunches!", true);
         }
       }else{
         t.errorSpot("Student " + stu.fName + " " + stu.lName + " has " + stu.lunches.length + " lunches!", false);

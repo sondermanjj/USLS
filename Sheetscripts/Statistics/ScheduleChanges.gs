@@ -44,11 +44,9 @@ function updateChanges(){
       promptForChanges();
     }
     updatedChanges = true;
-    Logger.log("Changes: " + changeshtml);
     return changeshtml;
   }
-
-
+  
 /**
  * @desc - Creates/Updates the Scanned Data and Student Schedule Changes sheets and returns the differences
  *         between the Final Student Data and Scanned Data to be displayed in the UI as schedule changes
@@ -173,9 +171,7 @@ function findChanges(oldValues, newValues, changesSheet) {
                      oldValues[i][TableColumn],
                      newValues[k][TableColumn]]);
     }
-    
   }
-  
   changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
   return changes;
 }
