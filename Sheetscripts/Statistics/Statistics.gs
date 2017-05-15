@@ -95,9 +95,9 @@ function statistics(time, day, values, students) {
   
   var properties = PropertiesService.getDocumentProperties();
   
-  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
-  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
-  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
+  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
+  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
   var flag;
   var lunchDay;
   var lunchTime;

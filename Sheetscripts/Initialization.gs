@@ -21,8 +21,8 @@ function initialization() {
     }
     
     setSheetProperties();
-    //assignStudentLunchDays();
-    //addFacultyTables();
+    assignStudentLunchDays();
+    addFacultyTables();
   
   } else {
     SpreadsheetApp.getUi().alert("Clean up failed, cannot set properties!");

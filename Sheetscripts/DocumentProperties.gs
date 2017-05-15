@@ -1,12 +1,7 @@
 
 
 function testting() {
-  var properties =  PropertiesService.getDocumentProperties()
-  properties.deleteAllProperties();
-  var schoolDays = { 1 : 'A', 2 : 'B', 3 : 'C', 4 : 'D', 5 : 'E', 6 : 'F', 7 : 'G', 8 : 'H',
-                     A1 : 'A', B2 : 'B', C3 : 'C', D4 : 'D', E5 : 'E', F6 : 'F', G7 : 'G', H8 : 'H'};
-  
-  Logger.log(properties.getProperties());
+  Logger.log(PropertiesService.getDocumentProperties().getProperties());
   
 }
 
@@ -65,7 +60,7 @@ function testting() {
   var lunchTimes = ["early", "mid", "late"];
   var numberOfTables = 19;
   var schoolDays = { 1 : 'A', 2 : 'B', 3 : 'C', 4 : 'D', 5 : 'E', 6 : 'F', 7 : 'G', 8 : 'H',
-                     A1 : 'A', B2 : 'B', C3 : 'C', D4 : 'D', E5 : 'E', F6 : 'F', G7 : 'G', H8 : 'H'};
+                     E1 : 'A', G2 : 'B', A3 : 'C', C4 : 'D', F5 : 'E', H6 : 'F', B7 : 'G', D8 : 'H'};
   
   
   var properties = PropertiesService.getDocumentProperties();
@@ -97,8 +92,14 @@ function setSheetProperties() {
   setDODSheet(dodSheet);
   
   //Needs to run after setting sheets
-  setStudentColumnIndices(properties.getProperty("studentData"));
-  setTeacherColumnIndices(properties.getProperty("teacherChoices"));
+  var studentHeaders = getListOfColumns(
+                          SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+                          properties.getProperty("studentData")).getDataRange().getValues());
+  var teacherHeaders = getListOfColumns(
+                          SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+                          properties.getProperty("teacherChoices")).getDataRange().getValues());
+  setStudentColumnIndices(studentHeaders);
+  setTeacherColumnIndices(teacherHeaders);
 }
 
 /**

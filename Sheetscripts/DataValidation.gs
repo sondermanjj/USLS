@@ -4,15 +4,16 @@ function validateData(sheetData) {
   validateTableNumbers(sheetData);
 }
 
-function validateColumn(sheetData, column) {
+function validateColumn(data, column) {
   var properties = PropertiesService.getDocumentProperties();
-  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
-  var correctColumnValues = JSON.parse(properties.getProperty(column));
+  var lunchTimeColumn = parseInt(properties.getProperty("Student " + column));
+  
   
   var incorrectCells = [];
   var sheetCell;
   var valid;
-  for (var i = 0; i < sheetData.length; i++) {
+  
+  for (var i = 0; i < data.length; i++) {
     sheetCell = sheetData[i][lunchTimeColumn]
     valid = false;
     for ( var j = 0; j < correctColumnValues.length; j ++) {

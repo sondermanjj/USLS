@@ -20,7 +20,9 @@
     }  else {
       changeshtml += "<ul id='changes'>";
       for (var i = 0; i < changes.length; i++) {
-        if (changes[i].length < 6) {
+        if (changes[i].length < 2 ) {
+          changeshtml += "<li> Some values in row " + changes[i][0] + " were changed, but course title was not.</li>";
+        } else if (changes[i].length < 6) {
           changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " added to the roster.</li>";
         } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
           changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
@@ -101,8 +103,8 @@ function scheduleChanges() {
 function checkForOldStudents(oldValues, newValues) {
 
   var properties = PropertiesService.getDocumentProperties();
-  var firstNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var lastNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
+  var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
   
   oldValues.sort(compareByColumnIndex(lastNameColumn));
   oldValues.sort(compareByColumnIndex(firstNameColumn));
@@ -134,8 +136,8 @@ function checkForOldStudents(oldValues, newValues) {
 function checkForNewStudents(oldValues, newValues) {
 
   var properties = PropertiesService.getDocumentProperties();
-  var firstNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var lastNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
+  var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
   
   oldValues.sort(compareByColumnIndex(lastNameColumn));
   oldValues.sort(compareByColumnIndex(firstNameColumn));
@@ -167,11 +169,12 @@ function checkForNewStudents(oldValues, newValues) {
 function findChanges(oldValues, newValues, changesSheet) {
   
   var properties = PropertiesService.getDocumentProperties();
-  var firstNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var lastNameColumn =  parseInt(properties.getProperty("pSLNameColumn"));
-  var LunchTimeColumn =  parseInt(properties.getProperty("pLunchTimeColumn"));
-  var LunchDayColumn =  parseInt(properties.getProperty("pLunchDayColumn"));
-  var TableColumn =  parseInt(properties.getProperty("pTableColumn"));
+  var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var lastNameColumn =  parseInt(properties.getProperty("Student Last Name"));
+  var LunchTimeColumn =  parseInt(properties.getProperty("Student Lunch Time"));
+  var LunchDayColumn =  parseInt(properties.getProperty("Student Lunch Day"));
+  var TableColumn =  parseInt(properties.getProperty("Student Lunch Table"));
+  var courseColumn = parseInt(properties.getProperty("Student Course Title"));
   
   oldValues.sort(compareByColumnIndex(LunchDayColumn));
   oldValues.sort(compareByColumnIndex(lastNameColumn));
@@ -204,27 +207,35 @@ function findChanges(oldValues, newValues, changesSheet) {
       k++;
     }
     
+    var newRow = newValues[k].toString().toLowerCase();
+    var oldRow = oldValues[i].toString().toLowerCase();
+    
     // If the newValue row does not equal the oldValue row, a schedule change happened
-    if ( !newValues[k].toString().equals(oldValues[i].toString())) {
+    if ( !newRow.equals(oldRow)) {
       
-      //Add the old value, new value, and an empty row to the changes sheet array
-      changesSheetArray.push(oldValues[i]);
-      changesSheetArray.push(newValues[k]);
-      changesSheetArray.push(emptyRow);
+      if ( newRow[courseColumn] == oldRow[courseColumn] ) {
+        changes.push([k+1]);
+      } else {
       
-      //Add the needed information to the changes array
-      changes.push( [newValues[k][firstNameColumn],
-                     newValues[k][lastNameColumn],
-                     oldValues[i][LunchDayColumn],
-                     oldValues[i][LunchTimeColumn],
-                     newValues[k][LunchDayColumn],
-                     newValues[k][LunchTimeColumn],
-                     oldValues[i][TableColumn],
-                     newValues[k][TableColumn]]);
+        //Add the old value, new value, and an empty row to the changes sheet array
+        changesSheetArray.push(oldValues[i]);
+        changesSheetArray.push(newValues[k]);
+        changesSheetArray.push(emptyRow);
+        
+        //Add the needed information to the changes array
+        changes.push( [newValues[k][firstNameColumn],
+                       newValues[k][lastNameColumn],
+                       oldValues[i][LunchDayColumn],
+                       oldValues[i][LunchTimeColumn],
+                       newValues[k][LunchDayColumn],
+                       newValues[k][LunchTimeColumn],
+                       oldValues[i][TableColumn],
+                       newValues[k][TableColumn]]);
+      }
     }
     
   }
-   
+  
   changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
   
   return changes;
