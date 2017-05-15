@@ -36,12 +36,17 @@
     */
     function saveLetterDays(){
       var dayBoxes = document.getElementsByClassName('daySettingsBox');
+      var numBoxes = document.getElementsByClassName('dayNumberBox');
       var daysList = [];
+      var schoolDays = {};
       for (var i = 0; i < dayBoxes.length; i++) {
         daysList.push(dayBoxes[i].value);
+        schoolDays[parseInt(numBoxes[i].value)] = dayBoxes[i].value;
+        schoolDays[dayBoxes[i].value + numBoxes[i].value] = dayBoxes[i].value;
       }
-      google.script.run.setLetterDays(daysList);
-      //consoleDisplay(JSON.stringify(google.script.run.getLetterDays()));  
+      google.script.run.setLetterDays(daysList); 
+      google.script.run.setSchoolDays(schoolDays);
+      console.log(JSON.stringify(schoolDays));
     }
     
     function consoleDisplay(toPrint){
@@ -457,7 +462,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day1" type="text" onkeypress="" name="a-day" value="A"/></span>
-                            <span><input class="dayNumberBox" id="day1num" type="text" onkeypress="" name="a-day" value="1"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day1num" type="text" onkeypress="" name="a-day" value="3"/></span>
                         </div>
                     </td>
                 </tr>
@@ -466,7 +472,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day2" type="text" onkeypress="" name="b-day" value="B"/></span>
-                            <span><input class="dayNumberBox" id="day2num" type="text" onkeypress="" name="b-day" value="2"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day2num" type="text" onkeypress="" name="b-day" value="7"/></span>
                         </div>
                     </td>
                 </tr>
@@ -475,7 +482,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day3" type="text" onkeypress="" name="c-day" value="C"/></span>
-                            <span><input class="dayNumberBox" id="day3num" type="text" onkeypress="" name="c-day" value="3"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day3num" type="text" onkeypress="" name="c-day" value="4"/></span>
                         </div>
                     </td>
                 </tr>
@@ -484,7 +492,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day4" type="text" onkeypress="" name="d-day" value="D"/></span>
-                            <span><input class="dayNumberBox" id="day4num" type="text" onkeypress="" name="d-day" value="4"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day4num" type="text" onkeypress="" name="d-day" value="8"/></span>
                         </div>
                     </td>
                 </tr>
@@ -493,7 +502,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day5" type="text" onkeypress="" name="e-day" value="E"/></span>
-                            <span><input class="dayNumberBox" id="day5num" type="text" onkeypress="" name="e-day" value="5"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day5num" type="text" onkeypress="" name="e-day" value="1"/></span>
                         </div>
                     </td>
                 </tr>
@@ -502,7 +512,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day6" type="text" onkeypress="" name="f-day" value="F"/></span>
-                            <span><input class="dayNumberBox" id="day6num" type="text" onkeypress="" name="f-day" value="6"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day6num" type="text" onkeypress="" name="f-day" value="5"/></span>
                         </div>
                     </td>
                 </tr>
@@ -511,7 +522,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day7" type="text" onkeypress="" name="g-day" value="G"/></span>
-                            <span><input class="dayNumberBox" id="day7num" type="text" onkeypress="" name="g-day" value="7"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day7num" type="text" onkeypress="" name="g-day" value="2"/></span>
                         </div>
                     </td>
                 </tr>
@@ -520,7 +532,8 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day8" type="text" onkeypress="" name="h-day" value="H"/></span>
-                            <span><input class="dayNumberBox" id="day8num" type="text" onkeypress="" name="h-day" value="8"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day8num" type="text" onkeypress="" name="h-day" value="6"/></span>
                         </div>
                     </td>
                 </tr>

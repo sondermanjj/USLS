@@ -126,6 +126,16 @@ function setProperties() {
 }
 
 /**
+ * @desc - Sets the document property for the pairing of numbers and letters for school days. Saves it as
+ *         a Json.stringify(map)
+ * @author - hendersonam
+ */
+function setSchoolDays(schoolDays) {
+  var properties = PropertiesService.getDocumentProperties();
+  properties.setProperty('schoolDays', JSON.stringify(schoolDays));
+}
+
+/**
  * @desc - Sets the document property for the letter days as a JSON.stringify value
  * @param - Array[] - the letters for each day
  * @author - hendersonam
