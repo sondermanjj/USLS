@@ -40,9 +40,11 @@
       var daysList = [];
       var schoolDays = {};
       for (var i = 0; i < dayBoxes.length; i++) {
-        daysList.push(dayBoxes[i].value);
-        schoolDays[parseInt(numBoxes[i].value)] = dayBoxes[i].value;
-        schoolDays[dayBoxes[i].value + numBoxes[i].value] = dayBoxes[i].value;
+        if(dayBoxes[i].value.trim() !== "" && numBoxes[i].value.trim() !== ""){
+          daysList.push(dayBoxes[i].value);
+          schoolDays[parseInt(numBoxes[i].value)] = dayBoxes[i].value;
+          schoolDays[dayBoxes[i].value + numBoxes[i].value] = dayBoxes[i].value;
+        }
       }
       google.script.run.setLetterDays(daysList); 
       google.script.run.setSchoolDays(schoolDays);
@@ -59,32 +61,47 @@
     */
     function saveLunchTimes(){
       var lunchTimeBoxes = document.getElementsByName("timeBox");
-      var assignedBoxes = document.getElementsByClassName('assignedBox');
       var numTableBoxes = document.getElementsByName('tableBox');
       var numStudentsBoxes = document.getElementsByName('studentsBox');
       var assignedLunchList = {};
       var nonAssignedLunchList = {};
       var lunchtimes = []; var timeObj;
-      var i = 0;
-      for(var j = 0; j < assignedBoxes.length; j+=2) {
+      
+      for(var j = 1; j < lunchTimeBoxes.length+1; j++) {
         var elem = document.getElementById('time' + j.toString());
+        console.log("elem: " + elem.id);
         if(elem.style.display !== 'none'){
-          if(assignedBoxes[j].checked){
-            timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": true};
-            assignedLunchList[lunchTimeBoxes[i].value] = timeObj;
+          console.log(elem.style.display);
+          var dropdown = document.getElementsByName('lunch' + j.toString() + 'Assigning')[0];
+          if(dropdown.options[dropdown.selectedIndex].value === 'table'){
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "table"};
+            assignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
           }
-          else{
-            timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": false};
-            nonAssignedLunchList[lunchTimeBoxes[i].value] = timeObj;
+          else if(dropdown.options[dropdown.selectedIndex].value === 'house'){
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "house"};
+            assignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
           }
-          lunchtimes.push(lunchTimeBoxes[i].value);
-          i++;
+          else if(dropdown.options[dropdown.selectedIndex].value === 'not'){
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "not"};
+            nonAssignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
+          }
+          lunchtimes.push(lunchTimeBoxes[j-1].value); 
         }
         else{}
       }
-      google.script.run.setNonAssignedLunches(nonAssignedLunchList);
-      google.script.run.setAssignedLunches(assignedLunchList);
-      google.script.run.setLunchTimes(lunchtimes);
+      setLunchProperties(nonAssignedLunchList, assignedLunchList, lunchtimes);
+    }
+    
+    /**
+    * @desc - sets the lunch time properties to the correct values
+    * @param - nonAssigned - json object of nonassigned lunch times
+    *          assigned - json object of assigned lunch times
+    *          all - array of all lunch times
+    */
+    function setLunchProperties(nonAssigned, assigned, all){
+      google.script.run.setNonAssignedLunches(nonAssigned);
+      google.script.run.setAssignedLunches(assigned);
+      google.script.run.setLunchTimes(all);
     }
     
     /**
@@ -303,9 +320,9 @@
     }
     
     function addTimeEntry(){
-      var time1 = document.getElementById('time0');
+      var time1 = document.getElementById('time1');
       var time2 = document.getElementById('time2');
-      var time3 = document.getElementById('time4');
+      var time3 = document.getElementById('time3');
       if(time1.style.display === 'none'){
         time1.style.display = 'block';
       }
@@ -569,7 +586,7 @@
                 <table class="table table-striped">
                     <tr>
                         <td>
-                            <div class="daySettingsTable" id="time0">
+                            <div class="daySettingsTable" id="time1">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="early" type="text" onkeypress="" name="timeBox" value="early"/></span>
@@ -582,16 +599,23 @@
                                     <span class="rowLabel">Number of Students: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
                                 </div>
-                                <div class="row">
-                                    <span class="rowLabel">Assigned Tables? </span>
+                                <div class="row assigning">
+                                    <span class="rowLabel">Assigning Rule </span>
                                     <span>
                                       <form>
-                                        <input class="assignedBox" type="radio" onkeypress="" value="Yes" name="timeOneRadio" checked/> Yes 
-                                        <input class="assignedBox" type="radio" onkeypress="" value="No" name="timeOneRadio"/> No
+                                        <select class ="assigning" name="lunch1Assigning">
+                                          <option value="not">Not Assigned</option>
+                                          <option value="table" selected>By Table</option>
+                                          <option value="house">By House</option>
+                                        </select>
                                     </form>
                                   </span>
-                                  <button class="action add_remove_button" onclick="hideTimeEntry('time0');">Remove</button>
                                 </div>
+                                <div class="row">
+                                    <span class="rowLabel">Priority: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlypriority" type="text" onkeypress="" name="priorityBox" value="1"/></span>
+                                </div>
+                                <button class="action add_remove_button" onclick="hideTimeEntry('time1');">Remove</button>
                             </div>
                         </td>
                     </tr>
@@ -610,14 +634,21 @@
                                     <span class="rowLabel">Number of Students: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
                                 </div>
-                                <div class="row">
-                                    <span class="rowLabel">Assigned Tables? </span>
+                                <div class="row assigning">
+                                    <span class="rowLabel">Assigning Rule </span>
                                     <span>
                                       <form>
-                                        <input class="assignedBox" type="radio" onkeypress="" value="Yes" name="timeTwoRadio"/> Yes
-                                        <input class="assignedBox" type="radio" onkeypress="" value="No" name="timeTwoRadio" checked/> No
-                                      </form>
-                                    </span>
+                                        <select class ="assigning" name="lunch2Assigning">
+                                          <option value="not" selected>Not Assigned</option>
+                                          <option value="table">By Table</option>
+                                          <option value="house">By House</option>
+                                        </select>
+                                    </form>
+                                  </span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Priority: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midpriority" type="text" onkeypress="" name="priorityBox" value="2"/></span>
                                 </div>
                                 <button class="action add_remove_button" onclick="hideTimeEntry('time2');">Remove</button>
                             </div>
@@ -625,7 +656,7 @@
                     </tr>
                     <tr>
                         <td colspan=2>
-                            <div class="daySettingsTable" id="time4">
+                            <div class="daySettingsTable" id="time3">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="late" type="text" onkeypress="" name="timeBox" value="late"/></span>
@@ -638,16 +669,23 @@
                                     <span class="rowLabel">Number of Students: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
                                 </div>
-                                <div class="row">
-                                    <span class="rowLabel">Assigned Tables? </span>
+                                <div class="row assigning">
+                                    <span class="rowLabel">Assigning Rule </span>
                                     <span>
                                       <form>
-                                        <input class="assignedBox" type="radio" onkeypress="" value="Yes" name="timeThreeRadio"/> Yes
-                                        <input class="assignedBox" type="radio" onkeypress="" value="No" name="timeThreeRadio" checked/> No
-                                      </form>
-                                    </span>
+                                        <select class ="assigning" name="lunch3Assigning">
+                                          <option value="not">Not Assigned</option>
+                                          <option value="table">By Table</option>
+                                          <option value="house" selected>By House</option>
+                                        </select>
+                                    </form>
+                                  </span>
                                 </div>
-                                <button class="action add_remove_button" onclick="hideTimeEntry('time4');">Remove</button>
+                                <div class="row">
+                                    <span class="rowLabel">Priority: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latepriority" type="text" onkeypress="" name="priorityBox" value="3"/></span>
+                                </div>
+                                <button class="action add_remove_button" onclick="hideTimeEntry('time3');">Remove</button>
                             </div>
                         </td>
                     </tr>
