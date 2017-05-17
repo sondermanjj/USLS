@@ -10,9 +10,7 @@ function parseRequests() {
   var sheet = SpreadsheetApp.getActiveSheet();
   var responses = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices"));
-  
-  //var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
-  
+    
   var responseData = responses.getDataRange();
   var teacherData = teacher.getDataRange();
   
