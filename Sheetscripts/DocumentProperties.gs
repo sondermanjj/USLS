@@ -14,34 +14,10 @@ function testting() {
  *     dodList - DOD List
  *    
  *   Column Indices for Students:
- *     pLunchTimeColumn - Lunch Time
- *     pLunchDayColumn - Lunch Day
- *     pSFNameColumn - First Name
- *     pSLNameColumn - Last Name
- *     pTFNameColumn - Faculty First Name
- *     pTLNameColumn - Faculty Last Name
- *     pAdvisorColumn - Advisor
- *     pGenderColumn - Gender
- *     pCourseTitleColumn - Course Title
- *     pCourseCodeColumn - Course Code
- *     pCourseLengthColumn - Course Length
- *     pCourseIDColumn - Course ID
- *     pSectionIDColumn - Section ID
- *     pBlockColumn - Block
- *     pDOBColumn - Date of Birth
- *     pTableHeadColumn - Table Head
- *     pTableColumn - Table
- *     pGradeColumn - Grade
- *     pHouseColumn - House
+ *     "Student " + column name
  *
  *   Column Indices for Teachers:
- *     tFNameColumn - First Name
- *     tLNameColumn - Last Name
- *     tLunchDayColumn - Lunch Day
- *     tLunchTimeColumn - Lunch Assignment (Lunch Time)
- *     tLunchPreferenceColumn;
- *     tCommentsColumn;
- *     tSectionColumn;
+ *     "Teacher " + column name
  *
  *   Others:
  *     numberOfTables - Number of tables in early lunch
