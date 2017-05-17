@@ -18,7 +18,7 @@ function runFacultyRequestTests() {
 }
 
 /**
-  * @desc - Test to make sure the houses are being correctly assigned
+  * @desc - Test to make sure the houses are being correctly assigned to faculty
   * @author - dicksontc
   */
 function testHouseAssignmentForFaculty() {
@@ -64,7 +64,7 @@ function testHouseAssignmentForFaculty() {
 }
 
 /**
-  * @desc - Test to make sure the houses are being correctly assigned
+  * @desc - Test to make sure the houses are being correctly assigned to students
   * @author - dicksontc
   */
 function testHouseAssignmentForStudents() {
