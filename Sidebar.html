@@ -46,7 +46,6 @@
       }
       google.script.run.setLetterDays(daysList); 
       google.script.run.setSchoolDays(schoolDays);
-      console.log(JSON.stringify(schoolDays));
     }
     
     function consoleDisplay(toPrint){
@@ -68,21 +67,24 @@
       var lunchtimes = []; var timeObj;
       var i = 0;
       for(var j = 0; j < assignedBoxes.length; j+=2) {
-        if(assignedBoxes[j].checked){
-          timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": true};
-          assignedLunchList[lunchTimeBoxes[i].value] = timeObj;
+        var elem = document.getElementById('time' + j.toString());
+        if(elem.style.display !== 'none'){
+          if(assignedBoxes[j].checked){
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": true};
+            assignedLunchList[lunchTimeBoxes[i].value] = timeObj;
+          }
+          else{
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": false};
+            nonAssignedLunchList[lunchTimeBoxes[i].value] = timeObj;
+          }
+          lunchtimes.push(lunchTimeBoxes[i].value);
+          i++;
         }
-        else{
-          timeObj = {"numberOfTables": parseInt(numTableBoxes[i].value), "numberOfStudents": parseInt(numStudentsBoxes[i].value), "assigned": false};
-          nonAssignedLunchList[lunchTimeBoxes[i].value] = timeObj;
-        }
-        lunchtimes.push(lunchTimeBoxes[i].value);
-        i++;
+        else{}
       }
       google.script.run.setNonAssignedLunches(nonAssignedLunchList);
       google.script.run.setAssignedLunches(assignedLunchList);
       google.script.run.setLunchTimes(lunchtimes);
-      //consoleDisplay("Non: " + JSON.stringify(nonAssignedLunchList) + ", Assigned: " + JSON.stringify(assignedLunchList));
     }
     
     /**
@@ -295,6 +297,26 @@
       x.style.display = 'none';
     }
     
+    function hideTimeEntry(id){
+      var x = document.getElementById(id);
+      x.style.display = 'none';
+    }
+    
+    function addTimeEntry(){
+      var time1 = document.getElementById('time0');
+      var time2 = document.getElementById('time2');
+      var time3 = document.getElementById('time4');
+      if(time1.style.display === 'none'){
+        time1.style.display = 'block';
+      }
+      else if(time2.style.display === 'none'){
+        time2.style.display = 'block';
+      }
+      else{
+        time3.style.display = 'block';
+      }
+    }
+    
     /**
     * @desc - Changes tab class names in order to highlight the active tab
     * @author - clemensam
@@ -361,7 +383,7 @@
 
        <button id="cleanButton" class="action" onclick="google.script.run.initialization();">Initialize</button>
 
-       <button id="exportButton" class="action" onclick="google.script.run.exportToWebsite();">Export</button>
+       <button id="exportButton" class="share" onclick="google.script.run.exportToWebsite();">Export</button>
 
      </div>
      
@@ -547,7 +569,7 @@
                 <table class="table table-striped">
                     <tr>
                         <td>
-                            <div class="daySettingsTable">
+                            <div class="daySettingsTable" id="time0">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="early" type="text" onkeypress="" name="timeBox" value="early"/></span>
@@ -568,13 +590,14 @@
                                         <input class="assignedBox" type="radio" onkeypress="" value="No" name="timeOneRadio"/> No
                                     </form>
                                   </span>
+                                  <button class="action add_remove_button" onclick="hideTimeEntry('time0');">Remove</button>
                                 </div>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td >
-                            <div class="daySettingsTable">
+                            <div class="daySettingsTable" id="time2">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="mid" type="text" onkeypress="" name="timeBox" value="mid"/></span>
@@ -596,12 +619,13 @@
                                       </form>
                                     </span>
                                 </div>
+                                <button class="action add_remove_button" onclick="hideTimeEntry('time2');">Remove</button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan=2>
-                            <div class="daySettingsTable">
+                            <div class="daySettingsTable" id="time4">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="late" type="text" onkeypress="" name="timeBox" value="late"/></span>
@@ -623,8 +647,12 @@
                                       </form>
                                     </span>
                                 </div>
+                                <button class="action add_remove_button" onclick="hideTimeEntry('time4');">Remove</button>
                             </div>
                         </td>
+                    </tr>
+                    <tr>
+                      <td><button class="action add_remove_button" onclick="addTimeEntry();">Add Lunch Time</button>
                     </tr>
                 </table>
             </td>
