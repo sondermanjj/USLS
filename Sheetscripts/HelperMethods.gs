@@ -40,6 +40,16 @@ function getHTMLDropdown(list) {
  * @author - hendersonam
  */
 function sortSheetBy(sheet, sorts) {
+
+  if (sorts === null) {
+    SpreadsheetApp.getUi().alert("No sorts given!");
+    return null;
+  }
+  if (sheet == null) {
+    SpreadsheetApp.getUi().alert("That sheet does not exist, cannot be sorted!");
+    return null;
+  }
+  
   var values = sheet.getDataRange().getValues();
   var headers = getListOfColumns(values);
   
@@ -54,15 +64,16 @@ function sortSheetBy(sheet, sorts) {
  * @param - String - String to search for
  * @author - hendersonam
  */
-function hideValues(filter, column) {
+function hideValues(filter, column, sheetName) {
 
+  Logger.log(sheetName);
   var properties = PropertiesService.getDocumentProperties()
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
 
   if( column == "All") {
-    map = searchAll(filter);
+    map = searchAll(filter, sheetName);
   } else {
-    map = searchColumn(filter, column);
+    map = searchColumn(filter, column, sheetName);
   }
   for (var i in map) {
     sheet.hideRows(i, map[i]);
@@ -74,9 +85,9 @@ function hideValues(filter, column) {
  * @param - String - String to search for
  * @author - hendersonam
  */
-function searchAll(filter) {
+function searchAll(filter, sheetName) {
   var properties = PropertiesService.getDocumentProperties();
-  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var count = 0;
   var index = 0;  
   var map = {};
@@ -104,9 +115,10 @@ function searchAll(filter) {
  * @param - String - String to search for
  * @author - hendersonam
  */
-function searchColumn(filter, column) {
+function searchColumn(filter, column, sheetName) {
   var properties = PropertiesService.getDocumentProperties();
-  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
+  Logger.log(sheetName);
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
   var columnIndex = getColumnIndex(getListOfColumns(values), column);
   var count = 0;
   var index = 0;  
@@ -135,10 +147,10 @@ function searchColumn(filter, column) {
  */
 function showAllValues() {
  var properties = PropertiesService.getDocumentProperties();
- var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
-  var values = sheet.getDataRange().getValues();
+ var sheet = SpreadsheetApp.getActiveSheet();
+ var values = sheet.getDataRange().getValues();
   
-
+ 
   sheet.showRows(1, values.length);
 }
 
@@ -315,4 +327,17 @@ function compareByColumnIndex(index) {
         return (a[index] < b[index]) ? -1 : 1;
     }
   }
+}
+
+/**
+ * @desc - Gets the parameters for the search function in the add-on
+ * @param - String - string to search for
+ *          String - Column name to search under
+ * @return - String - the parameters saved as a comma seperated string
+*/
+function getSearchParams(filter, column) {
+  var sheetName = SpreadsheetApp.getActiveSheet().getName();
+  var params = 'search, ' + filter + ', ' + column + ', ' + sheetName
+  Logger.log(params);
+  return params;
 }

@@ -5,11 +5,12 @@
  */
 function initialization() {
 
+  PropertiesService.getDocumentProperties().deleteAllProperties();
   setLunchProperties();
 
-  var cleaned = sheetCleanupPrompt();
+  var cleanedSheet = sheetCleanupPrompt();
   
-  if (cleaned) {
+  if (cleanedSheet) {
   
     var oldData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
     if (oldData != null ) {
@@ -20,7 +21,7 @@ function initialization() {
       SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
     }
     
-    setSheetProperties();
+    setSheetProperties(cleanedSheet);
     assignStudentLunchDays();
     addFacultyTables();
   

@@ -5,7 +5,7 @@
  */
 function sheetCleanupPrompt(){
 
-  var cleaned = false;
+  var cleanedSheet;
   
   var ui = SpreadsheetApp.getUi();
   response = ui.prompt('Preparing to clean raw data sheet...', 'Please enter the name of the raw data sheet.\n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
@@ -15,17 +15,16 @@ function sheetCleanupPrompt(){
     if(sheet != null){
       cleanedSheet = cleanUp(sheet);
       if (cleanedSheet != null ){
-        cleaned = true;
-        return cleaned;
+        return cleanedSheet;
       } else {
-        return cleaned;
+        return cleanedSheet;
       }  
     } else {
       ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
       sheetCleanupPrompt();
     }
   }
-  return cleaned;
+  return cleanedSheet;
 }
 
 /**

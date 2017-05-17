@@ -53,14 +53,14 @@ function testting() {
  * @desc - Sets the document properties for the sheets that will be used throughout the program inlcuding column indices
  * @author - hendersonam
  */
-function setSheetProperties() {
+function setSheetProperties(studentSheet) {
 
   var properties = PropertiesService.getDocumentProperties();
 
-  var studentSheet = promptForSettingSheetProperty("Which sheet has the cleaned student data?");
   var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet has the  faculty lunch choices?");
-  var teacherTableSheet = promptForSettingSheetProperty("Which sheet has the faculty table data?");
   var dodSheet = promptForSettingSheetProperty("Which sheet has the DOD list?");
+  var teacherTableSheet = promptForSettingSheetProperty("Please enter the name of the sheet you would like to save the faculty tables to");
+  
   
   setStudentSheet(studentSheet);
   setTeacherChoicesSheet(teacherChoicesSheet);
@@ -75,6 +75,7 @@ function setSheetProperties() {
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
                           properties.getProperty("teacherChoices")).getDataRange().getValues());
   setStudentColumnIndices(studentHeaders);
+  setHeaderColumnNames(studentHeaders);
   setTeacherColumnIndices(teacherHeaders);
 }
 

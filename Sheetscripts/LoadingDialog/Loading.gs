@@ -32,6 +32,7 @@ function doGet() {
 * @author - clemensam
 */
 function callMethod(args) {
+  Logger.log(args);
   var params = args.split(", ");
   var button = params[0];
   switch(button){
@@ -51,7 +52,8 @@ function callMethod(args) {
     case 'search':
       var filter = params[1].toString();
       var column = params[2].toString();
-      hideValues(filter, column);
+      var sheetName = params[3].toString();
+      hideValues(filter, column, sheetName);
       break;
     case 'clean':
       var sheetName = params[1];
