@@ -1,3 +1,5 @@
+//JSHint Verified 05/14/17
+
 var dropdownhtml;
 
 /**
@@ -6,7 +8,6 @@ var dropdownhtml;
 function getDropdownHTML(){
   return dropdownhtml;
   }
-
 
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
@@ -34,6 +35,32 @@ function getHTMLDropdown(list) {
 }
 
 /**
+* @desc - checks if a sheet with the given name exists in the current spreadsheet
+* @param - name of the sheet to check
+* @return - bool indicating whether the sheet exists or not
+* @author - clemensam
+*/
+function sheetExists(name){
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+  if(sheet !== null){
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+/**
+* @desc - opens a ui to display a message to the user
+* @param - string message to be displayed in the popup
+* @author - clemensam
+*/
+function showMessage(message){
+  var ui = SpreadsheetApp.getUi();
+  ui.alert(message);
+}
+
+/**
  * @desc - Sorts the given sheet by the list of sorts given
  * @param - Sheet - Sheet to sort
  *          Object[] - Array of header names to sort by in the order given
@@ -56,7 +83,7 @@ function sortSheetBy(sheet, sorts) {
  */
 function hideValues(filter, column) {
 
-  var properties = PropertiesService.getDocumentProperties()
+  var properties = PropertiesService.getDocumentProperties();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
 
   if( column == "All") {
@@ -180,8 +207,8 @@ function getListOfColumns(data) {
     SpreadsheetApp.getUi().alert("There is no 'First Name' column. Please make sure it is spelt exactly as shown.");
   }
 
-  for( j = 0; j < data[row].length; j++) {
-    list.push(data[row][j].toString());
+  for(var k = 0; k < data[row].length; k++) {
+    list.push(data[row][k].toString());
 
   }
   return list;
@@ -199,10 +226,11 @@ function promptForNewSheet(msg) {
   var ui = SpreadsheetApp.getUi();
   var response = ui.prompt('New Sheet', msg, ui.ButtonSet.OK_CANCEL);
 
+  var sheet;
   if (response.getSelectedButton() == ui.Button.OK) {
     var sheetName = response.getResponseText();
-    var sheet = ss.getSheetByName(sheetName);
-    if(sheet == null) {
+    sheet = ss.getSheetByName(sheetName);
+    if(sheet === null) {
       ss.insertSheet(sheetName);
       sheet = ss.getSheetByName(sheetName);
     } else {
@@ -231,10 +259,11 @@ function promptForSettingSheetProperty(msg) {
   var ui = SpreadsheetApp.getUi();
   var response = ui.prompt('Setting Properties...', msg, ui.ButtonSet.OK_CANCEL);
 
+  var sheet;
   if (response.getSelectedButton() == ui.Button.OK) {
     var sheetName = response.getResponseText();
-    var sheet = ss.getSheetByName(sheetName);
-    if(sheet == null) {
+    sheet = ss.getSheetByName(sheetName);
+    if(sheet === null) {
       response = ui.alert('Alert!', "That sheet does not exist. Would you like to create it?", ui.ButtonSet.YES_NO);
       if (response == ui.Button.YES) {
         ss.insertSheet(sheetName);
@@ -287,5 +316,5 @@ function compareByColumnIndex(index) {
     else {
         return (a[index] < b[index]) ? -1 : 1;
     }
-  }
+  };
 }

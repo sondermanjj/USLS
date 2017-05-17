@@ -5,150 +5,144 @@
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-    <style>
-    .branding-below {
-      bottom: 56px;
-      top: 0;
-    }
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    .branding-text {
-      left: 7px;
-      position: relative;
-      top: 3px;
-    }
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    .col-contain {
-      overflow: hidden;
-    }
-
-    .col-one {
-      float: left;
-      width: 50%;
-    }
-
-    .logo {
-      vertical-align: middle;
-    }
-
-    .radio-spacer {
-      height: 20px;
-    }
-
-    .width-100 {
-      width: 100%;
-    }
+    <?!= include('SidebarCSS.html'); ?>
     
-    body {
-      margin-left: 10px;
-    }
-    
-    table {
-      border-collapse: collapse;
-      width: 80%;
-    }
-    
-    table, th, td {
-      border: 1px solid black;
-    }
-    
-    th, td {
-      text-align: center;
-      padding: 8px 16px;
-    }
-    
-    #studentStatsTable th, #teacherStatsTable th{
-      border: none;
-      background-color: #e6e6e6;
-      font-weight: bold;
-    }
-    
-    #sortButtons, #sortButtons tr, #searchButtons, #searchButtons tr, #searchButtons td, #customSort, #customSort tr{
-      border: none;
-      padding: 8px 0px;
-      
-    }
-    
-    #sortButtons td, #customSort td {
-      text-align: left;
-      font-weight: bold;
-      border: none;
-      padding: 8px 5px;
-    }
-    
-    #sortButtons button {
-      text-align: center;
-    }
-    
-    #tabs {
-      background-color: white;
-      border-top: 5px solid #0d47a1;
-    }
-    
-     #changes li{
-      float: left;
-      display: block;
-      color: #000;
-      text-align: center;
-      padding: 5px 10px;
-      text-decoration: none;
-      margin: 0 5px 5px 0;
-      border-radius: 10px;
-      background-color: #e6e6e6;
-    }
-    
-    #changes li:hover {
-      background-color: #e6e6e6;
-      color: #000;
-    }
-    
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: white;
-    }
-
-    li {
-      float: left;
-      display: block;
-      color: #000;
-      text-align: center;
-
-      padding: 5px 10px;
-
-      text-decoration: none;
-      margin: 0 5px 0 0;
-      border-radius: 0 0 8px 8px;
-      background-color: #e6e6e6;
-      font-weight: bold;
-      
-    }
-    
-    li:hover {
-      /*top color: background-color: #333;*/
-      /*button color: background-color: #4a8bf5;*/
-      /*school color: background-color: #002967;*/
-      background-color: #0d47a1;
-      color: #fff;
-    }
-    
-    .active {
-      background-color: #0d47a1;
-      color: #fff;
-    }
-    
-    #statsPage, #searchPage {
-      display: none;
-    }
-    
-    #statsPage, #searchPage, #cleanPage{
-      margin-top: 10px;
-    }
-    
-    </style>
     <script>
+    //JSHint Verified 5/14/17
+    
+    
+    /**
+    * @desc - displays current day settings to the sidebar
+    * @author - clemensam
+    */
+    function displayLetterDays(){
+      var days = google.script.run.getLetterDays();
+      document.getElementById('currentDays').innerHTML = days;  
+    }
+    
+    /**
+    * @desc - pulls letter day information from the text boxes in the settings page and saves them to the document properties
+    * @author - clemensam
+    */
+    function saveLetterDays(){
+      var dayBoxes = document.getElementsByClassName('daySettingsBox');
+      var numBoxes = document.getElementsByClassName('dayNumberBox');
+      var daysList = [];
+      var schoolDays = {};
+      for (var i = 0; i < dayBoxes.length; i++) {
+        if(dayBoxes[i].value.trim() !== "" && numBoxes[i].value.trim() !== ""){
+          daysList.push(dayBoxes[i].value);
+          schoolDays[parseInt(numBoxes[i].value)] = dayBoxes[i].value;
+          schoolDays[dayBoxes[i].value + numBoxes[i].value] = dayBoxes[i].value;
+        }
+      }
+      google.script.run.setLetterDays(daysList); 
+      google.script.run.setSchoolDays(schoolDays);
+    }
+    
+    function consoleDisplay(toPrint){
+      var printDiv = document.getElementById('testingDiv');
+      printDiv.innerHTML = toPrint;
+    }
+    
+    /*
+    * @desc - pulls lunch time information from the text boxes in the settings page and saves them to the document properties
+    * @author - clemensam
+    */
+    function saveLunchTimes(){
+      var lunchTimeBoxes = document.getElementsByName("timeBox");
+      var numTableBoxes = document.getElementsByName('tableBox');
+      var numStudentsBoxes = document.getElementsByName('studentsBox');
+      var assignedLunchList = {};
+      var nonAssignedLunchList = {};
+      var lunchtimes = []; var timeObj;
+      
+      for(var j = 1; j < lunchTimeBoxes.length+1; j++) {
+        var elem = document.getElementById('time' + j.toString());
+        console.log("elem: " + elem.id);
+        if(elem.style.display !== 'none'){
+          console.log(elem.style.display);
+          var dropdown = document.getElementsByName('lunch' + j.toString() + 'Assigning')[0];
+          if(dropdown.options[dropdown.selectedIndex].value === 'table'){
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "table"};
+            assignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
+          }
+          else if(dropdown.options[dropdown.selectedIndex].value === 'house'){
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "house"};
+            assignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
+          }
+          else if(dropdown.options[dropdown.selectedIndex].value === 'not'){
+            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "not"};
+            nonAssignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
+          }
+          lunchtimes.push(lunchTimeBoxes[j-1].value); 
+        }
+        else{}
+      }
+      setLunchProperties(nonAssignedLunchList, assignedLunchList, lunchtimes);
+    }
+    
+    /**
+    * @desc - sets the lunch time properties to the correct values
+    * @param - nonAssigned - json object of nonassigned lunch times
+    *          assigned - json object of assigned lunch times
+    *          all - array of all lunch times
+    */
+    function setLunchProperties(nonAssigned, assigned, all){
+      google.script.run.setNonAssignedLunches(nonAssigned);
+      google.script.run.setAssignedLunches(assigned);
+      google.script.run.setLunchTimes(all);
+    }
+    
+    /**
+    * @desc - saves faculty choices and final student data sheet names from settings tab into properties
+    * @author - clemensam
+    */
+    function saveSheetNames(){
+      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
+      var studentDataSheet = document.getElementById('studentDataSheetName').value;
+      google.script.run.withSuccessHandler(saveTeacherSheet).sheetExists(teacherChoicesSheet);
+      google.script.run.withSuccessHandler(saveStudentSheet).sheetExists(studentDataSheet);
+    }
+    
+    /**
+    * @desc - saves faculty choices sheet name property
+    * @author - clemensam
+    */
+    function saveTeacherSheet(valid){
+      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
+      if(valid){
+        google.script.run.setTeacherChoicesSheetByName(teacherChoicesSheet);
+      }
+      else {
+        google.script.run.showMessage("Whoops! The Faculty Choices Sheet name that you entered does not exist. This setting could not be saved.");
+      }
+    }
+    
+    /**
+    * @desc - saves final student data sheet name property
+    * @author - clemensam
+    */
+    function saveStudentSheet(valid){
+      var studentDataSheet = document.getElementById('studentDataSheetName').value;
+      if(valid){
+        google.script.run.setStudentSheetByName(studentDataSheet);
+      }
+      else {
+        google.script.run.showMessage("Whoops! The Final Student Data Sheet name that you entered does not exist. This setting could not be saved.");
+      } 
+    }
+    
     
     function showMenus(){
       scanBoth();
@@ -229,60 +223,6 @@
         google.script.run.showDialog('search, ' + filter + ', ' + column);
       }
     }
-
-    /**
-    * @desc - Shows the contents relating to sheet clean up
-    * @author - clemensam
-    */
-    function showCleanupPage(){
-      var x = document.getElementById('cleanPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Shows the contents relating to the sheet's statistics
-    * @author - clemensam
-    */
-    function showStatisticsPage(){
-      var x = document.getElementById('statsPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Shows the contents relating to the search function for the sheet
-    * @author - clemensam
-    */
-    function showSearchPage(){
-      var x = document.getElementById('searchPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Hides the clean page contents
-    * @author - clemensam
-    */
-    function hideCleanupPage(){
-      var x = document.getElementById('cleanPage');
-      x.style.display = 'none';
-    }
-    
-    /**
-    * @desc - Hides the statistics page contents
-    * @author - clemensam
-    */
-    function hideStatisticsPage(){
-      var x = document.getElementById('statsPage');
-      x.style.display = 'none';
-    }
-    
-    /**
-    * @desc - Hides the search page contents
-    * @author - clemensam
-    */
-    function hideSearchPage(){
-      var x = document.getElementById('searchPage');
-      x.style.display = 'none';
-    }
     
     /*
     * @desc - same as above method, but used on press instead up enter key press
@@ -330,6 +270,15 @@
     }
     
     /**
+    * @desc - Shows the contents of the settings page
+    * @author - clemensam
+    */
+    function showSettingsPage(){
+      var x = document.getElementById('settingsPage');
+      x.style.display = 'block';
+    }
+    
+    /**
     * @desc - Hides the clean page contents
     * @author - clemensam
     */
@@ -357,6 +306,35 @@
     }
     
     /**
+    * @desc - Hides the settings page contents
+    * @author - clemensam
+    */
+    function hideSettingsPage(){
+      var x = document.getElementById('settingsPage');
+      x.style.display = 'none';
+    }
+    
+    function hideTimeEntry(id){
+      var x = document.getElementById(id);
+      x.style.display = 'none';
+    }
+    
+    function addTimeEntry(){
+      var time1 = document.getElementById('time1');
+      var time2 = document.getElementById('time2');
+      var time3 = document.getElementById('time3');
+      if(time1.style.display === 'none'){
+        time1.style.display = 'block';
+      }
+      else if(time2.style.display === 'none'){
+        time2.style.display = 'block';
+      }
+      else{
+        time3.style.display = 'block';
+      }
+    }
+    
+    /**
     * @desc - Changes tab class names in order to highlight the active tab
     * @author - clemensam
     */
@@ -377,8 +355,28 @@
           document.getElementById('statsTab').className = 'inactive';
           document.getElementById('searchTab').className = 'active';
           break;
+        case 'settings':
+          document.getElementById('cleanTab').className = 'inactive';
+          document.getElementById('statsTab').className = 'inactive';
+          document.getElementById('searchTab').className = 'inactive';
       }
 }
+
+ /**
+    * @desc - saves all properties entered into the settings page
+    * @author - clemensam
+    */
+    function saveAll(){
+       /*showCleanupPage(); 
+       hideSettingsPage(); 
+       hideStatisticsPage(); 
+       hideSearchPage(); 
+       changeID('clean');*/
+       saveLetterDays();
+       saveLunchTimes();
+       saveSheetNames();
+    }
+    
     
     </script>
   </head>
@@ -386,16 +384,24 @@
     
       <!--Navbar; On menu Item click, hide or display appropriate data and buttons -->
       <div id="tabs">
+      <span>
       <ul>
-        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Clean-Up</li>
-        <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
-        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Search/Sort</li>
+        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Clean-Up</li>
+        <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideSettingsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
+        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Search/Sort</li>
      </ul>
+     </span>
+     <span>
+       <img id="settingsButton" onClick="showSettingsPage(); hideCleanupPage(); hideStatisticsPage(); hideSearchPage(); changeID('settings');" src="https://8f0924f2-a-62cb3a1a-s-sites.googlegroups.com/site/usmlunch/tinysettings.png?attachauth=ANoY7crc2QY618uAJn01SKJu8slTjWxOe6AEjkKSJmmv_qvMkhiOb5VVNgxLF_zwxfjzuzMYVnKLUVlijeDSTn7ev03WTqlIqKTweHtVCi1A8jjxWMGj3iXchwrGQPbqzRqOfbkJl2-bCD2NHwQk1J_9OCbTKpfUWfak4inWzdRVL-Tjoa04vfW-JGZW_Zbw0IEe8743FVS3_c0TDpKNPiUeyHtYYUHU6g%3D%3D&attredirects=0"/>
+     </span>
      </div>
      
      <div id="cleanPage">
+
        <button id="cleanButton" class="action" onclick="google.script.run.initialization();">Initialize</button>
-       <button id="exportButton" class="action" onclick="google.script.run.exportToWebsitePrompt();">Export</button>
+
+       <button id="exportButton" class="share" onclick="google.script.run.exportToWebsite();">Export</button>
+
      </div>
      
      <div id="statsPage">
@@ -474,6 +480,252 @@
        </table>
        
      </div>
+     
+<div id="settingsPage">
+
+    <h2> Settings</h2>
+    
+    <div id='testingDiv'></div>
+    
+    <div id="currentDays"></div>
+
+    <table id="settingsTable">
+        <tr>
+            <th colspan=2>Letter Days in Schedule</th>
+        </tr>
+
+        <td id="fullWidth"colspan=2>
+            <table class="table table-striped">
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day1" type="text" onkeypress="" name="a-day" value="A"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day1num" type="text" onkeypress="" name="a-day" value="3"/></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day2" type="text" onkeypress="" name="b-day" value="B"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day2num" type="text" onkeypress="" name="b-day" value="7"/></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day3" type="text" onkeypress="" name="c-day" value="C"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day3num" type="text" onkeypress="" name="c-day" value="4"/></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day4" type="text" onkeypress="" name="d-day" value="D"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day4num" type="text" onkeypress="" name="d-day" value="8"/></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day5" type="text" onkeypress="" name="e-day" value="E"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day5num" type="text" onkeypress="" name="e-day" value="1"/></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day6" type="text" onkeypress="" name="f-day" value="F"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day6num" type="text" onkeypress="" name="f-day" value="5"/></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day7" type="text" onkeypress="" name="g-day" value="G"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day7num" type="text" onkeypress="" name="g-day" value="2"/></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="row">
+                            <span class="rowLabel">Letter: </span>
+                            <span><input class="daySettingsBox" id="day8" type="text" onkeypress="" name="h-day" value="H"/></span>
+                            <span class="numLabel">Number: </span>
+                            <span><input class="dayNumberBox" id="day8num" type="text" onkeypress="" name="h-day" value="6"/></span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <tr>
+            <th colspan=2>Lunch Times</th>
+        </tr>
+        <tr>
+            <td id="fullWidth"colspan=2>
+                <table class="table table-striped">
+                    <tr>
+                        <td>
+                            <div class="daySettingsTable" id="time1">
+                                <div class="row">
+                                    <span class="rowLabel">Time: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="early" type="text" onkeypress="" name="timeBox" value="early"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Tables: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlytables" type="text" onkeypress="" name="tableBox" value="19"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Students: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
+                                </div>
+                                <div class="row assigning">
+                                    <span class="rowLabel">Assigning Rule </span>
+                                    <span>
+                                      <form>
+                                        <select class ="assigning" name="lunch1Assigning">
+                                          <option value="not">Not Assigned</option>
+                                          <option value="table" selected>By Table</option>
+                                          <option value="house">By House</option>
+                                        </select>
+                                    </form>
+                                  </span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Priority: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlypriority" type="text" onkeypress="" name="priorityBox" value="1"/></span>
+                                </div>
+                                <button class="action add_remove_button" onclick="hideTimeEntry('time1');">Remove</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >
+                            <div class="daySettingsTable" id="time2">
+                                <div class="row">
+                                    <span class="rowLabel">Time: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="mid" type="text" onkeypress="" name="timeBox" value="mid"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Tables: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midtables" type="text" onkeypress="" name="tableBox" value="19"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Students: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
+                                </div>
+                                <div class="row assigning">
+                                    <span class="rowLabel">Assigning Rule </span>
+                                    <span>
+                                      <form>
+                                        <select class ="assigning" name="lunch2Assigning">
+                                          <option value="not" selected>Not Assigned</option>
+                                          <option value="table">By Table</option>
+                                          <option value="house">By House</option>
+                                        </select>
+                                    </form>
+                                  </span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Priority: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midpriority" type="text" onkeypress="" name="priorityBox" value="2"/></span>
+                                </div>
+                                <button class="action add_remove_button" onclick="hideTimeEntry('time2');">Remove</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <div class="daySettingsTable" id="time3">
+                                <div class="row">
+                                    <span class="rowLabel">Time: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="late" type="text" onkeypress="" name="timeBox" value="late"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Tables: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latetables" type="text" onkeypress="" name="tableBox" value="19"/></span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Number of Students: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
+                                </div>
+                                <div class="row assigning">
+                                    <span class="rowLabel">Assigning Rule </span>
+                                    <span>
+                                      <form>
+                                        <select class ="assigning" name="lunch3Assigning">
+                                          <option value="not">Not Assigned</option>
+                                          <option value="table">By Table</option>
+                                          <option value="house" selected>By House</option>
+                                        </select>
+                                    </form>
+                                  </span>
+                                </div>
+                                <div class="row">
+                                    <span class="rowLabel">Priority: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latepriority" type="text" onkeypress="" name="priorityBox" value="3"/></span>
+                                </div>
+                                <button class="action add_remove_button" onclick="hideTimeEntry('time3');">Remove</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td><button class="action add_remove_button" onclick="addTimeEntry();">Add Lunch Time</button>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th colspan=2>Sheet Names</th>
+        </tr>
+        <tr>
+            <td id="fullWidth"colspan=2>
+                <table class="table table-striped">
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <span class="rowLabel">Final Student Data: </span>
+                                <span class="inputSpan"><input class="settingsBox" id="studentDataSheetName" type="text" onkeypress="" name="finalDataSheetName" value=""/></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <span class="rowLabel">Faculty Choices: </span>
+                                <span class="inputSpan"><input class="settingsBox" id="facultyChoicesSheetName" type="text" onkeypress="" name="facultyChoicesSheetName" value=""/></span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <button class="action" onclick="saveAll();">Save</button>
+
+</div>
+<br/>
       
-    </body>
+</body>
 </html>
