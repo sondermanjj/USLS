@@ -75,7 +75,7 @@ function studentTester(){
   messages[0] = "TestForFilledEarlyLunches: " + testForFilledEarlyLunches(students);
   messages[1] = "TestAllStudentsHaveLunchForEachDay: " + testAllStudentsHaveALunchForEachDay(students);
   messages[2] = "TestColorByTime: " +testColorByTime(pLunchTimeColumn);
-  //messages[3] = "TestColorByTable: " +testColorByTable(pTableColumn);
+  messages[3] = "TestColorByTable: " +testColorByTable(pTableColumn);
   
   Logger.log(messages[2]);
   

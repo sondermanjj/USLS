@@ -1,4 +1,4 @@
-//JSHint verified 4/3/2017 sondermanjj
+//JSHint verified 5/15/2017 sondermanjj
 
 /**
 @desc Main application for assigning students to their lunch tables each day.
@@ -8,12 +8,10 @@
 function assignStudentLunchDays() {
 
   var properties = PropertiesService.getDocumentProperties();
-  var sheet = SpreadsheetApp.getActiveSheet();
   var primarySheetName =properties.getProperty("studentData");
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(primarySheetName);
   var teacherSheetName = properties.getProperty("teacherChoices");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(teacherSheetName);
-
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -23,16 +21,12 @@ function assignStudentLunchDays() {
   var stu;
   
   var pNumRows = primaryData.getNumRows();
-  var pNumColumns = primaryData.getNumColumns();
   var tNumRows = teacherData.getNumRows();
-  var tNumColumns = teacherData.getNumColumns();
   
-  var students = [];
-  //Set needed variables in Primary List
-  
+  var students = [];  
   var teachers = [];
-  teachers = getTeachers(tValues, tNumRows);
   
+  teachers = getTeachers(tValues, tNumRows);
   students = getStudents(pValues, pNumRows, teachers);
   
   var pEarlyStudents = [];
@@ -42,9 +36,7 @@ function assignStudentLunchDays() {
   //to an array, and do the table assignments for late lunches
   for(var i = 0; i < students.length; i++){
     stu = students[i];
-    if(stu.fName == "First Name") {
-      //Do Nothing
-    } else {
+    if(stu.fName !== "First Name") {
       if(stu.grade >= 9){
         var a = false;
         var b = false;
@@ -369,7 +361,7 @@ function parseStudentChanges(){
     }
     scanSheet.clear();
     sortSheetBy(primarySheet, ["Lunch Day", "Last Name", "First Name"]);
-    var currentValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues()
+    var currentValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
     scanSheet.getRange(1, 1, currentValues.length, currentValues[0].length).setValues(currentValues);
   }else{
     message = "No changes have been made";
@@ -452,14 +444,12 @@ primary - the sheet the students are being printed to
 function printStudentsToSheet(students, primary){
 
   var documentProperties = PropertiesService.getDocumentProperties();
-  var primaryData = primary.getDataRange();
-  var pValues = primaryData.getValues();
 
-  var pushArray ;
+  var pushArray;
   var finalArray = [];
   var count = 0;
   
-  var sFNameCol = parseInt(documentProperties.getProperty("pSFNameColumn"),10);
+  var sFNameCol = parseInt(documentProperties.getProperty("pSFNameColumn"));
   var sLNameCol = parseInt(documentProperties.getProperty("pSLNameColumn"));
   var gradeCol = parseInt(documentProperties.getProperty("pGradeColumn"));
   var houseCol = parseInt(documentProperties.getProperty("pHouseColumn"));
@@ -534,63 +524,7 @@ function printStudentsToSheet(students, primary){
   primary.clear();
   var sheetRange = primary.getRange(1, 1, count, 19);
   sheetRange.setValues(finalArray);
-  
-
 }
-/**
-
-
-
-@desc Sets the user properies to make use of global variables
-@params - pNumColumns - the number of columns in Final Student Data
-pValues - the array of the Final Student Data
-tNumColumns - the number of columns in Faculty Choices
-tValues - the array of Faculty Choices
-@funtional - yes
-@author - dicksontc
-
-function setProperties(pNumColumns, pValues, tNumColumns, tValues){
-  var properties = {pLunchTimeColumn: 0, pLunchDayColumn: 0, pSFNameColumn: 0,
-                    pSLNameColumn: 0, pTFNameColumn: 0, pTLNameColumn: 0,
-                    pAdvisorColumn: 0, pGenderColumn: 0,
-                    pCourseTitleColumn: 0, pCourseCodeColumn: 0, pCourseLengthColumn: 0,
-                    pCourseIDColumn: 0, pSectionIDColumn: 0, pBlockColumn: 0, pDOBColumn: 0,
-                    pTableHeadColumn: 0,pTableColumn: 0, pGradeColumn: 0,
-                    pHouseColumn: 0, tFNameColumn: 0, tLNameColumn: 0,
-                    tLunchDayColumn: 0, tLunchTimeColumn: 0};
-  
-  var pHeaders = getListOfColumns(pValues);
-  var tHeaders = getListOfColumns(tValues);
-  properties.pLunchTimeColumn = getColumnIndex(pHeaders, "Lunch Time");
-  properties.pLunchDayColumn = getColumnIndex(pHeaders, "Lunch Day");
-  properties.pSFNameColumn = getColumnIndex(pHeaders, "First Name");
-  properties.pSLNameColumn = getColumnIndex(pHeaders, "Last Name");
-  properties.pTFNameColumn = getColumnIndex(pHeaders, "Faculty First Name");
-  properties.pTLNameColumn = getColumnIndex(pHeaders, "Faculty Last Name");
-  properties.pAdvisorColumn = getColumnIndex(pHeaders, "Advisor");
-  properties.pGenderColumn = getColumnIndex(pHeaders, "Gender");
-  properties.pCourseTitleColumn = getColumnIndex(pHeaders, "Course Title");
-  properties.pCourseCodeColumn = getColumnIndex(pHeaders, "Course Code");
-  properties.pCourseLengthColumn = getColumnIndex(pHeaders, "Course Length");
-  properties.pCourseIDColumn = getColumnIndex(pHeaders, "Course ID");
-  properties.pSectionIDColumn = getColumnIndex(pHeaders, "Section Identifier");
-  properties.pBlockColumn = getColumnIndex(pHeaders, "Block");
-  properties.pDOBColumn = getColumnIndex(pHeaders, "Date of Birth");
-  properties.pHouseColumn = getColumnIndex(pHeaders, "House");
-  properties.pTableHeadColumn = getColumnIndex(pHeaders, "Table Head");
-  properties.pTableColumn = getColumnIndex(pHeaders, "Lunch Table");
-  properties.pGradeColumn = getColumnIndex(pHeaders, "Grade Level");
-  
-  properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
-  properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
-  properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
-  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
-  
-  var documentProperties = PropertiesService.getDocumentProperties();
-  documentProperties.setProperties(properties);
-}
-
-*/
 
 /**
 @desc Creates student array filled with student information.
@@ -649,21 +583,36 @@ function getStudents(pValues, pNumRows, teachers){
     
     var zCheck = false;
     
+    var checkName = false;
+    var checkAdvisor = false;
     for(var j = 0; j < teachers.length; j++){
       var teach = teachers[j];
-      if(teacherFName === '' && teacherLName === ''){
-        if(time != "late" && time != "early")
-          time = 'mid';
-        j = teachers.length;
-        zCheck = true;
-      }else if(teach.fName == teacherFName && teach.lName == teacherLName){
-        for(var k = 0; k < teach.lunches.length; k++){
-          if(teach.lunches[k].day == day){
-            time = teach.lunches[k].time;
-            k = teach.lunches.length;
-            j = teachers.length;
+      if(!checkName){
+        if(teacherFName === '' && teacherLName === ''){
+          if(time != "late" && time != "early"){
+            time = 'mid';
+          }
+          checkName = true;
+          zCheck = true;
+        }else if(teach.fName == teacherFName && teach.lName == teacherLName){
+          for(var k = 0; k < teach.lunches.length; k++){
+            if(teach.lunches[k].day == day){
+              time = teach.lunches[k].time;
+              k = teach.lunches.length;
+              checkName = true;
+            }
           }
         }
+      }
+      if(!checkAdvisor){
+        var adv = teach.fName + " " + teach.lName;
+        if(adv === advisor){
+          house = teach.house;
+          checkAdvisor = true;
+        }
+      }
+      if(checkAdvisor && checkName){
+        j = teachers.length;
       }
     }
     
@@ -704,10 +653,8 @@ function getStudents(pValues, pNumRows, teachers){
 @author - dicksontc
 */
 function colorBackgrounds(column){
-  var sheet = SpreadsheetApp.getActiveSheet();
   var stuData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PropertiesService.getDocumentProperties().getProperty("studentData"));
-
-  var ran = stuData.getRange(1, column + 1, stuData.getDataRange().getNumRows());
+  var ran = stuData.getRange(1, parseInt(column) + 1, stuData.getDataRange().getNumRows());
   var vals = ran.getValues();
   var ro = ran.getNumRows();
   var rowColors = [];
@@ -795,16 +742,18 @@ function getTeachers(tValues, tNumRows){
   var lNameCol = parseInt(documentProperties.getProperty("tLNameColumn"));
   var lunchTimeCol = parseInt(documentProperties.getProperty("tLunchTimeColumn"));
   var lunchDayCol = parseInt(documentProperties.getProperty("tLunchDayColumn"));
-	var lunches;
+  var houseCol = parseInt(documentProperties.getProperty("tHouseColumn"));
+  var lunches;
   for(var i = 0; i < tNumRows; i++){
     var fname = tValues[i][fNameCol];
     var lname = tValues[i][lNameCol];
     var val = tValues[i][lunchTimeCol];
     var day = tValues[i][lunchDayCol];
+    var house = tValues[i][houseCol];
     if(teachers.length === 0){
       lunches = [];
       lunches.push({day: day, time: val});
-      teachers.push({fName: fname, lName: lname, lunches: lunches});
+      teachers.push({fName: fname, lName: lname, house: house, lunches: lunches});
     }else{
       for(var j = 0; j < teachers.length; j++){
         if(teachers[j].fName == fname && teachers[j].lName == lname){
@@ -814,7 +763,7 @@ function getTeachers(tValues, tNumRows){
         if(j == teachers.length - 1){
           lunches = [];
           lunches.push({day: day, time: val});
-          teachers.push({fName: fname, lName: lname, lunches: lunches});
+          teachers.push({fName: fname, lName: lname, house: house, lunches: lunches});
           j = teachers.length;
         }
       }

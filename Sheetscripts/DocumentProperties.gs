@@ -64,18 +64,19 @@ function testting() {
 function initialization() {
 
   setProperties();
-  assignStudentLunchDays();
-  addFacultyTables();
-  
-  var oldData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
-  if (oldData != null ) {
-    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldData);
+  if(parseRequests() === 0){
+    assignStudentLunchDays();
+    addFacultyTables();
+    
+    var oldData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
+    if (oldData != null ) {
+      SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldData);
+    }
+    var oldChanges = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
+    if (oldChanges != null ) {
+      SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
+    }
   }
-  var oldChanges = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
-  if (oldChanges != null ) {
-    SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
-  }
-  
   
 }
 
@@ -284,15 +285,33 @@ function setStudentColumnIndices(sheetName){
 */
 function setTeacherColumnIndices(sheetName) {
 
-  var teacherValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
+  var teacherSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var teacherValues = teacherSheet.getDataRange().getValues();
+  var row = -1;
+  for (var i = 0; i < teacherValues.length; i++) {
+    for( var j = 0; j < teacherValues[0].length; j++) {
+      if(teacherValues[i][j] == 'First Name') {
+        row = i;
+      } 
+    }
+  }
+  if(row === -1){
+    var finalArray = [];
+    finalArray[0] = ["First Name","Last Name","Lunch Day","Lunch Preference","Lunch Assignment","Table","House","Section","Comments"];
+    teacherSheet.clear();
+    var sheetRange = teacherSheet.getRange(1,1,1,9);
+    sheetRange.setValues(finalArray);
+    teacherValues = teacherSheet.getDataRange().getValues();
+  }
   var tHeaders = getListOfColumns(teacherValues);
-   
+  
   var properties = { tFNameColumn : 0,
                      tLNameColumn : 0,
                      tLunchDayColumn : 0,
                      tLunchTimeColumn : 0,
                      tLunchPreferenceColumn : 0,
                      tCommentsColumn : 0,
+
                      tTableColumn : 0,
                      tHouseColumn : 0,
                      tSectionColumn : 0};
