@@ -12,7 +12,6 @@ function assignStudentLunchDays() {
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(primarySheetName);
   var teacherSheetName = properties.getProperty("teacherChoices");
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(teacherSheetName);
-
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
