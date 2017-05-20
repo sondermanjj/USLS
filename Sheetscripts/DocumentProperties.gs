@@ -39,12 +39,14 @@ function testting() {
  *     tFNameColumn - First Name
  *     tLNameColumn - Last Name
  *     tLunchDayColumn - Lunch Day
- *     tLunchTimeColumn - Lunch Assignment (Lunch Time)
- *     tLunchPreferenceColumn - List of Lunch Preferences;
- *     tLunchTableColumn - Lunch Table
- *     tCommentsColumn - Comments
- *     tSectionColumn - Section (Free, Teaching, Off)
- *     tHouseColumn - House
+ *     tLunchTimeColumn - Lunch Time
+ *     tTableColumn - Table Assignment
+ *     tHouseColumn - Teacher House
+ *
+ *     tLunchPreferenceColumn;
+ *     tCommentsColumn;
+ *     tSectionColumn;
+ *
  *
  *   Others:
  *     numberOfTables - Number of tables in early lunch
@@ -223,7 +225,6 @@ function setDODSheet(sheet) {
   PropertiesService.getDocumentProperties().setProperty("DODList", value);
 }
 
-
 /**
  *@desc Sets the documnet properties for the final student data column header indices to be used as global variables
  *@params - Object[][] - the array of the Final Student Data
@@ -309,20 +310,21 @@ function setTeacherColumnIndices(sheetName) {
                      tLunchDayColumn : 0,
                      tLunchTimeColumn : 0,
                      tLunchPreferenceColumn : 0,
-                     tLunchTableColumn : 0,
                      tCommentsColumn : 0,
-                     tSectionColumn : 0,
-                     tHouseColumn : 0};
 
+                     tTableColumn : 0,
+                     tHouseColumn : 0,
+                     tSectionColumn : 0};
+  
   properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
   properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
   properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
-  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Assignment");
+  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Time");
   properties.tLunchPreferenceColumn = getColumnIndex(tHeaders, "Lunch Preference");
   properties.tCommentsColumn = getColumnIndex(tHeaders, "Comments");
-  properties.tSectionColumn = getColumnIndex(tHeaders, "Section");
+  properties.tTableColumn = getColumnIndex(tHeaders, "Table");
   properties.tHouseColumn = getColumnIndex(tHeaders, "House");
-  properties.tLunchTableColumn = getColumnIndex(tHeaders, "Lunch Table");
-  
+  properties.tSectionColumn = getColumnIndex(tHeaders, "Section");
+
   PropertiesService.getDocumentProperties().setProperties(properties);
 }
