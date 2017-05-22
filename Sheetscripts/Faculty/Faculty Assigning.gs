@@ -8,6 +8,7 @@
   */
   function addFacultyTables() {
     addTeachersToTableList();
+    prompt
   }
  
   var earlyCount = 0; //Number of teachers for early lunch
@@ -258,4 +259,86 @@
       ts.getRange(1, 1, data.length, data[0].length).setValues(data);
     }
   }
+  
+ /**
+ * @desc - Prompts the user whether they should add the faculty to the student data or not. First removes
+           all the teachers from the list and adds in the ones from the Faculty Choices. Finds teachers by
+           them not having a advisor
+ * @functional - yes
+ * @author - sondermanjj
+ */
+function facultyAddingPrompt(){  
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('Do you want to add the faculty to the final student data?', ui.ButtonSet.YES_NO);
+  if(response == ui.Button.YES) {
+    var properties = PropertiesService.getDocumentProperties();
+    var pValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
+    var advisorCol = parseInt(properties.getProperty("Student Advisor"));
+    var gradeCol = parseInt(properties.getProperty("Student Grade Level"));
+    for (var i = 0; i < pValues.length;i++) {
+      if (pValues[advisorCol][i] == "Advisor") {
+      //do nothing
+      } else {
+        if (pValues[i][advisorCol] === "" && pValues[i][gradeCol] === "") {
+          pValues.splice(i, 1)
+          i--;
+        }
+      }
+    }
+    
+    pValues = addFacultyToStudentData(pValues);
+    
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().clear();
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getRange(1, 1, pValues.length, pValues[0].length).setValues(pValues);
+  }
+}
+
+/**
+ * @desc - Adds the faculty choices data to the student data.
+ * @functional - yes
+ * @author - sondermanjj
+ */
+function addFacultyToStudentData(pValues){  
+
+  var properties = PropertiesService.getDocumentProperties();
+  var tValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices")).getDataRange().getValues();
+  //First get all the teacher property column indexes
+  var tFNameColumn = parseInt(properties.getProperty("Teacher First Name"));
+  var tLNameColumn = parseInt(properties.getProperty("Teacher Last Name"));
+  var tLunchDayColumn = parseInt(properties.getProperty("Teacher Lunch Day"));
+  var tLunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
+  var tTableColumn = parseInt(properties.getProperty("Teacher Table"));
+  var tHouseColumn = parseInt(properties.getProperty("Teacher House"));
+  //Then the where the teacher values should be put in.
+  var pSFNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var pSLFNameColumn = parseInt(properties.getProperty("Student Last Name"));
+  var pLunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var pLunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  var pTableColumn = parseInt(properties.getProperty("Student Lunch Table"));
+  var pHouseColumn = parseInt(properties.getProperty("Student House"));
+  
+  var placeHolder;
+  for (var i = 0; i < tValues.length; i++) {
+    if (tValues[i][tFNameColumn] == "First Name" || tValues[i][tFNameColumn] === "") {
+      //do nothing
+    } else {
+      placeHolder = [];
+      for (var j = 0; j < pValues[0].length; j++) {
+        placeHolder.push([]);
+      }
+      placeHolder[pSFNameColumn] = tValues[i][tFNameColumn];
+      placeHolder[pSLFNameColumn] = tValues[i][tLNameColumn];
+      placeHolder[pLunchDayColumn] = tValues[i][tLunchDayColumn];
+      placeHolder[pLunchTimeColumn] = tValues[i][tLunchTimeColumn];
+      placeHolder[pTableColumn] = tValues[i][tTableColumn];
+      placeHolder[pHouseColumn]  = tValues[i][tHouseColumn];
+      
+      pValues.push(placeHolder);
+      Logger.log(placeHolder);
+    }
+  }
+  
+  return pValues;
+}
+
   

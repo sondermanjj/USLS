@@ -28,16 +28,25 @@ function getStats(students) {
   var properties = PropertiesService.getDocumentProperties();
   var days = JSON.parse(properties.getProperty("letterDays"));
   var times = JSON.parse(properties.getProperty("lunchTimes"));
+
+  if (students) {
   var values = SpreadsheetApp
                   .getActiveSpreadsheet()
                   .getSheetByName(properties.getProperty("studentData"))
                   .getDataRange()
                   .getValues();
                   
+  } else {
+  
+  var values = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.getProperty("teacherChoices"))
+                  .getDataRange()
+                  .getValues();
+  }
+
   var tableValues = statistics(times, days, values, students);
-  
   return "<table id='studentStatsTable'>" + getHTMLTable(times, days, tableValues);
-  
 }
 
 
@@ -103,6 +112,27 @@ function statistics(time, day, values, students) {
     }
   }
   
+  var properties = PropertiesService.getDocumentProperties();
+  
+  if (students) {
+  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
+  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  Logger.log("Finding Student stats...");
+
+  } else {
+  var lunchDayColumn = parseInt(properties.getProperty("Teacher Lunch Day"));
+  var gradeColumn = values[0].length+1;
+  var lunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
+  Logger.log("Finding Teacher stats...");
+  }
+  
+  var flag;
+  var lunchDay;
+  var lunchTime;
+  var count;
+  
+
   //For each row in the data...
   for( var k = 0; k < values.length; k++) {
   

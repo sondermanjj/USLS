@@ -19,6 +19,7 @@ function testting() {
  *   Column Indices for Teachers:
  *     "Teacher " + column name
  *
+ *
  *   Others:
  *     numberOfTables - Number of tables in early lunch
  *     letterDays - A list of the letter days for the school
@@ -192,7 +193,6 @@ function setDODSheet(sheet) {
   PropertiesService.getDocumentProperties().setProperty("DODList", value);
 }
 
-
 /**
  *@desc Sets the documnet properties for the final student data column header indices to be used as global variables
  *@params - Object[][] - the array of the Final Student Data
@@ -215,10 +215,8 @@ function setStudentColumnIndices(pHeaders){
  *@author - dicksontc, hendersonam
 */
 function setTeacherColumnIndices(tHeaders) {
-
   var properties = PropertiesService.getDocumentProperties();
-  
-   
+  //Start of hendersan airtight 
   for(var i = 0; i < tHeaders.length; i++) {
     if (tHeaders[i] != "") {
       properties.setProperty("Teacher " + tHeaders[i], i);
