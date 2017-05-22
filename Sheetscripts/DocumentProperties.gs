@@ -215,7 +215,7 @@ function setStudentColumnIndices(pHeaders){
  *@author - dicksontc, hendersonam
 */
 function setTeacherColumnIndices(tHeaders) {
-
+  var properties = PropertiesService.getDocumentProperties();
   //Start of hendersan airtight 
   for(var i = 0; i < tHeaders.length; i++) {
     if (tHeaders[i] != "") {
