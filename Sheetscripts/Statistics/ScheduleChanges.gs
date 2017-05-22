@@ -3,6 +3,14 @@
   var changeshtml = "";
   var updatedChanges = false;
   
+function updateChanges(){
+  var list = scheduleChanges();
+  var numChanges = 0;
+  for(var j=0; j<list.length; j++){
+    numChanges += 1;
+  }
+  Logger.log(numChanges);
+}
   /**
   * @desc - Gets the html for the schedule updates
   * @return - A list of schedule updates in html
