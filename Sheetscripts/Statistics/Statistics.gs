@@ -125,6 +125,9 @@ function statistics(time, day, values, students) {
   var gradeColumn = values[0].length+1;
   var lunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
   Logger.log("Finding Teacher stats...");
+  Logger.log(lunchDayColumn);
+  Logger.log(gradeColumn);
+  Logger.log(lunchTimeColumn);
   }
   
   var flag;
@@ -141,8 +144,7 @@ function statistics(time, day, values, students) {
     lunchTime = values[k][lunchTimeColumn].toString().toLowerCase();
     
     //If student, grade column can't be empty
-    if( (values[k][gradeColumn] !== "") == students) {
-    
+      
       count = 0;
       while( isNaN(lunchDay) ) {
         lunchDay == day[count].toString().toLowerCase() ? lunchDay = count : count++;
@@ -160,7 +162,8 @@ function statistics(time, day, values, students) {
         lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
         if (count == time.length) {
           //If the value in the cell is not a lunch time...
-          if (isNaN(lunchTime) && lunchTime != "lunch time") {
+          if (isNaN(lunchTime) && (lunchTime != "lunch time" && lunchTime != "lunch assignment") ) {
+            Logger.log(lunchTime);
             incorrectLunchTimes.push([k+1]);
           }
           break;
@@ -171,7 +174,7 @@ function statistics(time, day, values, students) {
         stats[lunchDay][lunchTime] += 1;
         if (count == time.length) break;
       }     
-    }
+    
   }
   
   if (incorrectLunchTimes.length > 0) {
