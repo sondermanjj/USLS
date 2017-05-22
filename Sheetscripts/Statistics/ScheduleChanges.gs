@@ -30,7 +30,7 @@
       changeshtml += "<ul id='changes'>";
       for (var i = 0; i < changes.length; i++) {
         if (changes[i][0] == 1 ) {
-          changeshtml += "<li> " + changes[i][1] + " has mispellings in the following columns during " + changes[i][2] + " day: ";
+          changeshtml += "<li> The following column values have been changed for " + changes[i][1] + " on " + changes[i][2] + " days: ";
           for ( var t = 3; t < changes[i].length; t++) {
           changeshtml += changes[i][t];
           }
