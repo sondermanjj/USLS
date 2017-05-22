@@ -8,7 +8,6 @@
   */
   function addFacultyTables() {
     addTeachersToTableList();
-    prompt
   }
  
   var earlyCount = 0; //Number of teachers for early lunch

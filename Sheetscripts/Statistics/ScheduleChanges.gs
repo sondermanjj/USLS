@@ -3,14 +3,15 @@
   var changeshtml = "";
   var updatedChanges = false;
   
-function updateChanges(){
-  var list = scheduleChanges();
-  var numChanges = 0;
-  for(var j=0; j<list.length; j++){
-    numChanges += 1;
+  function updateChanges(){            
+    var list = scheduleChanges();            
+    var numChanges = 0;            
+    for(var j=0; j<list.length; j++){            
+      numChanges += 1;            
+    }            
+    Logger.log(numChanges);            
   }
-  Logger.log(numChanges);
-}
+                    
   /**
   * @desc - Gets the html for the schedule updates
   * @return - A list of schedule updates in html
@@ -28,8 +29,12 @@ function updateChanges(){
     }  else {
       changeshtml += "<ul id='changes'>";
       for (var i = 0; i < changes.length; i++) {
-        if (changes[i].length == 1 ) {
-          changeshtml += "<li> Some values in row " + changes[i][0] + " were changed, but course title was not.</li>";
+        if (changes[i][0] == 1 ) {
+          changeshtml += "<li> " + changes[i][1] + " has mispellings in the following columns during " + changes[i][2] + " day: ";
+          for ( var t = 3; t < changes[i].length; t++) {
+          changeshtml += changes[i][t];
+          }
+          changeshtml += "</li>";
         } else if (changes[i].length == 2 ) {
           changeshtml += "<li> Lunch time in row " + changes[i][0] + " is misspelt. Currently says " + changes[i][1] + ".</li>";
         } else if (changes[i].length < 6) {
@@ -184,6 +189,7 @@ function findChanges(oldValues, newValues, changesSheet) {
   var TableColumn =  parseInt(properties.getProperty("Student Lunch Table"));
   var courseColumn = parseInt(properties.getProperty("Student Course Title"));
   var times = JSON.parse(properties.getProperty("lunchTimes"));
+  var headers = JSON.parse(properties.getProperty("headers"));
   
   oldValues.sort(compareByColumnIndex(LunchDayColumn));
   oldValues.sort(compareByColumnIndex(lastNameColumn));
@@ -214,8 +220,16 @@ function findChanges(oldValues, newValues, changesSheet) {
     var oldRow = oldValues[i].toString().toLowerCase();
     // If the newValue row does not equal the oldValue row, a schedule change happened
     if ( !newRow.equals(oldRow)) {
-      if ( newRow[courseColumn] == oldRow[courseColumn] ) {
-        changes.push([k+1]);
+      if ( newRow[courseColumn] == oldRow[courseColumn]) {
+        var mispellings = [1, newValues[k][firstNameColumn], newValues[k][LunchDayColumn]];
+        Logger.log(headers.length);
+        for ( var p = 0; p < headers.length; p++) {
+          if ( newValues[k][p] != oldValues[i][p] ) {
+            Logger.log(headers[p]);
+            mispellings.push(headers[p]);
+          }
+        }
+        changes.push(mispellings);
       } else if (!times.includes(newRow[LunchTimeColumn]) ){
         changes.push([k+1, newRow[LunchTimeColumn]]);
       } else {

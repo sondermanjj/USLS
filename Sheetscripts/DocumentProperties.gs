@@ -1,7 +1,7 @@
 
 
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperties());
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("headers"));
   
 }
 
