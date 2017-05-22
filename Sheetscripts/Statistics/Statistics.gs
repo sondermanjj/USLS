@@ -115,15 +115,15 @@ function statistics(time, day, values, students) {
   var properties = PropertiesService.getDocumentProperties();
   
   if (students) {
-  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
-  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
-  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
+  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
+  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
   Logger.log("Finding Student stats...");
 
   } else {
-  var lunchDayColumn = parseInt(properties.getProperty("tLunchDayColumn"));
+  var lunchDayColumn = parseInt(properties.getProperty("Teacher Lunch Day"));
   var gradeColumn = values[0].length+1;
-  var lunchTimeColumn = parseInt(properties.getProperty("tLunchTimeColumn"));
+  var lunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
   Logger.log("Finding Teacher stats...");
   }
   
