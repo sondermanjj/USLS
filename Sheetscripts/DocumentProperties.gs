@@ -17,17 +17,6 @@ function testting() {
  *     "Student " + column name
  *
  *   Column Indices for Teachers:
- *     tFNameColumn - First Name
- *     tLNameColumn - Last Name
- *     tLunchDayColumn - Lunch Day
- *     tLunchTimeColumn - Lunch Time
- *     tTableColumn - Table Assignment
- *     tHouseColumn - Teacher House
- *
- *     tLunchPreferenceColumn;
- *     tCommentsColumn;
- *     tSectionColumn;
- 
  *     "Teacher " + column name
  *
  *
@@ -227,33 +216,6 @@ function setStudentColumnIndices(pHeaders){
 */
 function setTeacherColumnIndices(tHeaders) {
 
-  //Start of sondermanjj-Airtight
-  var teacherValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
-  var tHeaders = getListOfColumns(teacherValues);
-   
-  var properties = { tFNameColumn : 0,
-                     tLNameColumn : 0,
-                     tLunchDayColumn : 0,
-                     tLunchTimeColumn : 0,
-                     tLunchPreferenceColumn : 0,
-                     tCommentsColumn : 0,
-                     tTableColumn : 0,
-                     tHouseColumn : 0,
-                     tSectionColumn : 0};
-  
-  properties.tFNameColumn = getColumnIndex(tHeaders, "First Name");
-  properties.tLNameColumn = getColumnIndex(tHeaders, "Last Name");
-  properties.tLunchDayColumn = getColumnIndex(tHeaders, "Lunch Day");
-  properties.tLunchTimeColumn = getColumnIndex(tHeaders, "Lunch Time");
-  properties.tLunchPreferenceColumn = getColumnIndex(tHeaders, "Lunch Preference");
-  properties.tCommentsColumn = getColumnIndex(tHeaders, "Comments");
-  properties.tTableColumn = getColumnIndex(tHeaders, "Table");
-  properties.tHouseColumn = getColumnIndex(tHeaders, "House");
-  properties.tSectionColumn = getColumnIndex(tHeaders, "Section");
-
-  PropertiesService.getDocumentProperties().setProperties(properties);
-  var properties = PropertiesService.getDocumentProperties();
-  
   //Start of hendersan airtight 
   for(var i = 0; i < tHeaders.length; i++) {
     if (tHeaders[i] != "") {
