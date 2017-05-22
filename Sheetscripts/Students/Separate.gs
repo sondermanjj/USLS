@@ -20,13 +20,13 @@ function splitIntoNewSheets(){
   var pNumRows = primaryData.getNumRows();
   var pNumColumns = primaryData.getNumColumns();
   
-  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
-  var lunchTableColumn = parseInt(properties.getProperty("pLunchTableColumn"));
-  var fNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var lNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
-  var houseColumn = parseInt(properties.getProperty("pHouseColumn"));
-  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
-  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  var lunchTableColumn = parseInt(properties.getProperty("Student Lunch Table"));
+  var fNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var lNameColumn = parseInt(properties.getProperty("Student Last Name"));
+  var houseColumn = parseInt(properties.getProperty("Student House"));
+  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
   
   doHouseSheets(pValues,pNumRows);
   doTableSheets(pValues,pNumRows);
@@ -72,13 +72,13 @@ function doHouseSheets(pValues,pNumRows){
 
   var properties = PropertiesService.getDocumentProperties();
   
-  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
-  var lunchTableColumn = parseInt(properties.getProperty("pLunchTableColumn"));
-  var fNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var lNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
-  var houseColumn = parseInt(properties.getProperty("pHouseColumn"));
-  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
-  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  var lunchTableColumn = parseInt(properties.getProperty("Student Lunch Table"));
+  var fNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var lNameColumn = parseInt(properties.getProperty("Student Last Name"));
+  var houseColumn = parseInt(properties.getProperty("Student House"));
+  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
   
   var academy = [];
   var crest = [];
@@ -133,13 +133,13 @@ function doHouseSheets(pValues,pNumRows){
 function doTableSheets(pValues, pNumRows){
   var properties = PropertiesService.getDocumentProperties();
   
-  var lunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
-  var lunchTableColumn = parseInt(properties.getProperty("pLunchTableColumn"));
-  var fNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var lNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
-  var houseColumn = parseInt(properties.getProperty("pHouseColumn"));
-  var lunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
-  var gradeColumn = parseInt(properties.getProperty("pGradeColumn"));
+  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  var lunchTableColumn = parseInt(properties.getProperty("Student Lunch Table"));
+  var fNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var lNameColumn = parseInt(properties.getProperty("Student Last Name"));
+  var houseColumn = parseInt(properties.getProperty("Student House"));
+  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
 
 
   var tables = [];
