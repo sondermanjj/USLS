@@ -189,14 +189,6 @@
     }
     
     /**
-      * @desc - Dissplays the dropdown menu to list the columns that can be used for filtering
-      * @author - hendersonam
-      */
-    function displayDropdown(list) {
-
-    }
-    
-    /**
       * @desc - Displays Lunch Statistics
       * @author - hendersonam
       */
@@ -226,7 +218,7 @@
       if (key==13){
         var filter = document.getElementById('filter').value.toLowerCase();
         var column = document.getElementById('dropdownfilter').value;
-        google.script.run.showDialog('search, ' + filter + ', ' + column);
+        google.script.run.withSuccessHandler(google.script.run.showDialog).getSearchParams(filter, column);
       }
     }
 
@@ -290,7 +282,7 @@
     function search(){
       var filter = document.getElementById('filter').value.toLowerCase();
       var column = document.getElementById('dropdownfilter').value;
-      google.script.run.showDialog('search, ' + filter + ', ' + column);
+      google.script.run.withSuccessHandler(google.script.run.showDialog).getSearchParams(filter, column);
     }
     
     /*

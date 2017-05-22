@@ -40,6 +40,16 @@ function getHTMLDropdown(list) {
  * @author - hendersonam
  */
 function sortSheetBy(sheet, sorts) {
+
+  if (sorts === null) {
+    SpreadsheetApp.getUi().alert("No sorts given!");
+    return null;
+  }
+  if (sheet == null) {
+    SpreadsheetApp.getUi().alert("That sheet does not exist, cannot be sorted!");
+    return null;
+  }
+  
   var values = sheet.getDataRange().getValues();
   var headers = getListOfColumns(values);
   
@@ -54,15 +64,16 @@ function sortSheetBy(sheet, sorts) {
  * @param - String - String to search for
  * @author - hendersonam
  */
-function hideValues(filter, column) {
+function hideValues(filter, column, sheetName) {
 
+  Logger.log(sheetName);
   var properties = PropertiesService.getDocumentProperties()
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
 
   if( column == "All") {
-    map = searchAll(filter);
+    map = searchAll(filter, sheetName);
   } else {
-    map = searchColumn(filter, column);
+    map = searchColumn(filter, column, sheetName);
   }
   for (var i in map) {
     sheet.hideRows(i, map[i]);
@@ -74,9 +85,9 @@ function hideValues(filter, column) {
  * @param - String - String to search for
  * @author - hendersonam
  */
-function searchAll(filter) {
+function searchAll(filter, sheetName) {
   var properties = PropertiesService.getDocumentProperties();
-  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var count = 0;
   var index = 0;  
   var map = {};
@@ -104,9 +115,10 @@ function searchAll(filter) {
  * @param - String - String to search for
  * @author - hendersonam
  */
-function searchColumn(filter, column) {
+function searchColumn(filter, column, sheetName) {
   var properties = PropertiesService.getDocumentProperties();
-  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
+  Logger.log(sheetName);
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
   var columnIndex = getColumnIndex(getListOfColumns(values), column);
   var count = 0;
   var index = 0;  
@@ -135,10 +147,10 @@ function searchColumn(filter, column) {
  */
 function showAllValues() {
  var properties = PropertiesService.getDocumentProperties();
- var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
-  var values = sheet.getDataRange().getValues();
+ var sheet = SpreadsheetApp.getActiveSheet();
+ var values = sheet.getDataRange().getValues();
   
-
+ 
   sheet.showRows(1, values.length);
 }
 
@@ -161,7 +173,8 @@ function getColumnIndex(values, name) {
 }
 
 /**
- * @desc - Gets a list of the column names saved in an array
+ * @desc - Gets a list of the column names and returns them in an array, looking for
+ *         the name "First Name" as an indicator that it found the header row
  * @param - Object[][] - 2D Array of data
  * @return - Array[] - List of the column names in the given data
  */
@@ -173,6 +186,8 @@ function getListOfColumns(data) {
     for( var j = 0; j < data[0].length; j++) {
       if(data[i][j] == 'First Name') {
         row = i;
+        j = data[0].length;
+        i = data.length;
       } 
     }
   }
@@ -211,7 +226,7 @@ function promptForNewSheet(msg) {
         ss.deleteSheet(sheet);
         ss.insertSheet(sheetName);
         sheet = ss.getSheetByName(sheetName);
-      } else {
+      } else if (response == ui.Button.NO) {
         sheet = promptForNewSheet(msg);
       }
     }
@@ -249,26 +264,50 @@ function promptForSettingSheetProperty(msg) {
 }
 
 /**
- * @desc - adds a column to a given 2d Array for a Google Sheet
+ * @desc - adds a column/columns to the end of a given 2d Array for a Google Sheet
+ *         Assumes the header row has 'First Name' somewhere in it
  * @param - Object[][] - 2D Array of values to add the column name to
- *          name - name of the column
+ *          Array[] - names of the columns to add
  * @functional - YES
  * @author - hendersonam, sondermanjj
  */
-function addColumnName(values, name) {
+function addColumnNames(values, names) {
   var numColumns = values[0].length;
   var exists = false;
- 
-  for (var i = 0; i <= numColumns - 1; i++) {
-    var column = values[0][i];
-    if (column == name) {
-      exists = true;
+  var headerRow;
+  
+  for (var i = 0; i < values.length; i++) {
+    for ( var j = 0; j < values[0].length; i++) {
+      if (values[i][j] == "First Name") {
+        headerRow = i;
+        i = values.length;
+        j = values[0].length;
+      }
     }
   }
-  if (!exists) {
-    values[0][numColumns] = name;
-    for (var j = 1; j < values.length; j++) {
-      values[j][numColumns] = "";
+  
+  if (isNaN(headerRow)) {
+    SpreadsheetApp.getUi().alert("Could not add a new column because there is no 'First Name' column. Please make sure it is spelt exactly as shown.");
+    return null;
+  }
+  
+  for ( var j = 0; j < names.length; j++) {
+    for (var i = 0; i < numColumns; i++) {
+      var column = values[headerRow][i];
+      if (column == names[j]) {
+        exists = true;
+      }
+    }
+    
+    if (!exists) {
+      exists = false;
+      values[headerRow][numColumns] = names[j];
+      for (var k = 0; k < values.length; k++) {
+        if( values[k][numColumns] != values[headerRow][numColumns]){
+          values[k][numColumns] = "";
+        }
+      }
+      numColumns += 1;
     }
   }
   return values;
@@ -288,4 +327,17 @@ function compareByColumnIndex(index) {
         return (a[index] < b[index]) ? -1 : 1;
     }
   }
+}
+
+/**
+ * @desc - Gets the parameters for the search function in the add-on
+ * @param - String - string to search for
+ *          String - Column name to search under
+ * @return - String - the parameters saved as a comma seperated string
+*/
+function getSearchParams(filter, column) {
+  var sheetName = SpreadsheetApp.getActiveSheet().getName();
+  var params = 'search, ' + filter + ', ' + column + ', ' + sheetName
+  Logger.log(params);
+  return params;
 }

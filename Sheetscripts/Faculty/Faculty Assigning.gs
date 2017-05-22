@@ -8,7 +8,6 @@
   */
   function addFacultyTables() {
     addTeachersToTableList();
-    prompt
   }
  
   var earlyCount = 0; //Number of teachers for early lunch
@@ -273,8 +272,8 @@ function facultyAddingPrompt(){
   if(response == ui.Button.YES) {
     var properties = PropertiesService.getDocumentProperties();
     var pValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
-    var advisorCol = parseInt(properties.getProperty("pAdvisorColumn"));
-    var gradeCol = parseInt(properties.getProperty("pGradeColumn"));
+    var advisorCol = parseInt(properties.getProperty("Student Advisor"));
+    var gradeCol = parseInt(properties.getProperty("Student Grade Level"));
     for (var i = 0; i < pValues.length;i++) {
       if (pValues[advisorCol][i] == "Advisor") {
       //do nothing
@@ -303,19 +302,19 @@ function addFacultyToStudentData(pValues){
   var properties = PropertiesService.getDocumentProperties();
   var tValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices")).getDataRange().getValues();
   //First get all the teacher property column indexes
-  var tFNameColumn = parseInt(properties.getProperty("tFNameColumn"));
-  var tLNameColumn = parseInt(properties.getProperty("tLNameColumn"));
-  var tLunchDayColumn = parseInt(properties.getProperty("tLunchDayColumn"));
-  var tLunchTimeColumn = parseInt(properties.getProperty("tLunchTimeColumn"));
-  var tTableColumn = parseInt(properties.getProperty("tTableColumn"));
-  var tHouseColumn = parseInt(properties.getProperty("tHouseColumn"));
+  var tFNameColumn = parseInt(properties.getProperty("Teacher First Name"));
+  var tLNameColumn = parseInt(properties.getProperty("Teacher Last Name"));
+  var tLunchDayColumn = parseInt(properties.getProperty("Teacher Lunch Day"));
+  var tLunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
+  var tTableColumn = parseInt(properties.getProperty("Teacher Table"));
+  var tHouseColumn = parseInt(properties.getProperty("Teacher House"));
   //Then the where the teacher values should be put in.
-  var pSFNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var pSLFNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
-  var pLunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
-  var pLunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
-  var pTableColumn = parseInt(properties.getProperty("pTableColumn"));
-  var pHouseColumn = parseInt(properties.getProperty("pHouseColumn"));
+  var pSFNameColumn = parseInt(properties.getProperty("Student First Name"));
+  var pSLFNameColumn = parseInt(properties.getProperty("Student Last Name"));
+  var pLunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+  var pLunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  var pTableColumn = parseInt(properties.getProperty("Student Lunch Table"));
+  var pHouseColumn = parseInt(properties.getProperty("Student House"));
   
   var placeHolder;
   for (var i = 0; i < tValues.length; i++) {

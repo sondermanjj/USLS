@@ -38,12 +38,12 @@ function parseRequests() {
   var rLateColumn;
   var rCommentsColumn;
   
-  var tFNameColumn = properties.getProperty("tFNameColumn");
-  var tLNameColumn = properties.getProperty("tLNameColumn");
-  var tLunchDayColumn = properties.getProperty("tLunchDayColumn");
-  var tLunchPreferenceColumn = properties.getProperty("tLunchPreferenceColumn");
-  var tCommentsColumn = properties.getProperty("tCommentsColumn");
-  var tSectionColumn = properties.getProperty("tSectionColumn");
+  var tFNameColumn = properties.getProperty("Teacher First Name");
+  var tLNameColumn = properties.getProperty("Teacher Last Name");
+  var tLunchDayColumn = properties.getProperty("Teacher Lunch Day");
+  var tLunchPreferenceColumn = properties.getProperty("Teacher Lunch Preference");
+  var tCommentsColumn = properties.getProperty("Teacher Comments");
+  var tSectionColumn = properties.getProperty("Teacher Section");
   
   var finalRows = [];
   var column;
