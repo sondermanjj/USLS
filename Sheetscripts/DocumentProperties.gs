@@ -1,7 +1,7 @@
 
 
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperties());
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("headers"));
   
 }
 
@@ -36,6 +36,8 @@ function testting() {
   var letterDays = ["A", "B", "C", "D", "E", "F", "G", "H"];
   var lunchTimes = ["early", "mid", "late"];
   var numberOfTables = 19;
+   // New day assignments for fall 2017 :
+   // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
   var schoolDays = { 1 : 'E', 2 : 'G', 3 : 'A', 4 : 'C', 5 : 'F', 6 : 'H', 7 : 'B', 8 : 'D',
                      E1 : 'E', G2 : 'G', A3 : 'A', C4 : 'C', F5 : 'F', H6 : 'H', B7 : 'B', D8 : 'D'};
   
@@ -48,6 +50,23 @@ function testting() {
   setNumberOfTables(numberOfTables);
   setSchoolDays(schoolDays);
   
+}
+
+/**
+* @ desc - re-sets column indices and column name properties
+*/
+function setColumnProperties(){
+  var properties = PropertiesService.getDocumentProperties();
+   //Needs to run after setting sheets
+  var studentHeaders = getListOfColumns(
+                          SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+                          properties.getProperty("studentData")).getDataRange().getValues());
+  var teacherHeaders = getListOfColumns(
+                          SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+                          properties.getProperty("teacherChoices")).getDataRange().getValues());
+  setStudentColumnIndices(studentHeaders);
+  setHeaderColumnNames(studentHeaders);
+  setTeacherColumnIndices(teacherHeaders);
 }
 
 /**

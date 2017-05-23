@@ -32,9 +32,11 @@
         if (changes[i][0] == 1 ) {
           changeshtml += "<li> The following column values have been changed for " + changes[i][1] + " on " + changes[i][2] + " days: ";
           for ( var t = 3; t < changes[i].length; t++) {
-          changeshtml += changes[i][t];
+          changeshtml += " " + changes[i][t];
           }
           changeshtml += "</li>";
+        } else if (changes[i].length == 2 ) {
+          changeshtml += "<li> Lunch time in row " + changes[i][0] + " is misspelt. Currently says " + changes[i][1] + ".</li>";
         } else if (changes[i].length < 6) {
           changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " added to the roster.</li>";
         } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
@@ -216,12 +218,11 @@ function findChanges(oldValues, newValues, changesSheet) {
     }
     var newRow = newValues[k].toString().toLowerCase();
     var oldRow = oldValues[i].toString().toLowerCase();
-    Logger.log(times.indexOf("mid"));
     // If the newValue row does not equal the oldValue row, a schedule change happened
     if ( !newRow.equals(oldRow)) {
-      if ( newValues[k][courseColumn] == oldValues[i][courseColumn]) {
-        Logger.log("Scanning error...." + newValues[k][courseColumn]);
+      if ( newRow[courseColumn] == oldRow[courseColumn]) {
         var mispellings = [1, newValues[k][firstNameColumn], newValues[k][LunchDayColumn]];
+        Logger.log(headers.length);
         for ( var p = 0; p < headers.length; p++) {
           if ( newValues[k][p] != oldValues[i][p] ) {
             Logger.log(headers[p]);
@@ -229,8 +230,8 @@ function findChanges(oldValues, newValues, changesSheet) {
           }
         }
         changes.push(mispellings);
-      } else if (times.indexOf(newValues[k][LunchTimeColumn]) < 0 ){
-        changes.push([k+1, newValues[k][LunchTimeColumn]]);
+      } else if (!times.includes(newRow[LunchTimeColumn]) ){
+        changes.push([k+1, newRow[LunchTimeColumn]]);
       } else {
         //Add the old value, new value, and an empty row to the changes sheet array
         changesSheetArray.push(oldValues[i]);
@@ -249,7 +250,6 @@ function findChanges(oldValues, newValues, changesSheet) {
     }
   }
   changesSheet.getRange(1, 1, changesSheetArray.length, changesSheetArray[0].length).setValues(changesSheetArray);
-  Logger.log(changes);
   return changes;
 }
 

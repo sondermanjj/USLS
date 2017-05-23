@@ -102,7 +102,16 @@
       color: #000;
     }
     
-    ul {
+    #reqSheets {
+      padding: 5px;
+      font-size: 1em;
+    }
+    
+    #reqSheets li {
+      font-weight: bold;
+    }
+    
+    #tabs ul {
       list-style-type: none;
       margin: 0;
       padding: 0;
@@ -110,7 +119,7 @@
       background-color: white;
     }
 
-    li {
+    #tabs li {
       float: left;
       display: block;
       color: #000;
@@ -126,7 +135,7 @@
       
     }
     
-    li:hover {
+    #tabs li:hover {
       /*top color: background-color: #333;*/
       /*button color: background-color: #4a8bf5;*/
       /*school color: background-color: #002967;*/
@@ -134,7 +143,7 @@
       color: #fff;
     }
     
-    .active {
+    #tabs .active {
       background-color: #0d47a1;
       color: #fff;
     }
@@ -386,8 +395,16 @@
      </div>
      
      <div id="cleanPage">
+       <div id="reqSheets">Before initializing data, please make sure that you have the following sheets:
+         <ul>
+           <li>Raw Data</li>
+           <li>Faculty Choices</li>
+           <li>DoD List</li>
+         </ul>
+       </div>
        <button id="cleanButton" class="action" onclick="google.script.run.initialization();">Initialize</button>
        <button id="exportButton" class="action" onclick="google.script.run.exportToWebsitePrompt();">Export</button>
+       <button id="setColumnsButton" class="action" onclick="google.script.run.setColumnProperties();">Reset Columns</button>
      </div>
      
      <div id="statsPage">
