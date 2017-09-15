@@ -1,0 +1,60 @@
+<style>
+  body {
+    font-family: sans-serif;
+  }
+  table, td, tr, th {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: center;
+  }
+  th {
+    background-color: #cccccc;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  h1{
+    margin-right: 30px;
+    display: inline-block;
+  }
+  
+  .printButton {
+    background-image: url("https://farm5.staticflickr.com/4184/34211099306_31b9f44900_b.jpg");
+    background-size: 100%; 
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #e6e6e6;
+    background-position: center; 
+    border: 1px solid #bfbfbf;
+    width: 100px;
+    height: 35px;
+  }
+  
+  #printPageButton {
+    background-image: url("https://farm3.staticflickr.com/2825/33472835943_cb99cc1f5c_b.jpg");
+    background-size: 100%; 
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #e6e6e6;
+    background-position: center; 
+    border: 1px solid #bfbfbf;
+    width: 100px;
+    height: 35px;
+  }
+  
+@media print {
+  .dayDiv.notPrint, .printButton, #printPageButton{
+    display: none;
+  }
+  .dayDiv.print, .dayDiv.printAll{
+    display: block;
+  }
+  .dayDiv.print{
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+</style>
+
+

@@ -1,0 +1,207 @@
+<Module>
+<ModulePrefs title="Faculty Script" /> 
+<Content type="html">
+<?!= include('website/facultyApp/CSS'); ?>
+
+<script type="text/javascript">
+  //JSHint verified 4/30/2017 sondermanjj
+  function printDay(day){
+    if(day === 'all'){
+      var printDivs = document.getElementsByClassName("dayDiv");
+      for(var i = 0; i < printDivs.length; i++){
+        printDivs.item(i).className = "dayDiv printAll";
+      }
+      var fullSchedule = document.getElementById("results");
+      fullSchedule.className = "dayDiv print";
+    }
+    else{
+      document.getElementById('printDiv').className = "";
+      var doNotPrint = document.getElementsByClassName("dayDiv");
+      for(var j = 0; j < doNotPrint.length; j++){
+        doNotPrint.item(j).className = "dayDiv notPrint";
+      }
+    
+      var dayToPrint = document.getElementById(day);
+      dayToPrint.className = "dayDiv print";
+    }
+  }
+  
+</script>
+
+<div id="results">
+<? var data = getResults(); ?>
+<? var aDay = getADay(); ?>
+<? var bDay = getBDay(); ?>
+<? var cDay = getCDay(); ?>
+<? var dDay = getDDay(); ?>
+<? var eDay = getEDay(); ?>
+<? var fDay = getFDay(); ?>
+<? var gDay = getGDay(); ?>
+<? var hDay = getHDay(); ?>
+
+<input id="printPageButton" onclick="printDay('all'); window.print();" type="button" value=" " />
+
+<div id="printDiv" class="showAll">
+<div id="A" class="dayDiv notPrint">
+<h1>A Day</h1><input class="printButton" onclick="printDay('A'); window.print();" type="button" value=" " />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < aDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < aDay[i].length; j++) { ?>
+        <td><?= aDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+
+<div id="B" class="dayDiv notPrint">
+<h1>B Day</h1><input class="printButton" onclick="printDay('B'); window.print();" type="button" value=" " /> 
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < bDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < bDay[i].length; j++) { ?>
+        <td><?= bDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+
+<div id="C" class="dayDiv notPrint">
+<h1>C Day</h1><input class="printButton" onclick="printDay('C'); window.print(); " type="button" value=" " />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < cDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < cDay[i].length; j++) { ?>
+        <td><?= cDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+
+<div id="D" class="dayDiv notPrint">
+<h1>D Day</h1><input class="printButton" onclick="printDay('D'); window.print();" type="button" value=" " />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < dDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < dDay[i].length; j++) { ?>
+        <td><?= dDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+
+<div id="E" class="dayDiv notPrint">
+<h1>E Day</h1><input class="printButton" onclick="printDay('E'); window.print();" type="button" value=" " />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < eDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < eDay[i].length; j++) { ?>
+        <td><?= eDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+
+<div id="F" class="dayDiv notPrint">
+<h1>F Day</h1><input class="printButton" onclick="printDay('F');window.print();" type="button" value=" " />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < fDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < fDay[i].length; j++) { ?>
+        <td><?= fDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+
+<div id="G" class="dayDiv notPrint">
+<h1>G Day</h1><input class="printButton" onclick="printDay('G'); window.print();" type="button" value=" " />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < gDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < gDay[i].length; j++) { ?>
+        <td><?= gDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+
+<div id="H" class="dayDiv notPrint">
+<h1>H Day</h1><input class="printButton" onclick="printDay('H'); window.print();" type="button" value=" " />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+  <? for (var i = 0; i < hDay.length; i++) { ?>
+    <tr>
+      <? for (var j = 0; j < hDay[i].length; j++) { ?>
+        <td><?= hDay[i][j] ?></td>
+      <? } ?>
+    </tr>
+  <? } ?>
+</table>
+</div>
+</div>
+</div>
+</Content>
+</Module>
