@@ -45,8 +45,8 @@ function testting() {
   var properties = PropertiesService.getDocumentProperties();
   setLetterDays(letterDays);
   setLunchTimes(lunchTimes);
-  setAssignedLunches([{time: "early", by:"normal", numStudents: 133}]);
-  setNonAssignedLunches([{time: "mid", by:"none", numStudents: 133}, {time: "late", by: "house", numStudents: 133}]);
+  setAssignedLunches([{"time": "early", "by":"table", "numStudents": 133}]);
+  setNonAssignedLunches([{"time": "mid", "by":"none", "numStudents": 133}, {"time": "late", "by": "house", "numStudents": 133}]);
   //setAssignedLunches([["early", 133]]);
   //setNonAssignedLunches(["mid", "late"]);
   setNumberOfTables(numberOfTables);
