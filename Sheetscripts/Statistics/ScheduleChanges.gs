@@ -11,6 +11,38 @@
     }            
     Logger.log(numChanges);            
   }
+  
+  function validateChange(data) {
+    var properties = PropertiesService.getDocumentProperties();
+    var values = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.getProperty("studentData"))
+                  .getDataRange()
+                  .getValues();
+                  
+    var valid = checkForStudent(values, data[0], data[1]);
+    return valid;
+  }
+  
+  function checkForStudent(values, firstname, lastname) {
+    var properties = PropertiesService.getDocumentProperties();
+    var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
+    var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
+    var valid = false;
+  
+    Logger.log(values[2][firstNameColumn]);
+    for(var i = 0; i < values[0].length; i++) {
+      if(firstname == values[i][firstNameColumn]) {
+      Logger.log("should be true");
+        valid = true;
+      }
+    }
+    return valid;
+  }
+  
+  function makeChange(validated) {
+    Logger.log(validated);
+  }
                     
   /**
   * @desc - Gets the html for the schedule updates

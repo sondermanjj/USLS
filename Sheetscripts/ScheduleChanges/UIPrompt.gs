@@ -1,4 +1,4 @@
 function showScheduleChangesPrompt() {
-  var html = HtmlService.createHtmlOutputFromFile('ScheduleChangesPrompt').setWidth(250).setHeight(150);
+  var html = HtmlService.createTemplateFromFile('ScheduleChangesPrompt').evaluate();
   SpreadsheetApp.getUi().showModalDialog(html, ' ');
 }
