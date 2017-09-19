@@ -9,22 +9,16 @@
     <?!= include('Stylesheet'); ?>
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
   </head>
+  
   <script>
     function checkValues() {
-      var firstname = document.getElementById("firstname").value;
-      var lastname = document.getElementById("lastname").value;
-      var coursetitle = document.getElementById("coursetitle").value;
-      var lunchday = document.getElementById("lunchday").value;
-      
-      var formData = [firstname, lastname, coursetitle, lunchday];
-      
-      google.script.run.withSuccessHandler(makeChange).validateChange(formData);
-      
-      console.log(formData);
+      var formData = [document.getElementById("firstname").value, document.getElementById("lastname").value];
+      google.script.run.withSuccessHandler(showstudentSchedule).validateChange(formData);
     }
     
-    function makeChange(validated) {
-    console.log(validated);
+    function showStudentSchedule() {
+      var formData = [document.getElementById("firstname").value, document.getElementById("lastname").value];
+      google.script.run.getStudentScheduleHTML(formData);
     }
     
   </script>
@@ -34,12 +28,8 @@
     <form id="form">
       <label for="firstname">First Name:</label>
       <input type="text" id="firstname" required=true size="20" autofocus/><br>
-       <label for="lastname">Last Name:</label>
+      <label for="lastname">Last Name:</label>
       <input type="text" id="lastname" required=true size="20" /><br>
-       <label for="coursetitle">Course Title:</label>
-      <input type="text" id="coursetitle" required=true size="20" /><br>
-       <label for="lunchday">Lunch Day:</label>
-      <input type="text" id="lunchday" required=true size="20" /><br>
       <input type="button" onClick="checkValues()" value="Make Change" />
      </form>
      

@@ -30,18 +30,29 @@
     var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
     var valid = false;
   
-    Logger.log(values[2][firstNameColumn]);
-    for(var i = 0; i < values[0].length; i++) {
+    for(var i = 0; i < values.length; i++) {
       if(firstname == values[i][firstNameColumn]) {
-      Logger.log("should be true");
-        valid = true;
+        if(lastname == values[i][lastNameColumn]) {
+          valid = true;
+        }
       }
     }
+    
     return valid;
   }
   
-  function makeChange(validated) {
-    Logger.log(validated);
+  function getStudentScheduleHTML(data) {
+    var html = getStudentSchedule(data);
+    return html;
+  }
+  
+  function getStudentSchedule(data) {
+    var properties = PropertiesService.getDocumentProperties();
+    var values = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.getProperty("studentData"))
+                  .getDataRange()
+                  .getValues();
   }
                     
   /**
