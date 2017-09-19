@@ -20,25 +20,42 @@
                   .getDataRange()
                   .getValues();
                   
-    var valid = checkForStudent(values, data[0], data[1]);
-    return valid;
+    var validSchedule = checkForStudent(values, data[0], data[1]);
+    return validSchedule;
   }
   
   function checkForStudent(values, firstname, lastname) {
     var properties = PropertiesService.getDocumentProperties();
     var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
     var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
+    var courseTitleColumn = parseInt(properties.getProperty("Student Course Title"));
+    var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+    var teacherFirstNameColumn = parseInt(properties.getProperty("Student Faculty First Name"));
+    var teacherLastNameColumn = parseInt(properties.getProperty("Student Faculty Last Name"));
+    
+    var schedule = [];
     var valid = false;
   
     for(var i = 0; i < values.length; i++) {
       if(firstname == values[i][firstNameColumn]) {
         if(lastname == values[i][lastNameColumn]) {
           valid = true;
+          
+          var newDay = [];
+          newDay.push(values[i][teacherFirstNameColumn]);
+          newDay.push(values[i][teacherLastNameColumn]);
+          newDay.push(values[i][courseTitleColumn]);
+          newDay.push(values[i][lunchDayColumn]);
+          
+          schedule.push(newDay);
+          
         }
       }
     }
-    
-    return valid;
+    return {
+      valid : valid,
+      schedule: schedule
+    };
   }
   
   function getStudentScheduleHTML(data) {
@@ -53,6 +70,11 @@
                   .getSheetByName(properties.getProperty("studentData"))
                   .getDataRange()
                   .getValues();
+                  
+    var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
+    var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
+    
+    
   }
                     
   /**

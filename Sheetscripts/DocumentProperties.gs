@@ -13,10 +13,10 @@ function testting() {
  *     teacherTables - Faculty Table List
  *     dodList - DOD List
  *    
- *   Column Indices for Students:
+ *   Column Indices for Student Data Sheet:
  *     "Student " + column name
  *
- *   Column Indices for Teachers:
+ *   Column Indices for Teachers Choices Sheet:
  *     "Teacher " + column name
  *
  *

@@ -13,12 +13,20 @@
   <script>
     function checkValues() {
       var formData = [document.getElementById("firstname").value, document.getElementById("lastname").value];
-      google.script.run.withSuccessHandler(showstudentSchedule).validateChange(formData);
+      google.script.run.withSuccessHandler(showStudentSchedule).validateChange(formData);
     }
     
-    function showStudentSchedule() {
-      var formData = [document.getElementById("firstname").value, document.getElementById("lastname").value];
-      google.script.run.getStudentScheduleHTML(formData);
+    function showStudentSchedule(validSchedule) {
+      if(validSchedule.valid) {
+      console.log("blocking");
+        var x = document.getElementById('form');
+        x.style.display = 'block';
+      } else {
+        
+      }
+      
+      console.log(validSchedule.valid);
+      console.log(validSchedule.schedule);
     }
     
   </script>
