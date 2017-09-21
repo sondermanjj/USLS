@@ -39,6 +39,9 @@
     var schedule = [];
     var valid = false;
   
+    var headers = ["Teacher First Name", "Teacher Last Name", "Course Ttile", "Lunch Day"];
+    schedule.push(headers);
+    
     for(var i = 0; i < values.length; i++) {
       if(firstname.toString().toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
         if(lastname.toString().toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {

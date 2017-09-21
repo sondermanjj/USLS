@@ -22,16 +22,25 @@
         x.style.display = 'none';
         
         var html = ""; 
-        html += "<tr>";
-        html += "<th> Teacher First Name </th>";
-        html += "<th> Teacher Last Name </th>";
-        html += "<th> Course Title </th>";
-        html += "<th> Lunch Day </th>";
-        html += "</tr>";
+       
         
         var classes = validSchedule.schedule;
+          var headers = classes.shift();
+          console.log(headers);
         classes.sort(compareByColumnIndex(3));
+       
+        
         for ( var i = 0; i < classes.length; i++) {
+        
+        if(i == 0) {
+          html += "<tr>";
+          html += "<th>" + headers[0] + "</th>";
+          html += "<th>" + headers[1] + "</th>";
+          html += "<th>" + headers[2] + "</th>";
+          html += "<th>" + headers[3] + "</th>";
+          html += "</tr>"; 
+        }
+        
           html += "<tr>";
           html += "<td>" + classes[i][0] + "</td>";
           html += "<td>" + classes[i][1] + "</td>";
