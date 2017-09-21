@@ -33,12 +33,15 @@
     var teacherFirstNameColumn = parseInt(properties.getProperty("Student Faculty First Name"));
     var teacherLastNameColumn = parseInt(properties.getProperty("Student Faculty Last Name"));
     
+    var firstname = firstname.trim();
+    var lastname = lastname.trim();
+    
     var schedule = [];
     var valid = false;
   
     for(var i = 0; i < values.length; i++) {
-      if(firstname == values[i][firstNameColumn]) {
-        if(lastname == values[i][lastNameColumn]) {
+      if(firstname.toString().toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
+        if(lastname.toString().toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {
           valid = true;
           
           var newDay = [];

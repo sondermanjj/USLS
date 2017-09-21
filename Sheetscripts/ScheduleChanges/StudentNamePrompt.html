@@ -18,9 +18,29 @@
     
     function showStudentSchedule(validSchedule) {
       if(validSchedule.valid) {
-      console.log("blocking");
         var x = document.getElementById('form');
-        x.style.display = 'block';
+        x.style.display = 'none';
+        
+        var html = ""; 
+        html += "<tr>";
+        html += "<th> Teacher First Name </th>";
+        html += "<th> Teacher Last Name </th>";
+        html += "<th> Course Title </th>";
+        html += "<th> Lunch Day </th>";
+        html += "</tr>";
+        
+        var classes = validSchedule.schedule;
+        classes.sort(compareByColumnIndex(3));
+        for ( var i = 0; i < classes.length; i++) {
+          html += "<tr>";
+          html += "<td>" + classes[i][0] + "</td>";
+          html += "<td>" + classes[i][1] + "</td>";
+          html += "<td>" + classes[i][2] + "</td>";
+          html += "<td>" + classes[i][3] + "</td>";
+          html += "</tr>";
+        }
+        html += "</table>";
+        document.getElementById("classes").innerHTML = html;
       } else {
         
       }
@@ -29,17 +49,33 @@
       console.log(validSchedule.schedule);
     }
     
+    function compareByColumnIndex(index) {
+      return function(a,b){
+        if (a[index] === b[index]) {
+            return 0;
+        }
+        else {
+            return (a[index] < b[index]) ? -1 : 1;
+        }
+      }
+    }
+    
   </script>
   
   <body>
     
-    <form id="form">
+    <div id="form">
       <label for="firstname">First Name:</label>
       <input type="text" id="firstname" required=true size="20" autofocus/><br>
       <label for="lastname">Last Name:</label>
       <input type="text" id="lastname" required=true size="20" /><br>
       <input type="button" onClick="checkValues()" value="Make Change" />
-     </form>
+    </div>
+    
+    <div id="schedule">
+      <table id="classes">
+      </table>
+    </div>
      
      <?!= include('Javascript'); ?>
   </body>
