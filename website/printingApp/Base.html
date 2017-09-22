@@ -4,122 +4,127 @@
 <?!= include('website/printingApp/CSS'); ?>
 <script type="text/javascript"> 
 
-//verified with JSHint 4/26/2017 by sondermanjj
+//verified with JSHint 9/22/2017 by sondermanjj
   /**
   * Method to be called when the Search button is pressed
   * @param json the JSON string returned when calling getJSON from the script file
   */
-  function formPrintSubmit(json){
-  
-  
-  console.log("Testing");
-    /**
-    * Takes in a string and capitalizes each word in the string
-    * @param string the string to capitalize
-    * @return the capitalized version of the string
-    */
-    function capitalize(string){
+function formPrintSubmit(json) {
+  /**
+  * Takes in a string and capitalizes each word in the string
+  * @param string the string to capitalize
+  * @return the capitalized version of the string
+  */
+  function capitalize(string){
     
-      var stringArray = string.split(" ");
-      var newString = "";
-      
-      for(var i=0; i<stringArray.length; i++){
-        newString += stringArray[i].charAt(0).toUpperCase() + stringArray[i].slice(1) + " ";
+    var stringArray = string.split(" ");
+    var newString = "";
+    
+    for(var i=0; i<stringArray.length; i++){
+      newString += stringArray[i].charAt(0).toUpperCase() + stringArray[i].slice(1) + " ";
+    }
+    
+    return newString.trim();
+  }
+  
+  
+  // Variables pointing to parts of the HTML document so that their contents can be edited
+  var nameDiv = document.getElementById('nameDiv');
+  var schedDiv = document.getElementById('schedDiv');
+  var heading = "";
+  var subHeading = "";
+  
+  var resultsArray = [];
+  
+  // Start of string containing html to display matched results
+  var strSched;
+  var length = json.length;    
+  
+  //puts each row of the students in a large array. Does not put them in if it does not match the day or the table is empty.
+  for(var index=0; index<length; index++) { 
+    var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+    var day = json[index].gsx$lunchday.$t;
+    var time = json[index].gsx$eml.$t;
+    var table = json[index].gsx$table.$t.toLowerCase();
+    
+    if (checkCheckBoxes("time", time) && checkCheckBoxes("day", day) && table != "" ) {
+      if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
+      var dayArray = [];
+      dayArray.push(name);
+      dayArray.push(day);
+      dayArray.push(time);
+      dayArray.push(capitalize(table));
+      dayArray.push("       ");              
+      resultsArray.push(dayArray);   
       }
-      
-      return newString.trim();
     }
-
-
-    // Variables pointing to parts of the HTML document so that their contents can be edited
-    var nameDiv = document.getElementById('nameDiv');
-    var schedDiv = document.getElementById('schedDiv');
-    var heading = "";
-    var subHeading = "";
-
-    var resultsArray = [];
-    
-    // Start of string containing html to display matched results
-    var strSched;
-    var length = json.length;    
-    console.log("Looking for matches");
-   
-    for(var index=0; index<length; index++) {
-    
-        var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
-        var day = json[index].gsx$lunchday.$t;
-        var time = json[index].gsx$eml.$t;
-        var table = json[index].gsx$table.$t.toLowerCase();
-        
-        if (checkCheckBoxes("time", time) && 
-            checkCheckBoxes("day", day) && table != "" ) {
-            if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
-              var dayArray = [];
-              dayArray.push(name);
-              dayArray.push(day);
-              dayArray.push(time);
-              dayArray.push(capitalize(table));
-              dayArray.push("       ");              
-              resultsArray.push(dayArray);   
-            }
-        }
-    }
-    
-    var arr = resultsArray.sort(function(a, b){
-      if(a[3] < b[3]) return -1;
-      if(a[3] > b[3]) return 1;
-      return 0;
-    })
-    
-    strSched = '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Table</th><th>Attendance</th></tr>';    
-    strSched += "<h2> Table " + arr[0][3] + "</h2>";
-    var currentTable = resultsArray[0][3];
-    var tableCounter = 0;
-
-    for(var i=0; i<arr.length; i++){
-      if (currentTable != arr[i][3]) {
-        tableCounter++;
-        strSched += "</table>";
-        if (arr[i][2] != "late") {
-          if ((tableCounter)%3 != 0) {
-            strSched += '<div class="printingDivision"></div>';
-          } else {
-            strSched += '<div class="largePrintingDivision"></div>';
-          }
+  }
+  
+  //Sorts the array by the table.
+  var arr = resultsArray.sort(function(a, b){
+    if(a[3] < b[3]) return -1;
+    if(a[3] > b[3]) return 1;
+    return 0;
+  });
+  
+  //Creates the HTML to put in the page. This is the first table.
+  strSched = '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Table</th><th>Attendance</th></tr>';    
+  strSched += "<h2> Table " + arr[0][3] + "</h2>";
+  var currentTable = resultsArray[0][3];
+  var tableCounter = 0;
+  
+  for(var i=0; i<arr.length; i++) {
+    if (currentTable != arr[i][3]) {
+      tableCounter++;
+      strSched += "</table>";
+      //we only want 3 tables per page for the normal ones, so every 3rd put a large division in for printing.
+      if (arr[i][3].length < 3) {
+        if ((tableCounter)%3 != 0) {
+          strSched += '<div class="printingDivision"></div>';
         } else {
           strSched += '<div class="largePrintingDivision"></div>';
-        }        
-        strSched += "<h2> Table " + arr[i][3] + "</h2>";
-        strSched += '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Table</th><th>Attendance</th></tr>';    
-        currentTable = arr[i][3];
-      }
+        }
+      } else {
+        strSched += '<div class="largePrintingDivision"></div>';
+      }        
+      //Header for the table.
+      strSched += "<h2> Table " + arr[i][3] + "</h2>";
+      strSched += '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Table</th><th>Attendance</th></tr>';    
+      currentTable = arr[i][3];
+    }
+    strSched += "<tr>";
+    for(var j=0; j<arr[i].length; j++){
+      strSched += "<td>" + arr[i][j] + "</td>";
+    }
+    strSched += "</tr>";
+  }   
+  strSched += "</table><div></div>";
+  
+  //If the user wants the master list, then inserts it here.
+  if (document.getElementsByName("masterList")[0].checked) {
+    arr = resultsArray.sort();
+    strSched += '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Table</th><th>Attendance</th></tr>';    
+    strSched += "<h2>Master List</h2>";
+    for(i=0; i<arr.length; i++) {
       strSched += "<tr>";
       for(var j=0; j<arr[i].length; j++){
         strSched += "<td>" + arr[i][j] + "</td>";
       }
       strSched += "</tr>";
-    }   
-    strSched += "</table>";
- 
-    if(resultsArray.length === 0){
-      strSched = "Invalid Search. No Results Found.";
     }
-    
-    //Set the inner HTML of the necessary components to the proper contents
-    schedDiv.innerHTML = strSched;
-    document.getElementById('loadingDiv').innerHTML = "";
+    strSched += "</table>";      
   }
   
+  if(resultsArray.length === 0){
+    strSched = "Invalid Search. No Results Found.";
+  }
   
-function checkValidTime(value) {
-    var trimmedValue = value.toLowerCase().trim();
-    if (trimmedValue == "early" || trimmedValue == "mid" ||  trimmedValue == "late") {
-        return true;
-    } else {
-        return false;
-    }
+  //Set the inner HTML of the necessary components to the proper contents
+  schedDiv.innerHTML = strSched;
+  document.getElementById('loadingDiv').innerHTML = "";
 }
-  
+
+//Checks a group of checkboxes for ticked values.
 function checkCheckBoxes(name, value) {
   var inputElements = document.getElementsByName(name);
   var oneChecked = false;
@@ -137,50 +142,15 @@ function checkCheckBoxes(name, value) {
       return true;
   }  
 }
-  
-function toggleSearchTable() {
-    var x = document.getElementById('searchTable');
-    if (x.style.display === 'block') {
-        x.style.display = 'none';
-    } else {
-        x.style.display = 'block';
-    }
-}
 
-function clearSearchOptions() {
-    clearRadioList("house");
-    clearRadioList("day");
-    clearRadioList("time");
-    document.getElementById('Table').value = "";
-}
-
-function clearRadioList(field) {
-    var ele = document.getElementsByName(field);
-    for(var i=0;i<ele.length;i++)
-    ele[i].checked = false;
-}
-
-function findSelection(field) {
-var radios = document.getElementsByName(field);
-
-  for (var i = 0, length = radios.length; i < length; i++) {
-      if (radios[i].checked) {
-          return radios[i].value;
-      }
+function handle(e){
+  if(e.keyCode === 13){
+    e.preventDefault(); // Ensure it is only this code that runs
+    
+    google.script.run.withSuccessHandler(formPrintSubmit).getJSON(); 
+    document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
   }
-
-return "";
-
 }
-
- function handle(e){
-   if(e.keyCode === 13){
-       e.preventDefault(); // Ensure it is only this code that runs
-            
-       google.script.run.withSuccessHandler(formPrintSubmit).getJSON(); 
-       document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
-    }
- }
  
  function printPage() {
    var header = document.getElementById('nameDiv').innerHTML;
@@ -215,6 +185,12 @@ return "";
             <input name="time" type="checkbox" value="Late" /> Late
         </form></td>
       </tr>
+      <tr class="noBorder">
+        <td class="noBorder">Master List: </td>
+        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="masterList" type="checkbox" value="masterList" />
+        </form></td>
+      </tr>      
     </table>
     <input id="student" type="button" onClick="google.script.run.withSuccessHandler(formPrintSubmit).getJSON(); console.log('Button Pushed'); document.getElementById('loadingDiv').innerHTML = '<br>Loading...';" value="Generate Tables" />     
 </div>
