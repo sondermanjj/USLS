@@ -1,9 +1,9 @@
 //ID of the Google spreadsheet being accessed
-var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
+var fallId = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
 var tab = "1";
 
 //URL for retrieving data from sheets directly as JSON
-var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" + tab + "/public/values?alt=json";
+var url = "https://spreadsheets.google.com/feeds/list/" + fallId + "/" + tab + "/public/values?alt=json";
 
 /**
 * Tells the script how to serve the page when a GET request is made
