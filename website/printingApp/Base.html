@@ -39,13 +39,14 @@ function formPrintSubmit(json) {
   // Start of string containing html to display matched results
   var strSched;
   var length = json.length;    
-  
+  console.log(json);
   //puts each row of the students in a large array. Does not put them in if it does not match the day or the table is empty.
   for(var index=0; index<length; index++) { 
+  console.log("Here");
     var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
     var day = json[index].gsx$lunchday.$t;
-    var time = json[index].gsx$eml.$t;
-    var table = json[index].gsx$table.$t.toLowerCase();
+    var time = json[index].gsx$lunchtime.$t;
+    var table = json[index].gsx$lunchtable.$t.toLowerCase();
     
     if (checkCheckBoxes("time", time) && checkCheckBoxes("day", day) && table != "" ) {
       if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
@@ -120,8 +121,6 @@ function formPrintSubmit(json) {
       }
       strSched += "</table>";      
     }
-  
-    
     //Set the inner HTML of the necessary components to the proper contents
   }
   schedDiv.innerHTML = strSched;

@@ -1,9 +1,9 @@
 //ID of the Google spreadsheet being accessed
-var fallId = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
+var fallID = "1JsqgABDi402dddQqja_sMRhaCiMLJueS6pryspANVas";
 var tab = "1";
 
 //URL for retrieving data from sheets directly as JSON
-var url = "https://spreadsheets.google.com/feeds/list/" + fallId + "/" + tab + "/public/values?alt=json";
+var url = "https://spreadsheets.google.com/feeds/list/" + fallID + "/" + getWebsiteSheetLocation(fallID).toString() + "/public/values?alt=json";
 
 /**
 * Tells the script how to serve the page when a GET request is made
@@ -17,6 +17,18 @@ function doGet(e) {
   Logger.log(params);
   
   return apphtml;
+}
+
+/**
+* Finds the location of the Website Info in the current spreadsheet
+* @param id ID for the spreadsheet
+* @return integer representing the location of the website sheet
+*/
+function getWebsiteSheetLocation(id){
+  var spreadSheet = SpreadsheetApp.openById(id);
+  var websiteSheet = spreadSheet.getSheetByName("Website Info");
+  var sheetId = websiteSheet.getIndex().toFixed(0);
+  return sheetId;  
 }
 
 function doPost(e){
@@ -58,8 +70,3 @@ function getData() {
 /**
 *
 */
-
-
-
-  
-
