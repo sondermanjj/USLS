@@ -116,6 +116,37 @@ function assignStudentLunchDays() {
           students8Plus.push(stu);
         }
       }
+      else { //middle school
+        var a = false;
+        var b = false;
+        var c = false;
+        var d = false;
+        var e = false;
+        var f = false;
+        var g = false;
+        var h = false;
+        for(var j = 0; j < stu.lunches.length; j++){
+          if(stu.lunches[j].day == 'A')
+            a = true;
+          else if(stu.lunches[j].day == 'B')
+            b = true;
+          else if(stu.lunches[j].day == 'C')
+            c = true;
+          else if(stu.lunches[j].day == 'D')
+            d = true;
+          else if(stu.lunches[j].day == 'E')
+            e = true;
+          else if(stu.lunches[j].day == 'F')
+            f = true;
+          else if(stu.lunches[j].day == 'G')
+            g = true;
+          else if(stu.lunches[j].day == 'H')
+            h = true;
+          if(stu.lunches[j].time == 'early'){
+            pEarlyStudents.push({stuEarly: stu, lunch: j});
+          }
+        }
+      }
     }
   }  
 
