@@ -29,12 +29,11 @@
        <button id="cleanButton" class="action" onclick="google.script.run.initialization();">Initialize</button>
        <button id="exportButton" class="action" onclick="google.script.run.exportToWebsitePrompt();">Export</button>
        <button id="setColumnsButton" class="action" onclick="google.script.run.setColumnProperties();">Reset Columns</button>
-       <button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">New Schedule Change</button>
      </div>
      
      <div id="statsPage">
        <button id="scanButton" class="action" onclick="scanData();">Check Statistics</button>
-       <button id="changeButton" class="action" onclick="google.script.run.parseStudentChanges()">Auto-Reassign</button>
+       <button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button>
        <div id="changes"></div>
        <div id="stats"></div>
      </div>

@@ -6,7 +6,7 @@
       * @desc - Creates an onClick event for a table row to highlight the row
       * @author - hendersonam
   *******************************************************************/
-  $(document).on('click', 'tr', function() {
+  $(document).on('click', '.selectable', function() {
     $(this).toggleClass("selected");
   });
   
@@ -21,12 +21,16 @@
   }
   
   /*****************************************************************
-      * @desc - Sets the value of the div display
+      * @desc - Sets the display for the given divId to 'block' and all other divs to 'none'
       * @param - divID - String - the id of the div to toggle
       * @author - hendersonam
   *******************************************************************/
-  function setDivDisplay(divID, value) {
-      document.getElementById(divID).style.display = value;
+  function showDiv(divID) {
+    var divs = document.getElementsByTagName('div');
+    for(var i = 0; i < divs.length; i++){
+      divs[i].style.display = 'none';
+    }
+    document.getElementById(divID).style.display = 'block';
   }
   
   /*****************************************************************
@@ -55,6 +59,7 @@
     var formData = [document.getElementById("firstname").value, document.getElementById("lastname").value];
     google.script.run.withSuccessHandler(showStudentSchedule).validateChange(formData);
   }
+  
   
   /*****************************************************************
       * @desc - Creates the headers for an html table
@@ -88,7 +93,7 @@
   function createNewScheduleInputs(oldCourses) {
     var newSchedules = document.getElementById('newSchedule');
     var html = "";
-    var headers = ["Course Name", "Day"];
+    var headers = ["New Course", "Day"];
     html += createHeaders(html, headers);
     for(var i = 0; i < oldCourses.length; i++) {
       html += '<tr>';
@@ -97,8 +102,7 @@
       html += '</tr>';
     }
     document.getElementById('newClasses').innerHTML = html;
-    setDivDisplay('schedule', 'none');
-    setDivDisplay('newSchedule', 'block');
+    showDiv('newSchedule');
   }
     
   /*****************************************************************
@@ -127,17 +131,17 @@
       classes.sort(compareByColumnIndex(3));
       
       for ( var i = 0; i < classes.length; i++) {
-        html += "<tr>";
+        html += '<tr class="selectable">';
         for( var j = 0; j < classes[i].length; j++) {
-          html += "<td>" + classes[i][j] + "</td>";
+          html += '<td >' + classes[i][j] + '</td>';
         }
         html += "</tr>";
       }
       
       html += "</table>";
       document.getElementById("classes").innerHTML = html;
-      setDivDisplay('form', 'none');
-      setDivDisplay('schedule', 'block');
+      window.resizeTo(700, 700);
+      showDiv('schedule');
     } else {
     
     }

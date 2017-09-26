@@ -6,9 +6,7 @@
   
   function showScheduleChangesPrompt() {
     var html = HtmlService.createTemplateFromFile('Sheetscripts/ScheduleChanges/HTML')
-      .evaluate()
-      .setHeight(550)
-      .setWidth(450);
+      .evaluate();
     SpreadsheetApp.getUi().showModalDialog(html, ' ');
   }
 
@@ -49,7 +47,7 @@
     var schedule = [];
     var valid = false;
   
-    var headers = ["Teacher First Name", "Teacher Last Name", "Course Ttile", "Lunch Day"];
+    var headers = ["First Name", "Last Name", "Course Ttile", "Lunch Day"];
     schedule.push(headers);
     
     for(var i = 0; i < values.length; i++) {
