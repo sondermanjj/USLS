@@ -43,8 +43,10 @@ function runCorrectBlockDataTest() {
     
     var values = range.getValues();
     var blockColumn;
+    var courseColumn;
     var numRows = values.length;
     var numColumns = values[0].length;
+    var courseRegex = new RegExp("z[0-9]{3}");
     
     for (var i = 0; i <= numColumns - 1; i++) {
       var column = values[0][i];
@@ -54,9 +56,18 @@ function runCorrectBlockDataTest() {
       }
     }
     
+    for (var i = 0; i <= numColumns - 1; i++) {
+      var column = values[0][i];
+      if (column == 'Course Title') {
+        blockFound = true;
+        courseColumn = i ;
+      }
+    }
+    
     //Check for innapropriate blocks
     for (var j = 1; j < numRows - 1; j++) {
       var row = values[j][blockColumn];
+      var course = values[j][courseColumn];
       if(row == "1" || row == "2" || 
          row == "3" || row == "4" || 
          row == "5" || row == "6" || 
@@ -64,11 +75,12 @@ function runCorrectBlockDataTest() {
          row == "E1" || row == "G2" || 
          row == "A3" || row == "C4" || 
          row == "F5" || row == "H6" || 
-         row == "B7" || row == "D8") {
+         row == "B7" || row == "D8" || 
+         (row == "" && course.toString().match(courseRegex))) {
         
         t.errorSpot("Lunch Ok!", true);
       } else {
-        range.getCell(j+1, blockColumn +1).setBackground("red");
+        range.getCell(j+1, blockColumn+1).setBackground("red");
         t.errorSpot("Cell ("+(j+1)+","+(blockColumn+1)+"), innapropriate block", false);
       }
     }
