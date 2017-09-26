@@ -1,5 +1,5 @@
 <Module>
-<ModulePrefs title="Search Script" /> 
+<ModulePrefs title="Search Script" height="100%"/> 
 <Content type="html">
 <?!= include('website/searchApp/CSS'); ?>
 <script type="text/javascript"> 
@@ -52,24 +52,26 @@
     
     heading = capitalize(nameEntered);
     subHeading = "Search Results";
-    strSched = "<table><tr><th>Name</th><th>Day</th><th>Lunch Time</th><th>Block</th><th>Table</th><th>House</th</tr>";
+    strSched = "<table><tr><th>Name</th><th>Grade</th><th>Day</th><th>Lunch Time</th><th>Block</th><th>Table</th><th>House</th</tr>";
     
     for(var index=0; index<length; index++){
     
         var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
         var day = json[index].gsx$lunchday.$t;
         var house = json[index].gsx$house.$t.trim();
-        var time = json[index].gsx$eml.$t;
-        var table = json[index].gsx$table.$t.toLowerCase();
+        var time = json[index].gsx$lunchtime.$t;
+        var table = json[index].gsx$lunchtable.$t.toLowerCase();
         var block = json[index].gsx$block.$t;
+        var grade = json[index].gsx$gradelevel.$t.trim();
         
         if (name.toLowerCase().includes(nameEntered) && checkCheckBoxes("house", house) && 
-            checkCheckBoxes("time", time)  && (tableEntered.trim() === "" || table == tableEntered) && 
-            checkCheckBoxes("day", day) ) {
+            checkCheckBoxes("time", time)  && checkCheckBoxes("grade", grade) && checkCheckBoxes("day", day) &&
+            (tableEntered.trim() === "" || table == tableEntered) ) {
             console.log("Match Found");
             if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
               var dayArray = [];
               dayArray.push(name);
+              dayArray.push(grade);
               dayArray.push(day);
               dayArray.push(time);
               dayArray.push(block);
@@ -103,6 +105,7 @@
     nameDiv.innerHTML = "<h1>" + heading + "</h1>";
     subHeadingDiv.innerHTML = "<h2>" + subHeading + "</h2>";
     document.getElementById('loadingDiv').innerHTML = "";
+    setPageFullHeight();
   }
   
   
@@ -123,10 +126,16 @@ function checkCheckBoxes(name, value) {
   for(var i=0; inputElements[i]; ++i){
       if(inputElements[i].checked){
            oneChecked = true;
-           if (inputElements[i].value.toLowerCase().includes(value.toLowerCase())) {
+           if (inputElements[i].value.toLowerCase() === (value.toLowerCase())) {
                return true;
            }
-      }
+           else if(inputElements[i].value === "middle-school" && (value === "5" || value === "6" || value === "7" || value === "8")) {
+               return true;
+           }
+           else if(inputElements[i].value === "Middle" && value === "mid") {
+               return true;
+           }
+       }
   }
   if (oneChecked) {
       return false;
@@ -172,7 +181,7 @@ return "";
 
  function handle(e){
    if(e.keyCode === 13){
-       e.preventDefault(); // Ensure it is only this code that rusn
+       e.preventDefault(); // Ensure it is only this code that runs
             
        google.script.run.withSuccessHandler(formSubmit).getJSON(); 
        document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
@@ -185,10 +194,19 @@ return "";
    var printhtml = 'https://sites.google.com/site/usmlunch/jarfunklemcree/printpage?schedule=' + schedToPrint + '&tmpl=/system/app/templates/print';
    window.open(printhtml);
  }
+ 
+ /**
+ * @desc - sets div surrounding page to 100% height on data load to remove scrolling
+ * @author - clemensam
+ */
+ function setPageFullHeight(){
+   var appFrame = document.getElementById('appBackground');
+   appFrame.style.height = "100%";
+ }
 
 
 </script>
-
+<div id="appBackground">
 <hr>
 <div id="searchForm">
   <form id="nameForm" action="#">
@@ -200,8 +218,8 @@ return "";
     <input id="tableToggle" type="button" name="image" onClick="toggleSearchTable()" value="" display = "none"/> 
     <table class="noBorder" id="searchTable">
     <tr class ="noBorder">
-        <td class="noBorder">House: </td>
-        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+        <td class="noBorder"><b>House: </b></td>
+        <td id="houseList" class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
             <input name="house" type="checkbox" value="Academy" /> Academy
             <input name="house" type="checkbox" value="Arrow" /> Arrow
             <input name="house" type="checkbox" value="Crest" /> Crest
@@ -209,12 +227,12 @@ return "";
         </form></td>
       </tr>
       <tr class="noBorder">
-        <td class="noBorder">Table: </td>
+        <td class="noBorder"><b>Table: </b></td>
         <td class="noBorder"><input class="h" id="Table" onkeypress="handle(event)" type="text" name="table" /></td>
       </tr>
       <tr class="noBorder">
-        <td class="noBorder">Day: </td>
-        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+        <td class="noBorder"><b>Day: </b></td>
+        <td id="dayList" class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
             <input name="day" type="checkbox" value="A" /> A
             <input name="day" type="checkbox" value="B" /> B
             <input name="day" type="checkbox" value="C" /> C
@@ -226,11 +244,22 @@ return "";
         </form></td>
       </tr>
       <tr class="noBorder">
-        <td class="noBorder">Time: </td>
+        <td class="noBorder"><b>Time: </b></td>
         <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
             <input name="time" type="checkbox" value="Early" /> Early
             <input name="time" type="checkbox" value="Middle" /> Middle
             <input name="time" type="checkbox" value="Late" /> Late
+        </form></td>
+      </tr>
+      <tr class="noBorder">
+        <td class="noBorder"><b>Grade: </b></td>
+        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="grade" type="checkbox" value="9" /> 9
+            <input name="grade" type="checkbox" value="10" /> 10
+            <input name="grade" type="checkbox" value="11" /> 11
+            <input name="grade" type="checkbox" value="12" /> 12
+            <input name="grade" type="checkbox" value="" /> Faculty
+            <input name="grade" type="checkbox" value="middle-school" /> Other
         </form></td>
       </tr>
     </table>
@@ -244,6 +273,7 @@ return "";
   <div id="nameDiv"></div>
   <div id="subHeadingDiv"></div>
   <div id="schedDiv"></div>
+</div>
 </div>
 </Content>
 </Module>
