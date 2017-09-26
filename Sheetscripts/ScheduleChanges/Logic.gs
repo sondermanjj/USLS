@@ -3,6 +3,16 @@
   var changeshtml = "";
   var updatedChanges = false;
   
+  
+  function showScheduleChangesPrompt() {
+    var html = HtmlService.createTemplateFromFile('Sheetscripts/ScheduleChanges/HTML')
+      .evaluate()
+      .setHeight(550)
+      .setWidth(450);
+    SpreadsheetApp.getUi().showModalDialog(html, ' ');
+  }
+
+
   function updateChanges(){            
     var list = scheduleChanges();            
     var numChanges = 0;            

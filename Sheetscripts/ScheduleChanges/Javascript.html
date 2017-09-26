@@ -1,0 +1,162 @@
+<script tpye="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+<script>
+
+/*****************************************************************
+      * @desc - Creates an onClick event for a table row to highlight the row
+      * @author - hendersonam
+  *******************************************************************/
+  $(document).on('click', 'tr', function() {
+    $(this).toggleClass("selected");
+  });
+  
+  
+  /*****************************************************************
+      * @desc - Sends the list of new courses to the backend logic
+      *         to be added to the sheet
+      * @author - hendersonam
+  *******************************************************************/
+  function sendNewSchedule() {
+  
+  }
+  
+  /*****************************************************************
+      * @desc - Sets the value of the div display
+      * @param - divID - String - the id of the div to toggle
+      * @author - hendersonam
+  *******************************************************************/
+  function setDivDisplay(divID, value) {
+      document.getElementById(divID).style.display = value;
+  }
+  
+  /*****************************************************************
+      * @desc - Gets the courses the user selected to change
+      * @author - hendersonam
+  *******************************************************************/
+  function getSelectedCourses() {
+    var selected = [];
+    $("#classes tr.selected").each(function(){
+      var row = $(this)[0];
+      var firstName = row.childNodes[0].innerText;
+      var lastName = row.childNodes[1].innerText;
+      var course = row.childNodes[2].innerText;
+      var day = row.childNodes[3].innerText;
+      selected.push([firstName, lastName, course, day]);
+    });
+    createNewScheduleInputs(selected);
+  }
+  
+  /*****************************************************************
+      * @desc - Checks the first and last name given to make sure it's 
+      *         an actual student in the sheet
+      * @author - hendersonam
+  *******************************************************************/
+  function checkValues() {
+    var formData = [document.getElementById("firstname").value, document.getElementById("lastname").value];
+    google.script.run.withSuccessHandler(showStudentSchedule).validateChange(formData);
+  }
+  
+  /*****************************************************************
+      * @desc - Creates the headers for an html table
+      * @param - html - String - the html to add the headers to
+      *          headers - Array - 1D Array with the header names
+      * @author - hendersonam
+  *******************************************************************/
+  function createHeaders(html, headers) {
+    html += "<tr>";
+    for( var j = 0; j < headers.length; j++) {
+      html += "<th>" + headers[j] + "</th>";
+    }
+    html += "</tr>";
+    return html;
+  }
+  
+  /*****************************************************************
+      * @desc - Creates a table with text inputs for each selected course. 
+      *         Displays the corresponding lunch day next to each. 
+      *         Columns: 
+      *           Course Name
+      *           Lunch Day
+      * @param - oldCourses - Array - Array of courses that were selected 
+      *                               from the students shcedule.
+      *                               Format: [Teacher First Name,
+      *                                        Teacher Last Name,
+      *                                        Course Title,
+      *                                        Lunch Day]
+      * @author - hendersonam
+  *******************************************************************/
+  function createNewScheduleInputs(oldCourses) {
+    var newSchedules = document.getElementById('newSchedule');
+    var html = "";
+    var headers = ["Course Name", "Day"];
+    html += createHeaders(html, headers);
+    for(var i = 0; i < oldCourses.length; i++) {
+      html += '<tr>';
+      html += '<td><input type="text" required=true size="20" /></td>';
+      html += '<td>' + oldCourses[i][3] + '</td>';
+      html += '</tr>';
+    }
+    document.getElementById('newClasses').innerHTML = html;
+    setDivDisplay('schedule', 'none');
+    setDivDisplay('newSchedule', 'block');
+  }
+    
+  /*****************************************************************
+      * @desc - If the student was a valid student, creates a table that 
+      *         displays the schedule for the given student.
+      *         Columns: 
+      *           Teacher First Name
+      *           Teacher Last Name
+      *           Course Title
+      *           Lunch Day
+      * @param - validSchedule - Array - Array with a boolean for if the student 
+      *                               is valid and then their schedule. Index 0 contains the headers.
+      *                               Format: [valid : valid,
+      *                                        schedule : [Teacher First Name,
+      *                                                    Teacher Last Name,
+      *                                                    Course Title,
+      *                                                    Lunch Day]
+      * @author - hendersonam
+  *******************************************************************/
+  function showStudentSchedule(validSchedule) {
+    if(validSchedule.valid) {
+      var html = ""; 
+      var classes = validSchedule.schedule;
+      var headers = classes.shift();
+      html += createHeaders(html, headers);
+      classes.sort(compareByColumnIndex(3));
+      
+      for ( var i = 0; i < classes.length; i++) {
+        html += "<tr>";
+        for( var j = 0; j < classes[i].length; j++) {
+          html += "<td>" + classes[i][j] + "</td>";
+        }
+        html += "</tr>";
+      }
+      
+      html += "</table>";
+      document.getElementById("classes").innerHTML = html;
+      setDivDisplay('form', 'none');
+      setDivDisplay('schedule', 'block');
+    } else {
+    
+    }
+  }
+    
+  
+  /*****************************************************************
+      * @desc - Compares an array by the given index rather than just the first index
+      * @param - index - Int - Index by which the comparison should be made
+      * @author - hendersonam
+  *******************************************************************/  
+  function compareByColumnIndex(index) {
+    return function(a,b){
+      if (a[index] === b[index]) {
+        return 0;
+      } else {
+      return (a[index] < b[index]) ? -1 : 1;
+      }
+    }
+  }
+</script>
+
