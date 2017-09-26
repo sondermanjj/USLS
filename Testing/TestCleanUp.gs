@@ -46,6 +46,7 @@ function runCorrectBlockDataTest() {
     var courseColumn;
     var numRows = values.length;
     var numColumns = values[0].length;
+    var courseRegex = new RegExp("z[0-9]{3}");
     
     for (var i = 0; i <= numColumns - 1; i++) {
       var column = values[0][i];
@@ -75,7 +76,7 @@ function runCorrectBlockDataTest() {
          row == "A3" || row == "C4" || 
          row == "F5" || row == "H6" || 
          row == "B7" || row == "D8" || 
-         (row == "" && course.toString().indexOf("z")>(-1))) {
+         (row == "" && course.toString().match(courseRegex))) {
         
         t.errorSpot("Lunch Ok!", true);
       } else {
