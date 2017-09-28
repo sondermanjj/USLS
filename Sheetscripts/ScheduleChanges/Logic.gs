@@ -3,14 +3,20 @@
   var changeshtml = "";
   var updatedChanges = false;
   
-  
+  /*****************************************************************
+      * @desc - Brings up the Schedule Change Prompt
+      * @author - hendersonam
+  *******************************************************************/
   function showScheduleChangesPrompt() {
     var html = HtmlService.createTemplateFromFile('Sheetscripts/ScheduleChanges/HTML')
       .evaluate();
     SpreadsheetApp.getUi().showModalDialog(html, ' ');
   }
 
-
+  /*****************************************************************
+      * @desc - Checks for how many updates there were ? //TODO
+      * @author - hendersonam
+  *******************************************************************/
   function updateChanges(){            
     var list = scheduleChanges();            
     var numChanges = 0;            
@@ -20,20 +26,135 @@
     Logger.log(numChanges);            
   }
   
-  function validateChange(data) {
+  /*****************************************************************
+      * @desc - Returns a JSON object with a boolean and a schedule. If true,
+      *         the shcedule is valid. If false, the student did now exist in the sheet
+      *         and there is no schedule, thus invalid and undefined.
+      * @param - data - Array - Contains the first and last name of a student
+      *                         [FirstName, LastName]
+      * @return - JSON Object - [ valid : Boolean, schedule : Array]
+      * @author - hendersonam
+  *******************************************************************/
+  function getValidSchedule(data) {
+  
+    var schedule = [];
+    
+    var headers = ["First Name", "Last Name", "Course Ttile", "Lunch Day"];
+    schedule.push(headers);
+    
+    var firstname = data[0].trim();
+    var lastname = data[1].trim();
+    schedule.push(getStudentSchedule(firstname, lastname));    
+    
+    var valid = false;
+    if(schedule.length > 1) valid = true;
+    
+    return {
+      valid : valid,
+      schedule: schedule
+    };
+  }
+  
+  /*****************************************************************
+      * @desc - Validates the schedule change
+      * @param - firstname - String - First name of the student
+      *          lastname - String - Last name of the student
+      *          oldCourses - Array - Courses to be replace [TeacherFirstName, TeacherLastName, CourseName, LunchDay]
+      *          newCourses - Array - New courses for the schedule [CourseName, LunchDay]
+      * @author - hendersonam
+  *******************************************************************/
+  function validateCourses(firstname, lastname, oldCourses, newCourses) {
+    swapCourses(firstname, lastname, oldCourses, newCourses);
+  }
+  
+  /*****************************************************************
+      * @desc - Swaps old courses with new courses for a given student
+      * @param - firstname - String - First name of the student
+      *          lastname - String - Last name of the student
+      *          oldCourses - Array - Courses to be replace [TeacherFirstName, TeacherLastName, CourseName, LunchDay]
+      *          newCourses - Array - New courses for the schedule [CourseName, LunchDay]
+      * @author - hendersonam
+  *******************************************************************/
+  function swapCourses(firstname, lastname, oldCourses, newCourses) {
     var properties = PropertiesService.getDocumentProperties();
+    
     var values = SpreadsheetApp
                   .getActiveSpreadsheet()
                   .getSheetByName(properties.getProperty("studentData"))
                   .getDataRange()
                   .getValues();
                   
-    var validSchedule = checkForStudent(values, data[0], data[1]);
-    return validSchedule;
+    var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
+    var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
+    var courseTitleColumn = parseInt(properties.getProperty("Student Course Title"));
+    var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
+    var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+    
+    /*
+    ############################################
+    NEED TO GET THE COURSE-DAY PROPERTIES HERE
+    ############################################
+    */
+    
+    values.sort(compareByColumnIndex(lunchDayColumn));
+    
+    oldCourses.sort(compareByColumnIndex(3));
+    newCourses.sort(compareByColumnIndex(1));
+    var numOfChangesToBeMade = newCourses.length - 1;
+    var numOfChangesMade = 0;
+    var studentChanges = [];
+    Logger.log(numOfChangesToBeMade);
+    
+    for(var i = 0; i < values.length; i++) {
+      
+      if(firstname.toString().toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
+        if(lastname.toString().toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {
+          if(oldCourses[numOfChangesMade][3].toString().toLowerCase() == values[i][lunchDayColumn].toString().toLowerCase()) {
+            Logger.log(oldCourses[numOfChangesMade][3]);
+            values[i][courseTitleColumn] = newCourses[numOfChangesMade][0];
+            
+            /*
+            ######################################################################################
+            values[i][lunchTimeColumn] = NEED TO GET THE CORRECT LUNCH TIME HERE FROM THE PROPERTY
+            ######################################################################################
+            */
+            
+            numOfChangesMade++;
+            if(numOfChangesMade == numOfChangesToBeMade) {
+              Logger.log("got here");
+              i = values.length;
+            }
+          }
+        }
+      }
+    }
+    
+    Logger.log("MADE IT");
+    //TODO
+    //THIS IS TEMPORARY
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getRange(1, 1, values.length, values[0].length).setValues(values);
+
+    
+    //return schedule;
+    
   }
   
-  function checkForStudent(values, firstname, lastname) {
+  /*****************************************************************
+      * @desc - Returns the schedule for the given student as an array
+      * @param - firstname - String - First name of the student
+      *          lastname - String - Last name of the student
+      * @return - schedule - Array - Student Schedule [TeacherFirstName, TeacherLastName, CoursTitle, LunchDay]
+      * @author - hendersonam
+  *******************************************************************/
+  function getStudentSchedule(firstname, lastname) {             
     var properties = PropertiesService.getDocumentProperties();
+    
+    var values = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.getProperty("studentData"))
+                  .getDataRange()
+                  .getValues();
+                  
     var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
     var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
     var courseTitleColumn = parseInt(properties.getProperty("Student Course Title"));
@@ -41,19 +162,10 @@
     var teacherFirstNameColumn = parseInt(properties.getProperty("Student Faculty First Name"));
     var teacherLastNameColumn = parseInt(properties.getProperty("Student Faculty Last Name"));
     
-    var firstname = firstname.trim();
-    var lastname = lastname.trim();
-    
     var schedule = [];
-    var valid = false;
-  
-    var headers = ["First Name", "Last Name", "Course Ttile", "Lunch Day"];
-    schedule.push(headers);
-    
     for(var i = 0; i < values.length; i++) {
       if(firstname.toString().toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
         if(lastname.toString().toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {
-          valid = true;
           
           var newDay = [];
           newDay.push(values[i][teacherFirstNameColumn]);
@@ -62,34 +174,23 @@
           newDay.push(values[i][lunchDayColumn]);
           
           schedule.push(newDay);
-          
         }
       }
     }
-    return {
-      valid : valid,
-      schedule: schedule
-    };
+    
+    return schedule;
   }
   
+  /*****************************************************************
+      * @desc - Gets the html for a student schedule
+      * @param - data - Array - 
+      * @author - hendersonam
+  *******************************************************************/
   function getStudentScheduleHTML(data) {
     var html = getStudentSchedule(data);
     return html;
   }
-  
-  function getStudentSchedule(data) {
-    var properties = PropertiesService.getDocumentProperties();
-    var values = SpreadsheetApp
-                  .getActiveSpreadsheet()
-                  .getSheetByName(properties.getProperty("studentData"))
-                  .getDataRange()
-                  .getValues();
-                  
-    var firstNameColumn = parseInt(properties.getProperty("Student First Name"));
-    var lastNameColumn = parseInt(properties.getProperty("Student Last Name"));
-    
-    
-  }
+
                     
   /**
   * @desc - Gets the html for the schedule updates

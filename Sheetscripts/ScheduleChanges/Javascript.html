@@ -17,6 +17,24 @@
       * @author - hendersonam
   *******************************************************************/
   function sendNewSchedule() {
+    var newCourses = [];
+    $('#newSchedule tr').each( function() {
+      var row = $(this)[0];
+      var newCourse = row.childNodes[0].childNodes[0].value;
+      var day = row.childNodes[1].innerText;
+      newCourses.push([newCourse, day]);
+    });
+    google.
+      script.
+      run.
+      withSuccessHandler(showChanges).
+      validateCourses($('#firstname').val(), 
+                         $('#lastname').val(), 
+                         $('#classes').data('selected'),
+                         newCourses);
+  }
+  
+  function showChanges(html) {
   
   }
   
@@ -47,6 +65,7 @@
       var day = row.childNodes[3].innerText;
       selected.push([firstName, lastName, course, day]);
     });
+    $('#classes').data('selected', selected);
     createNewScheduleInputs(selected);
   }
   
@@ -55,9 +74,9 @@
       *         an actual student in the sheet
       * @author - hendersonam
   *******************************************************************/
-  function checkValues() {
-    var formData = [document.getElementById("firstname").value, document.getElementById("lastname").value];
-    google.script.run.withSuccessHandler(showStudentSchedule).validateChange(formData);
+  function sendStudentName() {
+    var formData = [$('#firstname').val(), $('#lastname').val()];
+    google.script.run.withSuccessHandler(showStudentSchedule).getValidSchedule(formData);
   }
   
   
@@ -128,6 +147,7 @@
       var classes = validSchedule.schedule;
       var headers = classes.shift();
       html += createHeaders(html, headers);
+      classes = classes[0];
       classes.sort(compareByColumnIndex(3));
       
       for ( var i = 0; i < classes.length; i++) {
