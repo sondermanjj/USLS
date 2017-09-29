@@ -147,7 +147,7 @@ function assignStudentLunchDays() {
 @funtional - yes
 @author - dicksontc
 */
-function parseStudentChanges(changes){
+function parseStudentChanges(listOfChanges){
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
   var studentDataProp = properties.studentData;
@@ -167,16 +167,18 @@ function parseStudentChanges(changes){
   var tNumRows = teacherData.getNumRows();
   
   var students = [];
-  var changes = changes;
+  var changes = listOfChanges;
   var teachers = [];
   var changesToBeReturned = [];
   
-  var message = "";
-  var i,j,k,p;
+  var i,j,k,p,x;
+  var newTable;
+  var oldtime;
+  var newtime;
   teachers = getTeachers(tValues, tNumRows, properties);
   students = getStudents(pValues, pNumRows, teachers, properties);
   
-  for(var i = 0; i < students.length; i++){
+  for(i = 0; i < students.length; i++){
     assignZScore(students[i], properties);
   }
   if(changes.length > 0){
@@ -189,8 +191,8 @@ function parseStudentChanges(changes){
             for(k = 0; k < stu.lunches.length; k++){
               var lunch = stu.lunches[k];
               if(lunch.day === change.oldDay){
-                var oldtime = change.oldTime;
-                var newtime = change.newTime;
+                oldtime = change.oldTime;
+                newtime = change.newTime;
                 var oldAssigned = true;
                 var newAssigned = true;
                 var oldNum = -1;
@@ -206,7 +208,6 @@ function parseStudentChanges(changes){
                   }
                 }
                 if(!oldAssigned && !newAssigned){
-                  var newTable;
                   students[j].lunches[k].time = newtime;
                   if(nonAssignedLunches[newNum].by === "none"){
                     students[j].lunches[k].table = "";
@@ -215,7 +216,7 @@ function parseStudentChanges(changes){
                     students[j].lunches[k].table = stu.house;
                     newTable = stu.house;
                   }
-                  changes.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
+                  changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
                 }else{
                   var affectedStu;
                   var affectedLunch;
@@ -223,13 +224,13 @@ function parseStudentChanges(changes){
                   var time;
                   var oldTimeObj;
                   var newTimeObj;
-                  for(var x = 0; x < assignedLunches.length; x++){
+                  for(x = 0; x < assignedLunches.length; x++){
                     if(newtime === assignedLunches[x].time){
                       time = assignedLunches[x];
                       x = assignedLunches.length;
                     }
                   }
-                  for(var x = 0; x < nonAssignedLunches.length; x++){
+                  for(x = 0; x < nonAssignedLunches.length; x++){
                     if(oldtime === nonAssignedLunches[x].time){
                       oldTimeObj = nonAssignedLunches[x];
                     }
@@ -239,9 +240,7 @@ function parseStudentChanges(changes){
                     }
                   }
                   var zScoreStudents = getzScoreStudents(students, day, time, false);
-                  var zStu = zScoreStudents[0].stu;
                   affectedLunch = zScoreStudents[0].lunchIndex;
-                  var lunchTime = zStu.lunches[affectedLunch].time;
                   affectedStu = zScoreStudents[0].stuIndex;
 
                   if(affectedStu === null){
@@ -278,8 +277,8 @@ function parseStudentChanges(changes){
                     }
                   }
                   assignZScore(students[affectedStu], properties);
-                  changes.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
-                  changes.push([students[affectedStu].fName, students[affectedStu].lName, newtime, oldtime, affectedTableOld, affectedTableNew]);
+                  changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
+                  changesToBeReturned.push([students[affectedStu].fName, students[affectedStu].lName, newtime, oldtime, affectedTableOld, affectedTableNew]);
                 }
                 assignZScore(students[j], properties);
                 k = stu.lunches.length;
@@ -289,12 +288,12 @@ function parseStudentChanges(changes){
           }
         }
       }else{
-        changes.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
+        changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
       }
     }
     printStudentsToSheet(students, primarySheet, properties);
   }
-  return changes;
+  return changesToBeReturned;
 }
 
 /**
