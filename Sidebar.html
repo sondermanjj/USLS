@@ -63,9 +63,13 @@
       var lunchTimeBoxes = document.getElementsByName("timeBox");
       var numTableBoxes = document.getElementsByName('tableBox');
       var numStudentsBoxes = document.getElementsByName('studentsBox');
-      var assignedLunchList = {};
-      var nonAssignedLunchList = {};
-      var lunchtimes = []; var timeObj;
+      var priorityBoxes = document.getElementsByName('priorityBox');
+      var fontBoxes = document.getElementsByName('fontBox');
+      var backgroundBoxes = document.getElementsByName('backgroundBox');
+      var assignedLunchList = [];
+      var nonAssignedLunchList = [];
+      var lunchtimes = [];
+      var timeObj;
       
       for(var j = 1; j < lunchTimeBoxes.length+1; j++) {
         var elem = document.getElementById('time' + j.toString());
@@ -73,29 +77,35 @@
         if(elem.style.display !== 'none'){
           console.log(elem.style.display);
           var dropdown = document.getElementsByName('lunch' + j.toString() + 'Assigning')[0];
+          var priority = parseInt(priorityBoxes[j-1].value);
+          var font = fontBoxes[j-1].value;
+          var background = backgroundBoxes[j-1].value;
+          var time = lunchTimeBoxes[j-1].value;
           if(dropdown.options[dropdown.selectedIndex].value === 'table'){
-            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "table"};
-            assignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
+            timeObj = {"numTables": parseInt(numTableBoxes[j-1].value), "numStudents": parseInt(numStudentsBoxes[j-1].value), "by": "table",
+                        "priority": priority, "time": time};
+            assignedLunchList.push(timeObj);
           }
           else if(dropdown.options[dropdown.selectedIndex].value === 'house'){
-            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "house"};
-            assignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
+            timeObj = {"numTables": parseInt(numTableBoxes[j-1].value), "numStudents": parseInt(numStudentsBoxes[j-1].value), "by": "house",
+                        "priority": priority, "time": time};
+            nonAssignedLunchList.push(timeObj);
           }
           else if(dropdown.options[dropdown.selectedIndex].value === 'not'){
-            timeObj = {"numberOfTables": parseInt(numTableBoxes[j-1].value), "numberOfStudents": parseInt(numStudentsBoxes[j-1].value), "assigned": "not"};
-            nonAssignedLunchList[lunchTimeBoxes[j-1].value] = timeObj;
+            timeObj = {"numTables": parseInt(numTableBoxes[j-1].value), "numStudents": parseInt(numStudentsBoxes[j-1].value), "by": "none",
+                        "priority": priority, "time": time};
+            nonAssignedLunchList.push(timeObj);
           }
-          lunchtimes.push(lunchTimeBoxes[j-1].value); 
+          lunchtimes.push({"name": time, "priority": priority, "font": font, "background": background}); 
         }
-        else{}
       }
       setLunchProperties(nonAssignedLunchList, assignedLunchList, lunchtimes);
     }
     
     /**
     * @desc - sets the lunch time properties to the correct values
-    * @param - nonAssigned - json object of nonassigned lunch times
-    *          assigned - json object of assigned lunch times
+    * @param - nonAssigned - array of json objects of nonassigned lunch times
+    *          assigned - array of json objects of assigned lunch times
     *          all - array of all lunch times
     */
     function setLunchProperties(nonAssigned, assigned, all){
@@ -111,8 +121,10 @@
     function saveSheetNames(){
       var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
       var studentDataSheet = document.getElementById('studentDataSheetName').value;
+      var dodSheet = document.getElementById('dodSheetName').value;
       google.script.run.withSuccessHandler(saveTeacherSheet).sheetExists(teacherChoicesSheet);
       google.script.run.withSuccessHandler(saveStudentSheet).sheetExists(studentDataSheet);
+      google.script.run.withSuccessHandler(saveDODSheet).sheetExists(dodSheet);
     }
     
     /**
@@ -122,7 +134,7 @@
     function saveTeacherSheet(valid){
       var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
       if(valid){
-        google.script.run.setTeacherChoicesSheetByName(teacherChoicesSheet);
+        google.script.run.setTeacherChoicesSheet(teacherChoicesSheet);
       }
       else {
         google.script.run.showMessage("Whoops! The Faculty Choices Sheet name that you entered does not exist. This setting could not be saved.");
@@ -136,11 +148,41 @@
     function saveStudentSheet(valid){
       var studentDataSheet = document.getElementById('studentDataSheetName').value;
       if(valid){
-        google.script.run.setStudentSheetByName(studentDataSheet);
+        google.script.run.setStudentSheet(studentDataSheet);
       }
       else {
         google.script.run.showMessage("Whoops! The Final Student Data Sheet name that you entered does not exist. This setting could not be saved.");
       } 
+    }
+    
+    /**
+    * @desc - saves dod sheet name property
+    * @author - dicksontc
+    */
+    function saveDODSheet(valid){
+      var dodDataSheet = document.getElementById('dodSheetName').value;
+      if(valid){
+        google.script.run.setDODSheet(dodDataSheet);
+      }
+      else {
+        google.script.run.showMessage("Whoops! The DOD Sheet name that you entered does not exist. This setting could not be saved.");
+      } 
+    }
+    
+    function saveHouses(){
+      var houseNames = document.getElementsByClassName("houseNameSettingsBox");
+      var houseFonts = document.getElementsByClassName("houseFontSettingsBox");
+      var houseBGs = document.getElementsByClassName("houseBGSettingsBox");
+      
+      var housesList = [];
+      
+      for(var j = 1; j < houseNames.length+1; j++) {
+        var name = document.getElementById('house' + j.toString() + "name").value;
+        var font = document.getElementById('house' + j.toString() + "font").value;
+        var bg = document.getElementById('house' + j.toString() + "bg").value;
+        housesList.push({"name": name, "font": font, "background": bg})
+      }
+      setHouses(housesList);
     }
     
     
@@ -501,7 +543,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day1" type="text" onkeypress="" name="a-day" value="A"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day1num" type="text" onkeypress="" name="a-day" value="3"/></span>
                         </div>
                     </td>
@@ -511,7 +553,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day2" type="text" onkeypress="" name="b-day" value="B"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day2num" type="text" onkeypress="" name="b-day" value="7"/></span>
                         </div>
                     </td>
@@ -521,7 +563,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day3" type="text" onkeypress="" name="c-day" value="C"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day3num" type="text" onkeypress="" name="c-day" value="4"/></span>
                         </div>
                     </td>
@@ -531,7 +573,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day4" type="text" onkeypress="" name="d-day" value="D"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day4num" type="text" onkeypress="" name="d-day" value="8"/></span>
                         </div>
                     </td>
@@ -541,7 +583,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day5" type="text" onkeypress="" name="e-day" value="E"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day5num" type="text" onkeypress="" name="e-day" value="1"/></span>
                         </div>
                     </td>
@@ -551,7 +593,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day6" type="text" onkeypress="" name="f-day" value="F"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day6num" type="text" onkeypress="" name="f-day" value="5"/></span>
                         </div>
                     </td>
@@ -561,7 +603,7 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day7" type="text" onkeypress="" name="g-day" value="G"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day7num" type="text" onkeypress="" name="g-day" value="2"/></span>
                         </div>
                     </td>
@@ -571,13 +613,94 @@
                         <div class="row">
                             <span class="rowLabel">Letter: </span>
                             <span><input class="daySettingsBox" id="day8" type="text" onkeypress="" name="h-day" value="H"/></span>
-                            <span class="numLabel">Number: </span>
+                            <span class="numLabel">Block: </span>
                             <span><input class="dayNumberBox" id="day8num" type="text" onkeypress="" name="h-day" value="6"/></span>
                         </div>
                     </td>
                 </tr>
             </table>
         </td>
+        <tr>
+            <th colspan=2>Houses</th>
+        </tr>
+
+        <td id="fullWidth"colspan=2>
+            <table class="table table-striped">
+                <tr>
+                    <td>
+                      <div class="houseSettingsTable" id="house1">
+                        <div class="row">
+                            <span class="rowLabel">House Name: </span>
+                            <span class="inputSpan"><input class="houseNamesettingsBox" id="house1name" type="text" onkeypress="" name="house1name" value="Academy"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Font Color: </span>
+                            <span class="inputSpan"><input class="houseFontSettingsBox" id="house1font" type="text" onkeypress="" name="house1font" value="#3366ff"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Background Color: </span>
+                            <span class="inputSpan"><input class="houseBGSettingsBox" id="house1bg" type="text" onkeypress="" name="house1bg" value="WHITE"/></span>
+                        </div>
+                      </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="houseSettingsTable" id="house2">
+                        <div class="row">
+                            <span class="rowLabel">House Name: </span>
+                            <span class="inputSpan"><input class="houseNameSettingsBox" id="house2name" type="text" onkeypress="" name="house2name" value="Arrow"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Font Color: </span>
+                            <span class="inputSpan"><input class="houseFontSettingsBox" id="house2font" type="text" onkeypress="" name="house2font" value="#008000"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Background Color: </span>
+                            <span class="inputSpan"><input class="houseBGSettingsBox" id="house2bg" type="text" onkeypress="" name="house2bg" value="WHITE"/></span>
+                        </div>
+                      </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="houseSettingsTable" id="house3">
+                        <div class="row">
+                            <span class="rowLabel">House Name: </span>
+                            <span class="inputSpan"><input class="houseNamesettingsBox" id="house3name" type="text" onkeypress="" name="house3name" value="Crest"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Font Color: </span>
+                            <span class="inputSpan"><input class="houseFontSettingsBox" id="house3font" type="text" onkeypress="" name="house3font" value="#ff0000"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Background Color: </span>
+                            <span class="inputSpan"><input class="houseBGSettingsBox" id="house3bg" type="text" onkeypress="" name="house3bg" value="WHITE"/></span>
+                        </div>
+                      </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="houseSettingsTable" id="house4">
+                        <div class="row">
+                            <span class="rowLabel">House Name: </span>
+                            <span class="inputSpan"><input class="houseNamesettingsBox" id="house4name" type="text" onkeypress="" name="house4name" value="Ledger"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Font Color: </span>
+                            <span class="inputSpan"><input class="houseFontSettingsBox" id="house4font" type="text" onkeypress="" name="house4font" value="YELLOW"/></span>
+                        </div>
+                        <div class="row">
+                            <span class="rowLabel">Background Color: </span>
+                            <span class="inputSpan"><input class="houseBGSettingsBox" id="house4bg" type="text" onkeypress="" name="house4bg" value="#660066"/></span>
+                        </div>
+                      </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <tr>
         <tr>
             <th colspan=2>Lunch Times</th>
         </tr>
@@ -615,6 +738,14 @@
                                     <span class="rowLabel">Priority: </span>
                                     <span class="inputSpan"><input class="settingsBox" id="earlypriority" type="text" onkeypress="" name="priorityBox" value="1"/></span>
                                 </div>
+                                <div class="fontColor">
+                                    <span class="rowLabel">Font Color: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlyfont" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
+                                </div>
+                                <div class="backgroundColor">
+                                    <span class="rowLabel">Background Color: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="earlybgcolor" type="text" onkeypress="" name="backgroundBox" value="YELLOW"/></span>
+                                </div>
                                 <button class="action add_remove_button" onclick="hideTimeEntry('time1');">Remove</button>
                             </div>
                         </td>
@@ -648,7 +779,15 @@
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Priority: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midpriority" type="text" onkeypress="" name="priorityBox" value="2"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midpriority" type="text" onkeypress="" name="priorityBox" value="3"/></span>
+                                </div>
+                                <div class="fontColor">
+                                    <span class="rowLabel">Font Color: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midfont" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
+                                </div>
+                                <div class="backgroundColor">
+                                    <span class="rowLabel">Background Color: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="midbgcolor" type="text" onkeypress="" name="backgroundBox" value="WHITE"/></span>
                                 </div>
                                 <button class="action add_remove_button" onclick="hideTimeEntry('time2');">Remove</button>
                             </div>
@@ -683,7 +822,15 @@
                                 </div>
                                 <div class="row">
                                     <span class="rowLabel">Priority: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latepriority" type="text" onkeypress="" name="priorityBox" value="3"/></span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latepriority" type="text" onkeypress="" name="priorityBox" value="2"/></span>
+                                </div>
+                                <div class="fontColor">
+                                    <span class="rowLabel">Font Color: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latefont" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
+                                </div>
+                                <div class="backgroundColor">
+                                    <span class="rowLabel">Background Color: </span>
+                                    <span class="inputSpan"><input class="settingsBox" id="latebgcolor" type="text" onkeypress="" name="backgroundBox" value="#8db4e2"/></span>
                                 </div>
                                 <button class="action add_remove_button" onclick="hideTimeEntry('time3');">Remove</button>
                             </div>
@@ -714,6 +861,14 @@
                             <div class="row">
                                 <span class="rowLabel">Faculty Choices: </span>
                                 <span class="inputSpan"><input class="settingsBox" id="facultyChoicesSheetName" type="text" onkeypress="" name="facultyChoicesSheetName" value=""/></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <span class="rowLabel">DOD List: </span>
+                                <span class="inputSpan"><input class="settingsBox" id="dodSheetName" type="text" onkeypress="" name="dodSheetName" value=""/></span>
                             </div>
                         </td>
                     </tr>
