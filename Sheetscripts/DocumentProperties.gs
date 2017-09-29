@@ -35,9 +35,9 @@ function testting() {
  */
  function setLunchProperties() {
   var letterDays = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var lunchTimes = [{"name": "early", "priority": 0, "font": "BLACK", "background": "YELLOW"},
-  {"name": "mid", "priority": 2, "font": "BLACK", "background": "WHITE"},
-  {"name": "late", "priority": 1, "font": "BLACK", "background": "#8db4e2"}];
+  var lunchTimes = [{"name": "early", "priority": 1, "font": "BLACK", "background": "YELLOW"},
+  {"name": "mid", "priority": 3, "font": "BLACK", "background": "WHITE"},
+  {"name": "late", "priority": 2, "font": "BLACK", "background": "#8db4e2"}];
   var numberOfTables = 19;
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
@@ -52,9 +52,9 @@ function testting() {
   var properties = PropertiesService.getDocumentProperties();
   setLetterDays(letterDays);
   setLunchTimes(lunchTimes);
-  setAssignedLunches([{"time": "early", "by":"table", "numStudents": 133, "priority": 0}]);
-  setNonAssignedLunches([{"time": "mid", "by":"none", "numStudents": 133, "priority": 2},
-    {"time": "late", "by": "house", "numStudents": 133, "priority": 1}]);
+  setAssignedLunches([{"time": "early", "by":"table", "numStudents": 133, "numTables": 19, "priority": 1}]);
+  setNonAssignedLunches([{"time": "mid", "by":"none", "numStudents": 133, "priority": 3},
+    {"time": "late", "by": "house", "numStudents": 133, "priority": 2}]);
   setNumberOfTables(numberOfTables);
   setSchoolDays(schoolDays);
   setHouses(houses);
