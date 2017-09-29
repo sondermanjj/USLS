@@ -25,6 +25,7 @@ function testting() {
  *     letterDays - A list of the letter days for the school
  *     lunchTimes - A list of the lunch times for the school
  *     houses - A list of the houses for the school
+ *     courses - A list of the courses with course name, the day it runs, and the lunch time
  *
  *
  *****************************************************************************************************************/
@@ -116,6 +117,16 @@ function setSheetProperties(studentSheet) {
 function setSchoolDays(schoolDays) {
   var properties = PropertiesService.getDocumentProperties();
   properties.setProperty('schoolDays', JSON.stringify(schoolDays));
+}
+
+/**
+ * @desc - Sets the document property for the pairing of course names, days, and lunch times. Saves it as
+ *         a Json.stringify(array)
+ * @author - dicksontc
+ */
+function setCourses(courses){
+  var properties = PropertiesService.getDocumentProperties();
+  properties.setProperty('courses', JSON.stringify(schoolDays));
 }
 
 /**
