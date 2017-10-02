@@ -183,7 +183,7 @@ function getCourses() {
 @funtional - yes
 @author - dicksontc
 */
-function parseStudentChanges(listOfChanges){
+function parseStudentChanges(values, listOfChanges){
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
   var studentDataProp = properties.studentData;
@@ -225,7 +225,7 @@ function parseStudentChanges(listOfChanges){
       if(oldtime !== newtime){
         for(j = 0; j < students.length; j++){
           var stu = students[j];
-          if(change.fName === stu.fName && change.lName === stu.lName){
+          if(change.fName.toString().toLowerCase() === stu.fName.toString().toLowerCase() && change.lName.toString().toLowerCase() === stu.lName.toString().toLowerCase()){
             for(k = 0; k < stu.lunches.length; k++){
               var lunch = stu.lunches[k];
               if(lunch.day === change.oldDay){

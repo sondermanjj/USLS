@@ -42,8 +42,8 @@
     var headers = ["First Name", "Last Name", "Course Ttile", "Lunch Day"];
     schedule.push(headers);
     
-    var firstname = data[0].trim();
-    var lastname = data[1].trim();
+    var firstname = data[0].trim().toString().toLowerCase();
+    var lastname = data[1].trim().toString().toLowerCase();
     schedule.push(getStudentSchedule(firstname, lastname));    
     
     var valid = false;
@@ -91,7 +91,7 @@
     var lunchTimeColumn = parseInt(properties["Student Lunch Time"]);
     var lunchTableColumn = parseInt(properties["Student Lunch Table"]);
     
-    var courseTimes = JSON.parse(properties.getProperty('courses'));
+    var courseTimes = JSON.parse(properties['courses']);
     
     values.sort(compareByColumnIndex(lunchDayColumn));
     
@@ -129,7 +129,8 @@
       }
     }
     
-    return parseStudentChanges(changes);
+    Logger.log("About to make schedule changes");
+    return parseStudentChanges(values, changes);
     
   }
   
