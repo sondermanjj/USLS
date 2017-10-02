@@ -583,7 +583,7 @@ function printStudentsToSheet(students, primary, properties){
       pushArray[genderCol] = gender;
       pushArray[advisorCol] =  advisor;
       pushArray[dobCol] = dob;
-      if(title === undefined || (title.length === 4 && title.indexOf("z") !== -1)){
+      if(title === undefined || title === "" || (title.length === 4 && title.indexOf("z") === 0)){
         pushArray[cTitleCol] =  zScore;
         pushArray[cCodeCol] =  "";
         pushArray[cLengthCol] = "";

@@ -120,16 +120,6 @@ function setSchoolDays(schoolDays) {
 }
 
 /**
- * @desc - Sets the document property for the pairing of course names, days, and lunch times. Saves it as
- *         a Json.stringify(array)
- * @author - dicksontc
- */
-function setCourses(courses){
-  var properties = PropertiesService.getDocumentProperties();
-  properties.setProperty('courses', JSON.stringify(schoolDays));
-}
-
-/**
  * @desc - Sets the document property for the list of header columns in the student data sheet. Saves it as
  *         a Json.stringify(array)
  * @author - hendersonam
