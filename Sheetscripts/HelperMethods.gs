@@ -117,7 +117,6 @@ function searchAll(filter, sheetName) {
  */
 function searchColumn(filter, column, sheetName) {
   var properties = PropertiesService.getDocumentProperties();
-  Logger.log(sheetName);
   var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
   var columnIndex = getColumnIndex(getListOfColumns(values), column);
   var count = 0;
