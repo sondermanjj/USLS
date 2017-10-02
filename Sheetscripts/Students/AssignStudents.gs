@@ -184,27 +184,31 @@ function parseStudentChanges(listOfChanges){
   if(changes.length > 0){
     for(i = 0; i < changes.length; i++){
       var change = changes[i];
-      if(change.oldTime !== change.newTime){
+      oldtime = change.oldTime;
+      newtime = change.newTime;
+      if(oldtime !== newtime){
         for(j = 0; j < students.length; j++){
           var stu = students[j];
           if(change.fName === stu.fName && change.lName === stu.lName){
             for(k = 0; k < stu.lunches.length; k++){
               var lunch = stu.lunches[k];
               if(lunch.day === change.oldDay){
-                oldtime = change.oldTime;
-                newtime = change.newTime;
                 var oldAssigned = true;
                 var newAssigned = true;
                 var oldNum = -1;
                 var newNum = -1;
+                var oldTimeObj;
+                var newTimeObj;
                 for(p = 0; p < nonAssignedLunches.length; p++){
                   if(oldtime === nonAssignedLunches[p].time){
                     oldAssigned = false;
                     oldNum = p;
+                    oldTimeObj = nonAssignedLunches[p];
                   }
                   if(newtime === nonAssignedLunches[p].time){
                     newAssigned = false;
                     newNum = p;
+                    newTimeObj = nonAssignedLunches[x];
                   }
                 }
                 if(!oldAssigned && !newAssigned){
@@ -220,33 +224,22 @@ function parseStudentChanges(listOfChanges){
                 }else{
                   var affectedStu;
                   var affectedLunch;
-                  var day = change.newDay;
-                  var time;
-                  var oldTimeObj;
-                  var newTimeObj;
+                  var day = change.oldDay;
                   for(x = 0; x < assignedLunches.length; x++){
                     if(newtime === assignedLunches[x].time){
-                      time = assignedLunches[x];
+                      newTimeObj = assignedLunches[x];
                       x = assignedLunches.length;
                     }
                   }
-                  for(x = 0; x < nonAssignedLunches.length; x++){
-                    if(oldtime === nonAssignedLunches[x].time){
-                      oldTimeObj = nonAssignedLunches[x];
-                    }
-                    if(newtime === nonAssignedLunches[x].time){
-                      newTimeObj = nonAssignedLunches[x];
-                      time = nonAssignedLunches[x];
-                    }
-                  }
-                  var zScoreStudents = getzScoreStudents(students, day, time, false);
-                  affectedLunch = zScoreStudents[0].lunchIndex;
-                  affectedStu = zScoreStudents[0].stuIndex;
+                  var zScoreStudents = getzScoreStudents(students, day, newTimeObj, false);
 
-                  if(affectedStu === null){
-                    SpreadsheetApp.getUi().alert("Not enough students to switch into/out of early lunch!");
+                  if(zScoreStudents.length === 0){
+                    SpreadsheetApp.getUi().alert("Not enough students to switch into/out of assigned lunch!");
                     return;
                   }
+                  affectedLunch = zScoreStudents[0].lunchIndex;
+                  affectedStu = zScoreStudents[0].stuIndex;
+                  
                   var affectedTableOld;
                   var affectedTableNew;
                   if(oldAssigned){
@@ -265,13 +258,14 @@ function parseStudentChanges(listOfChanges){
                     
                   }else if(newAssigned){
                     students[j].lunches[k].time = newtime;
-                    students[j].lunches[k].table = students[affectedStu].lunches[affectedLunch].table;
+                    newTable = students[affectedStu].lunches[affectedLunch].table;
+                    students[j].lunches[k].table = newTable
                     students[affectedStu].lunches[affectedLunch].time = oldtime;
                     affectedTableOld = students[affectedStu].lunches[affectedLunch].table;
                     if(oldTimeObj.by === "none"){
                       students[affectedStu].lunches[affectedLunch].table = "";
                       affectedTableNew = "";
-                    }else if(oldTimeObj.by === "table"){
+                    }else if(oldTimeObj.by === "house"){
                       students[affectedStu].lunches[affectedLunch].table = students[affectedStu].house;
                       affectedTableNew = students[affectedStu].house;
                     }
