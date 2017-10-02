@@ -10,6 +10,9 @@
     $(this).toggleClass("selected");
   });
   
+  function closePopup() {
+    google.script.host.close();
+  }
   
   /*****************************************************************
       * @desc - Sends the list of new courses to the backend logic
@@ -34,8 +37,23 @@
                          newCourses);
   }
   
-  function showChanges(html) {
-  
+  function showChanges(changes) {
+    console.log(changes);
+    var html = "";
+    var headers = ["First Name", "Last Name", "Old Lunch Time", "New Lunch Time", "Old Table", "New Table"];
+    html += createHeaders(html, headers);
+    
+    for ( var i = 0; i < changes.length; i++) {
+      html += '<tr>';
+      for( var j = 0; j < changes[i].length; j++) {
+        html += '<td >' + changes[i][j] + '</td>';
+      }
+        html += "</tr>";
+    }
+    
+      document.getElementById("scheduleChanges").innerHTML = html;
+      showDiv('potentialChanges');    
+    
   }
   
   /*****************************************************************
@@ -160,7 +178,6 @@
       
       html += "</table>";
       document.getElementById("classes").innerHTML = html;
-      window.resizeTo(700, 700);
       showDiv('schedule');
     } else {
     
