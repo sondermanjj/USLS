@@ -12,7 +12,9 @@ function getStatisticsHTML(){
  * @author - hendersonam
  */
 function getStatistics() {
-  var statshtml = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
+  var d = new Date();
+  var statshtml = "<h4>Last Updated: " + d.toLocaleTimeString() + " " + d.toLocaleDateString() + " </h4>";
+  statshtml += "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
   statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getStats(false);
   return statshtml;
 }
