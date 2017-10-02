@@ -115,6 +115,7 @@
             
             values[i][courseTitleColumn] = newCourses[numOfChangesMade][0];
             
+            
             /*
             ######################################################################################
             values[i][lunchTimeColumn] = NEED TO GET THE CORRECT LUNCH TIME HERE FROM THE PROPERTY
@@ -124,7 +125,7 @@
             var newRow = values[i];
             
             var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldRow[lunchTimeColumn], oldDay: oldRow[lunchDayColumn],
-                  oldTable: oldRow[lunchTableColumn], newTime: newRow[lunchTimeColumn], newDay: newRow[lunchDayColumn], newTable: newRow[lunchTableColumn]};
+                  oldTable: oldRow[lunchTableColumn], newTime: newRow[lunchTimeColumn]};
             changes.push(change);
             
             numOfChangesMade++;
@@ -136,15 +137,7 @@
       }
     }
     
-//    return parseStudentChanges(changes);
-    return [["First Name", "Last Name", "Old Time", "New Time", "New Table", "Old Table"]];
-    
-    //TODO
-    //THIS IS TEMPORARY
-    //SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData).getRange(1, 1, values.length, values[0].length).setValues(values);
-
-    
-    //return schedule;
+    return parseStudentChanges(changes);
     
   }
   
