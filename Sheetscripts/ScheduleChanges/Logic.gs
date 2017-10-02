@@ -93,7 +93,7 @@
     
     /*
     ############################################
-    NEED TO GET THE COURSE-DAY PROPERTIES HERE
+    var couseTimes = JSON.parse(properties.getProperty('courses'));
     ############################################
     */
     
@@ -115,10 +115,10 @@
             
             values[i][courseTitleColumn] = newCourses[numOfChangesMade][0];
             
-            
             /*
             ######################################################################################
-            values[i][lunchTimeColumn] = NEED TO GET THE CORRECT LUNCH TIME HERE FROM THE PROPERTY
+            var courseAndDay = values[i][courseTitleColumn].toString().toLowerCase() + values[i][lunchDayColumn].toString().toLowerCase();
+            values[i][lunchTimeColumn] = courses[courseAndDay];
             ######################################################################################
             */
             
