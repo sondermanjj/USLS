@@ -176,7 +176,6 @@ function getCourses() {
   }
   
   return courses;
-  
 }
 
 /**
