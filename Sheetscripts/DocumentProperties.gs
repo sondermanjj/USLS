@@ -1,7 +1,8 @@
 
 
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperty("headers"));
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
+  Logger.log(PropertiesService.getDocumentProperties().getProperties());
   
 }
 
@@ -144,6 +145,15 @@ function getHeaderColumnNames() {
  */
 function setLetterDays(value) {
   PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+}
+
+/**
+ * @desc - Sets courses and corresponding day
+ * @param - Object courses
+ * @author - clemensam
+ */
+function setCourses(courses) {
+  PropertiesService.getDocumentProperties().setProperty("courses", JSON.stringify(courses));
 }
 
 /**

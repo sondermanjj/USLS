@@ -143,6 +143,42 @@ function assignStudentLunchDays() {
 }
 
 /**
+@desc Gets all courses and their corresponding days
+@funtional - maybe
+@author - clemensam
+*/
+function getCourses() {
+  var docProps = PropertiesService.getDocumentProperties();
+  var properties = docProps.getProperties();
+  var studentDataProp = properties.studentData;
+  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
+  
+  var primaryData = primarySheet.getDataRange();
+  var pValues = primaryData.getValues();
+  var pNumRows = primaryData.getNumRows();
+
+  var lunchDayCol = parseInt(docProps.getProperty("Student Lunch Day"));
+  var courseTitleCol = parseInt(docProps.getProperty("Student Course Title"));
+  var lunchTimeCol = parseInt(docProps.getProperty("Student Lunch Time"));
+  
+  var courses = {};
+  var i; 
+  for(var i = 0; i < pNumRows; i++){
+    var lunchDay = pValues[i][lunchDayCol];
+    var courseTitle = pValues[i][courseTitleCol];
+    var courseDayConcat = courseTitle + lunchDay;
+
+    var lunchTime = pValues[i][lunchTimeCol];
+    
+    if(!courses.hasOwnProperty(courseDayConcat)) {
+      courses[courseDayConcat] = lunchTime;
+    }
+  }
+  
+  return courses;
+}
+
+/**
 @desc Uses the students and changes arrays to change student schedules 
 @funtional - yes
 @author - dicksontc
