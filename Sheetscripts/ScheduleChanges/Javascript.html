@@ -20,6 +20,8 @@
       * @author - hendersonam
   *******************************************************************/
   function sendNewSchedule() {
+    $("#backButton").prop("disabled",true);
+    $("#assignStudents").prop("disabled",true);
     var newCourses = [];
     $('#newSchedule tr').each( function() {
       var row = $(this)[0];
@@ -38,8 +40,8 @@
   }
   
   function showChanges(changes) {
-    console.log(changes);
     var html = "";
+    if(changes.length > 0) {
     var headers = ["First Name", "Last Name", "Old Lunch Time", "New Lunch Time", "Old Table", "New Table"];
     html += createHeaders(html, headers);
     
@@ -51,6 +53,9 @@
         html += "</tr>";
     }
     
+    } else {
+      html += "There were no schedule changes!";
+    }
       document.getElementById("scheduleChanges").innerHTML = html;
       showDiv('potentialChanges');    
     

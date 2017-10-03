@@ -66,7 +66,7 @@ function getHTMLTable(columns, rows, values) {
   //var html = "<table class='statsTable'>";
   tablehtml += "<tr><th></th>";
   for(var column = 0; column < columns.length; column++){
-     tablehtml += "<th>" + columns[column] + "</th>";
+     tablehtml += "<th>" + columns[column].name + "</th>";
   }
   tablehtml += "</tr>";
   

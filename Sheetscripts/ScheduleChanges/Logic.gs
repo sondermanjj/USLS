@@ -103,28 +103,34 @@
     var changes = [];
     for(var i = 0; i < values.length; i++) {
       
-      if(firstname.toString().toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
-        if(lastname.toString().toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {
+      if(firstname == values[i][firstNameColumn].toString().toLowerCase()) {
+        if(lastname == values[i][lastNameColumn].toString().toLowerCase()) {
           if(oldCourses[numOfChangesMade][3].toString().toLowerCase() == values[i][lunchDayColumn].toString().toLowerCase()) {
             
+            //Save the old row and the old time, and old course
             var oldRow = values[i];
             var oldTimee = values[i][lunchTimeColumn];
+            var oldCourse = values[i][courseTitleColumn];
             
-            values[i][courseTitleColumn] = newCourses[numOfChangesMade][0];
+            //Make the course title change in the data
+            var newCourseTitle = newCourses[numOfChangesMade][0];
             
-            var courseAndDay = values[i][courseTitleColumn].toString().toLowerCase() + values[i][lunchDayColumn].toString().toLowerCase();
-            values[i][lunchTimeColumn] = courseTimes[courseAndDay.toString().toLowerCase()].toString().toLowerCase();
+            //Get the course title and lunch day concat
+            var course = newCourses[numOfChangesMade][0];
+            var lunchDay = values[i][lunchDayColumn];
             
-            var newRow = values[i];
-            var newTimee = values[i][lunchTimeColumn];
-            
-            var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldTimee, oldDay: oldRow[lunchDayColumn],
-                  oldTable: oldRow[lunchTableColumn], newTime: newTimee};
-            changes.push(change);
-            Logger.log("Timeee: ");
-            Logger.log(courseTimes[courseAndDay.toString().toLowerCase()].toString().toLowerCase());
-            Logger.log(oldTimee);
-            Logger.log(newTimee);
+            //Course title and lunch day concat
+            var courseAndDay = course + lunchDay;
+            courseAndDay = courseAndDay.toString().toLowerCase().replace(/\s/g,'');
+            //Get the lunch time for that particular course and day pair
+            var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
+            //Only if not null do we count this as a change
+            if(newTime != null) {
+              //Create the change object
+              var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldTimee, oldDay: oldRow[lunchDayColumn],
+                            oldTable: oldRow[lunchTableColumn], newTime: newTime, newCourseName: newCourseTitle};
+              changes.push(change);
+            }
             numOfChangesMade++;
             if(numOfChangesMade == numOfChangesToBeMade) {
               i = values.length;
@@ -133,9 +139,8 @@
         }
       }
     }
-    Logger.log(changes);
-    Logger.log("About to make schedule changes");
-    return parseStudentChanges(values, changes);
+    
+    return parseStudentChanges(changes);
     
   }
   

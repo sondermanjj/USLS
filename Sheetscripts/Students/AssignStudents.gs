@@ -184,7 +184,7 @@ function getCourses() {
 @funtional - yes
 @author - dicksontc
 */
-function parseStudentChanges(values, listOfChanges){
+function parseStudentChanges(listOfChanges){
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
   var studentDataProp = properties.studentData;
