@@ -12,7 +12,9 @@ function getStatisticsHTML(){
  * @author - hendersonam
  */
 function getStatistics() {
-  var statshtml = "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
+  var d = new Date();
+  var statshtml = "<h4>Last Updated: " + d.toLocaleTimeString() + " " + d.toLocaleDateString() + " </h4>";
+  statshtml += "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
   statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getStats(false);
   return statshtml;
 }
@@ -64,7 +66,7 @@ function getHTMLTable(columns, rows, values) {
   //var html = "<table class='statsTable'>";
   tablehtml += "<tr><th></th>";
   for(var column = 0; column < columns.length; column++){
-     tablehtml += "<th>" + columns[column] + "</th>";
+     tablehtml += "<th>" + columns[column].name + "</th>";
   }
   tablehtml += "</tr>";
   
@@ -136,6 +138,8 @@ function statistics(time, day, values, students) {
   var count;
   
 
+Logger.log(day);
+Logger.log(time);
   //For each row in the data...
   for( var k = 0; k < values.length; k++) {
   
@@ -157,9 +161,10 @@ function statistics(time, day, values, students) {
         }
       }
       
+      
       count = 0;
       while ( isNaN(lunchTime) ) {
-        lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
+        lunchTime == time[count].name ? lunchTime = count : count++;
         if (count == time.length) {
           //If the value in the cell is not a lunch time...
           if (isNaN(lunchTime) && (lunchTime != "lunch time" && lunchTime != "lunch assignment") ) {
