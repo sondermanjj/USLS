@@ -108,21 +108,23 @@
           if(oldCourses[numOfChangesMade][3].toString().toLowerCase() == values[i][lunchDayColumn].toString().toLowerCase()) {
             
             var oldRow = values[i];
+            var oldTimee = values[i][lunchTimeColumn];
             
             values[i][courseTitleColumn] = newCourses[numOfChangesMade][0];
             
             var courseAndDay = values[i][courseTitleColumn].toString().toLowerCase() + values[i][lunchDayColumn].toString().toLowerCase();
-            Logger.log(courseTimes);
-            Logger.log(courseAndDay);
-            Logger.log(courseTimes[courseAndDay.toString().toLowerCase()]);
             values[i][lunchTimeColumn] = courseTimes[courseAndDay.toString().toLowerCase()].toString().toLowerCase();
             
             var newRow = values[i];
+            var newTimee = values[i][lunchTimeColumn];
             
-            var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldRow[lunchTimeColumn], oldDay: oldRow[lunchDayColumn],
-                  oldTable: oldRow[lunchTableColumn], newTime: newRow[lunchTimeColumn]};
+            var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldTimee, oldDay: oldRow[lunchDayColumn],
+                  oldTable: oldRow[lunchTableColumn], newTime: newTimee};
             changes.push(change);
-            
+            Logger.log("Timeee: ");
+            Logger.log(courseTimes[courseAndDay.toString().toLowerCase()].toString().toLowerCase());
+            Logger.log(oldTimee);
+            Logger.log(newTimee);
             numOfChangesMade++;
             if(numOfChangesMade == numOfChangesToBeMade) {
               i = values.length;
@@ -131,7 +133,7 @@
         }
       }
     }
-    
+    Logger.log(changes);
     Logger.log("About to make schedule changes");
     return parseStudentChanges(values, changes);
     
