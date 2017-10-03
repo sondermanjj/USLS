@@ -167,6 +167,7 @@ function getCourses() {
     var lunchDay = pValues[i][lunchDayCol];
     var courseTitle = pValues[i][courseTitleCol];
     var courseDayConcat = courseTitle + lunchDay;
+    courseDayConcat = courseDayConcat.replace(/\s/g,'').toLowerCase();
 
     var lunchTime = pValues[i][lunchTimeCol];
     

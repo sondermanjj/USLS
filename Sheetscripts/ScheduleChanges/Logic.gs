@@ -91,7 +91,7 @@
     var lunchTimeColumn = parseInt(properties["Student Lunch Time"]);
     var lunchTableColumn = parseInt(properties["Student Lunch Table"]);
     
-    var courseTimes = JSON.parse(properties['courses']);
+    var courseTimes = JSON.parse(properties["courses"]);
     
     values.sort(compareByColumnIndex(lunchDayColumn));
     
@@ -112,7 +112,10 @@
             values[i][courseTitleColumn] = newCourses[numOfChangesMade][0];
             
             var courseAndDay = values[i][courseTitleColumn].toString().toLowerCase() + values[i][lunchDayColumn].toString().toLowerCase();
-            values[i][lunchTimeColumn] = courseTimes[courseAndDay];
+            Logger.log(courseTimes);
+            Logger.log(courseAndDay);
+            Logger.log(courseTimes[courseAndDay.toString().toLowerCase()]);
+            values[i][lunchTimeColumn] = courseTimes[courseAndDay.toString().toLowerCase()].toString().toLowerCase();
             
             var newRow = values[i];
             
