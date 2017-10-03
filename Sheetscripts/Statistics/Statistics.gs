@@ -138,6 +138,8 @@ function statistics(time, day, values, students) {
   var count;
   
 
+Logger.log(day);
+Logger.log(time);
   //For each row in the data...
   for( var k = 0; k < values.length; k++) {
   
@@ -159,9 +161,10 @@ function statistics(time, day, values, students) {
         }
       }
       
+      
       count = 0;
       while ( isNaN(lunchTime) ) {
-        lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
+        lunchTime == time[count].name ? lunchTime = count : count++;
         if (count == time.length) {
           //If the value in the cell is not a lunch time...
           if (isNaN(lunchTime) && (lunchTime != "lunch time" && lunchTime != "lunch assignment") ) {
