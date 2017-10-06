@@ -76,6 +76,7 @@
       * @author - hendersonam
   *******************************************************************/
   function swapCourses(firstname, lastname, oldCourses, newCourses) {
+    newCourses.shift();
     var properties = PropertiesService.getDocumentProperties().getProperties();
     
     var values = SpreadsheetApp
@@ -97,7 +98,7 @@
     
     oldCourses.sort(compareByColumnIndex(3));
     newCourses.sort(compareByColumnIndex(1));
-    var numOfChangesToBeMade = newCourses.length - 1;
+    var numOfChangesToBeMade = newCourses.length;
     var numOfChangesMade = 0;
     var studentChanges = [];
     var changes = [];
@@ -124,7 +125,6 @@
             courseAndDay = courseAndDay.toString().toLowerCase().replace(/\s/g,'');
             //Get the lunch time for that particular course and day pair
             var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
-            
             //Only if not null do we count this as a change
             if(newTime != null) {
               //Create the change object
