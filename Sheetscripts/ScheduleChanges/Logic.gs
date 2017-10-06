@@ -124,14 +124,16 @@
             courseAndDay = courseAndDay.toString().toLowerCase().replace(/\s/g,'');
             //Get the lunch time for that particular course and day pair
             var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
+            
             //Only if not null do we count this as a change
             if(newTime != null) {
               //Create the change object
               var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldTimee, oldDay: oldRow[lunchDayColumn],
                             oldTable: oldRow[lunchTableColumn], newTime: newTime, newCourseName: newCourseTitle};
               changes.push(change);
+              numOfChangesMade++;
             }
-            numOfChangesMade++;
+            
             if(numOfChangesMade == numOfChangesToBeMade) {
               i = values.length;
             }
