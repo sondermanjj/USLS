@@ -1,9 +1,9 @@
 //ID of the Google spreadsheet being accessed
-var currentSpringID = "1Ghj-01z6asJzoyxIGg-OsXxaN2sv09OEwI_L0RFT_Ys";
-var tab = "1";
+var fallID = "1JsqgABDi402dddQqja_sMRhaCiMLJueS6pryspANVas";
 
 //URL for retrieving data from sheets directly as JSON
-var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" + tab + "/public/values?alt=json";
+//var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" + "1" + "/public/values?alt=json";
+var url = "https://spreadsheets.google.com/feeds/list/" + fallID + "/" + getWebsiteSheetLocation(fallID).toString() + "/public/values?alt=json";
 
 /**
 * Tells the script how to serve the page when a GET request is made
@@ -12,14 +12,22 @@ var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" 
 function doGet(e) {
   var params = JSON.stringify(e);
   var apphtml = HtmlService.createTemplateFromFile('website/searchApp/Base').evaluate();
-  var paramhtml = HtmlService.createHtmlOutput(params);
-  
-  Logger.log(params);
-  
   return apphtml;
 }
 
 function doPost(e){
+}
+
+/**
+* Finds the location of the Website Info in the current spreadsheet
+* @param id ID for the spreadsheet
+* @return integer representing the location of the website sheet
+*/
+function getWebsiteSheetLocation(id){
+  var spreadSheet = SpreadsheetApp.openById(id);
+  var websiteSheet = spreadSheet.getSheetByName("Website Info");
+  var sheetId = websiteSheet.getIndex().toFixed(0);
+  return sheetId;  
 }
 
 /**
@@ -36,14 +44,15 @@ function include(filename) {
 * @return JSON String of the sheets data
 */
 function getJSON() {
-   var json = UrlFetchApp.fetch(url);
+  var json = UrlFetchApp.fetch(url);
   
   var JS = JSON.parse(json.getContentText());
+  Logger.log(JS);
   
   var feed = JS.feed;
   
   var entries = feed.entry;
-  
+
   return entries;
 }
 
