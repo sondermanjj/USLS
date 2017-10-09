@@ -5,7 +5,7 @@ function testting() {
   
 }
 
- /*****************************************************************************************************************
+/*****************************************************************************************************************
  * Properties:
  *   Sheets:
  *     studentData - Final Student Data
@@ -24,6 +24,9 @@ function testting() {
  *     numberOfTables - Number of tables in early lunch
  *     letterDays - A list of the letter days for the school
  *     lunchTimes - A list of the lunch times for the school
+ *     houses - A list of the houses for the school
+ *     assignedLunches - A list of the lunches that have assigned seating
+ *     nonAssignedLunches - A list of the lunches that do not have assigned seating
  *
  *
  *****************************************************************************************************************/
@@ -32,23 +35,30 @@ function testting() {
  * @desc - Sets the document properties for the letter days, lunch times, number of tables, and school days
  * @author - hendersonam
  */
- function setLunchProperties() {
+function setLunchProperties() {
   var letterDays = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  var lunchTimes = ["early", "mid", "late"];
-  var numberOfTables = 19;
+  var lunchTimes = [{"name": "early", "priority": 1, "font": "BLACK", "background": "YELLOW"},
+  {"name": "mid", "priority": 3, "font": "BLACK", "background": "WHITE"},
+  {"name": "late", "priority": 2, "font": "BLACK", "background": "#8db4e2"}];
+  
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
   var schoolDays = { 1 : 'E', 2 : 'G', 3 : 'A', 4 : 'C', 5 : 'F', 6 : 'H', 7 : 'B', 8 : 'D',
                      E1 : 'E', G2 : 'G', A3 : 'A', C4 : 'C', F5 : 'F', H6 : 'H', B7 : 'B', D8 : 'D'};
   
+  var houses = [{"name": "Arrow", "font": "#008000", "background": "WHITE"},
+  {"name": "Academy", "font": "#3366ff", "background": "WHITE"},
+  {"name": "Crest", "font": "#ff0000", "background": "WHITE"},
+  {"name": "Ledger", "font": "YELLOW", "background": "#660066"}];
   
   var properties = PropertiesService.getDocumentProperties();
   setLetterDays(letterDays);
   setLunchTimes(lunchTimes);
-  //setAssignedLunches([["early", 133]]);
-  //setNonAssignedLunches(["mid", "late"]);
-  setNumberOfTables(numberOfTables);
+  setAssignedLunches([{"time": "early", "by":"table", "numStudents": 133, "numTables": 19, "priority": 1}]);
+  setNonAssignedLunches([{"time": "mid", "by":"none", "numStudents": 133, "priority": 3},
+    {"time": "late", "by": "house", "numStudents": 133, "priority": 2}]);
   setSchoolDays(schoolDays);
+  setHouses(houses);
   
 }
 
@@ -138,20 +148,20 @@ function setLetterDays(value) {
 
 /**
  * @desc - Sets the document property for the assigned lunch times as a JSON.stringify value
- * @param - Array[][] - 2D array with the lunch time and the amonut of students for that lunch
- * @author - hendersonam
+ * @param - Array[][] - array with the lunch times have assigned seating by lunch table
+ * @author - dicksontc
  */
 function setAssignedLunches(value) {
-  //PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+  PropertiesService.getDocumentProperties().setProperty("assignedLunches", JSON.stringify(value));
 }
 
 /**
  * @desc - Sets the document property for the non-assigned lunch times as a JSON.stringify value
- * @param - Array[] - the lunch times that do not have 
- * @author - hendersonam
+ * @param - Array[] - the lunch times that do not have assigned seating by lunch tables
+ * @author - dicksontc
  */
 function setNonAssignedLunches(value) {
-  //PropertiesService.getDocumentProperties().setProperty("letterDays", JSON.stringify(value));
+  PropertiesService.getDocumentProperties().setProperty("nonAssignedLunches", JSON.stringify(value));
 }
 
 /**
@@ -164,12 +174,12 @@ function setLunchTimes(value) {
 }
 
 /**
- * @desc - Sets the document property for the number of table as an int
- * @param - Int - the number of tables
- * @author - hendersonam
+ * @desc - Sets the document property for the houses as a JSON.stringify value
+ * @param - Array[] - the houses and their attributes
+ * @author - dicksontc
  */
-function setNumberOfTables(value) {
-  PropertiesService.getDocumentProperties().setProperty("numberOfTables", value);
+function setHouses(value) {
+  PropertiesService.getDocumentProperties().setProperty("houses", JSON.stringify(value));
 }
 
 /**
