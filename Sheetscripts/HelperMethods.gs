@@ -20,6 +20,32 @@ function getDropdownList() {
 }
 
 /**
+    * @desc - checks if a sheet with the given name exists in the current spreadsheet
+    * @param - name of the sheet to check
+    * @return - bool indicating whether the sheet exists or not
+    * @author - clemensam
+    */
+    function sheetExists(name){
+     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+     if(sheet !== null){
+       return true;
+     }
+     else {
+       return false;
+     }
+    }
+    
+    /**
+    * @desc - opens a ui to display a message to the user
+    * @param - string message to be displayed in the popup
+    * @author - clemensam
+    */
+    function showMessage(message){
+      var ui = SpreadsheetApp.getUi();
+      ui.alert(message);
+    }
+
+/**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
  * @param - Object[] - Array of header names
  * @return - String(HTML) - HTML for a dropdown list of headers
