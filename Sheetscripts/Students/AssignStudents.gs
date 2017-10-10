@@ -245,7 +245,7 @@ function parseStudentChanges(listOfChanges){
                   if(newtime === nonAssignedLunches[p].time){
                     newAssigned = false;
                     newNum = p;
-                    newTimeObj = nonAssignedLunches[x];
+                    newTimeObj = nonAssignedLunches[p];
                   }
                 }
                 if(!oldAssigned && !newAssigned){
