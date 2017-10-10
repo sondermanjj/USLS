@@ -128,7 +128,6 @@
             //Get the lunch time for that particular course and day pair
             var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
             //Only if not null do we count this as a change
-            Logger.log(newTime);
             if(newTime != null) {
               //Create the change object
               var teacherName = getTeacherForCourse(newCourseTitle);
@@ -146,8 +145,7 @@
                 }
               }
               
-              Logger.log(teacherFirstName);
-              Logger.log(teacherLastName);
+             
               var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldTimee, oldDay: oldRow[lunchDayColumn],
                             oldTable: oldRow[lunchTableColumn], newTime: newTime, newCourseName: newCourseTitle, 
                             facultyFName: teacherFirstName, facultyLName: teacherLastName};
@@ -162,7 +160,6 @@
         }
       }
     }
-    
     return parseStudentChanges(changes);
     
   }

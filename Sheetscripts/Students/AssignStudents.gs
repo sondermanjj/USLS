@@ -257,8 +257,8 @@ function parseStudentChanges(listOfChanges){
                     students[j].lunches[k].table = stu.house;
                     newTable = stu.house;
                   }
-                  students[j].lunches[k].teacherFName = changes.facultyFName;
-                  students[j].lunches[k].teacherLName = changes.facultyLName;
+                  students[j].lunches[k].teacherFName = change.facultyFName;
+                  students[j].lunches[k].teacherLName = change.facultyLName;
                   students[j].lunches[k].title = change.newCourseName;
                   changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
                 }else{
@@ -310,8 +310,8 @@ function parseStudentChanges(listOfChanges){
                       affectedTableNew = students[affectedStu].house;
                     }
                   }
-                  students[j].lunches[k].teacherFName = changes.facultyFName;
-                  students[j].lunches[k].teacherLName = changes.facultyLName;
+                  students[j].lunches[k].teacherFName = change.facultyFName;
+                  students[j].lunches[k].teacherLName = change.facultyLName;
                   students[j].lunches[k].title = change.newCourseName;
                   assignZScore(students[affectedStu], properties);
                   changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
@@ -319,8 +319,8 @@ function parseStudentChanges(listOfChanges){
                 }
                 assignZScore(students[j], properties);
               }else{
-                students[j].lunches[k].teacherFName = changes.facultyFName;
-                students[j].lunches[k].teacherLName = changes.facultyLName;
+                students[j].lunches[k].teacherFName = change.facultyFName;
+                students[j].lunches[k].teacherLName = change.facultyLName;
                 students[j].lunches[k].title = change.newCourseName;
                 changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
               }
