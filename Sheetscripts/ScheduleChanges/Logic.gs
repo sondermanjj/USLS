@@ -91,6 +91,8 @@
     var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
     var lunchTimeColumn = parseInt(properties["Student Lunch Time"]);
     var lunchTableColumn = parseInt(properties["Student Lunch Table"]);
+    var facultyFirstNameColumn = parseInt(properties["Student Faculty First Name"]);
+    var facultyLastNameColumn = parseInt(properties["Student Faculty Last Name"]);
     
     var courseTimes = JSON.parse(properties["courses"]);
     
@@ -126,10 +128,29 @@
             //Get the lunch time for that particular course and day pair
             var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
             //Only if not null do we count this as a change
+            Logger.log(newTime);
             if(newTime != null) {
               //Create the change object
+              var teacherName = getTeacherForCourse(newCourseTitle);
+              
+              var teacherFound = false;
+              for(var k = 0; k < values.length; k++) {
+                if(newCourseTitle.toString().toLowerCase() == values[k][courseTitleColumn].toString().toLowerCase()) {
+                  var teacherFirstName = values[k][facultyFirstNameColumn]; 
+                  var teacherLastName = values[k][facultyLastNameColumn];
+                  teacherFound = true;
+                }
+              
+                if(teacherFound) {
+                  k = values.length;
+                }
+              }
+              
+              Logger.log(teacherFirstName);
+              Logger.log(teacherLastName);
               var change = {fName: oldRow[firstNameColumn], lName: oldRow[lastNameColumn], oldTime: oldTimee, oldDay: oldRow[lunchDayColumn],
-                            oldTable: oldRow[lunchTableColumn], newTime: newTime, newCourseName: newCourseTitle};
+                            oldTable: oldRow[lunchTableColumn], newTime: newTime, newCourseName: newCourseTitle, 
+                            facultyFName: teacherFirstName, facultyLName: teacherLastName};
               changes.push(change);
               numOfChangesMade++;
             }
@@ -143,6 +164,17 @@
     }
     
     return parseStudentChanges(changes);
+    
+  }
+  
+  
+  /*****************************************************************
+      * @desc - Returns the schedule for the given student as an array
+      * @param - course - String - Course Title
+      * @return - schedule - Array - Student Schedule [TeacherFirstName, TeacherLastName, CoursTitle, LunchDay]
+      * @author - hendersonam
+  *******************************************************************/
+  function getTeacherForCourse(course, time) {
     
   }
   

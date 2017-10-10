@@ -223,13 +223,13 @@ function parseStudentChanges(listOfChanges){
       var change = changes[i];
       oldtime = change.oldTime;
       newtime = change.newTime;
-      if(oldtime !== newtime){
-        for(j = 0; j < students.length; j++){
-          var stu = students[j];
-          if(change.fName.toString().toLowerCase() === stu.fName.toString().toLowerCase() && change.lName.toString().toLowerCase() === stu.lName.toString().toLowerCase()){
-            for(k = 0; k < stu.lunches.length; k++){
-              var lunch = stu.lunches[k];
-              if(lunch.day === change.oldDay){
+      for(j = 0; j < students.length; j++){
+        var stu = students[j];
+        if(change.fName.toString().toLowerCase() === stu.fName.toString().toLowerCase() && change.lName.toString().toLowerCase() === stu.lName.toString().toLowerCase()){
+          for(k = 0; k < stu.lunches.length; k++){
+            var lunch = stu.lunches[k];
+            if(lunch.day === change.oldDay){
+              if(oldtime !== newtime){
                 var oldAssigned = true;
                 var newAssigned = true;
                 var oldNum = -1;
@@ -257,6 +257,9 @@ function parseStudentChanges(listOfChanges){
                     students[j].lunches[k].table = stu.house;
                     newTable = stu.house;
                   }
+                  students[j].lunches[k].teacherFName = changes.facultyFName;
+                  students[j].lunches[k].teacherLName = changes.facultyLName;
+                  students[j].lunches[k].title = change.newCourseName;
                   changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
                 }else{
                   var affectedStu;
@@ -269,7 +272,7 @@ function parseStudentChanges(listOfChanges){
                     }
                   }
                   var zScoreStudents = getzScoreStudents(students, day, newTimeObj, false);
-
+                  
                   if(zScoreStudents.length === 0){
                     SpreadsheetApp.getUi().alert("Not enough students to switch into/out of assigned lunch!");
                     return;
@@ -307,19 +310,25 @@ function parseStudentChanges(listOfChanges){
                       affectedTableNew = students[affectedStu].house;
                     }
                   }
+                  students[j].lunches[k].teacherFName = changes.facultyFName;
+                  students[j].lunches[k].teacherLName = changes.facultyLName;
+                  students[j].lunches[k].title = change.newCourseName;
                   assignZScore(students[affectedStu], properties);
                   changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
                   changesToBeReturned.push([students[affectedStu].fName, students[affectedStu].lName, newtime, oldtime, affectedTableOld, affectedTableNew]);
                 }
                 assignZScore(students[j], properties);
-                k = stu.lunches.length;
+              }else{
+                students[j].lunches[k].teacherFName = changes.facultyFName;
+                students[j].lunches[k].teacherLName = changes.facultyLName;
+                students[j].lunches[k].title = change.newCourseName;
+                changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
               }
+              k = stu.lunches.length;
             }
-            j = students.length;
           }
+          j = students.length;
         }
-      }else{
-        changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
       }
     }
     printStudentsToSheet(students, primarySheet, properties);
