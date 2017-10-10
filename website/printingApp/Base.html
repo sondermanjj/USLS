@@ -2,19 +2,54 @@
 <ModulePrefs title="Search Script" /> 
 <Content type="html">
 <?!= include('website/printingApp/CSS'); ?>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+</script>
+
+<script>
+    // on document load..
+    $(function() {
+      console.log('Loading Database...')
+      google.script.run.withSuccessHandler(assignValue).getJSON();       
+    });   
+ </script>
+
 <script type="text/javascript"> 
+
+var json = "empty";
+
+  //Checks if the database is loaded up yet.
+  function checkDatabase() {
+    var interval = 0;
+    if (json == "empty") {
+      console.log("No database loaded yet");
+      interval = 5000;
+    }
+    setTimeout(formPrintSubmit, interval);
+  }
+
 
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+  /**
+  * Method to be called when the website loads up.
+  * @param json the JSON string returned when calling getJSON from the script file
+  */ 
+  function assignValue(newJson) {
+    json = newJson;
+    console.log("Spreadsheet loaded");
+  }
+
+
 //verified with JSHint 9/22/2017 by sondermanjj
   /**
   * Method to be called when the Search button is pressed
   * @param json the JSON string returned when calling getJSON from the script file
   */
-function formPrintSubmit(json) {
+function formPrintSubmit() {
   /**
   * Takes in a string and capitalizes each word in the string
   * @param string the string to capitalize
@@ -30,8 +65,7 @@ function formPrintSubmit(json) {
     }
     
     return newString.trim();
-  }
-  
+  }  
   
   // Variables pointing to parts of the HTML document so that their contents can be edited
   var nameDiv = document.getElementById('nameDiv');
@@ -195,8 +229,8 @@ function handle(e){
   if(e.keyCode === 13){
     e.preventDefault(); // Ensure it is only this code that runs
     
-    google.script.run.withSuccessHandler(formPrintSubmit).getJSON(); 
-    document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
+    checkDatabase();
+    //document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
   }
 }
  
@@ -242,7 +276,7 @@ function handle(e){
         </form></td>
       </tr>      
     </table>
-    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(formPrintSubmit).getJSON(); console.log('Button Pushed'); document.getElementById('loadingDiv').innerHTML = '<br>Loading...';" value="Generate Tables" />     
+    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(checkDatabase());" value="Search" /> 
 </div>
 <hr>
 <div id="printButtonDiv"><input id="printButton" onclick="window.print()" type="button" value=" " /> </div>
