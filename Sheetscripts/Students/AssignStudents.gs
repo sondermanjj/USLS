@@ -274,7 +274,6 @@ function parseStudentChanges(listOfChanges){
                   var zScoreStudents = getzScoreStudents(students, day, newTimeObj, false);
                   
                   if(zScoreStudents.length === 0){
-                    SpreadsheetApp.getUi().alert("Not enough students to switch into/out of assigned lunch!");
                     return;
                   }
                   affectedLunch = zScoreStudents[0].lunchIndex;
