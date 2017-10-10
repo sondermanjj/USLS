@@ -6,7 +6,7 @@ function testting() {
   
 }
 
- /*****************************************************************************************************************
+/*****************************************************************************************************************
  * Properties:
  *   Sheets:
  *     studentData - Final Student Data
@@ -27,6 +27,8 @@ function testting() {
  *     lunchTimes - A list of the lunch times for the school
  *     houses - A list of the houses for the school
  *     courses - A list of the courses with course name, the day it runs, and the lunch time
+ *     assignedLunches - A list of the lunches that have assigned seating
+ *     nonAssignedLunches - A list of the lunches that do not have assigned seating
  *
  *
  *****************************************************************************************************************/
@@ -35,12 +37,11 @@ function testting() {
  * @desc - Sets the document properties for the letter days, lunch times, number of tables, and school days
  * @author - hendersonam
  */
- function setLunchProperties() {
+function setLunchProperties() {
   var letterDays = ["A", "B", "C", "D", "E", "F", "G", "H"];
   var lunchTimes = [{"name": "early", "priority": 1, "font": "BLACK", "background": "YELLOW"},
   {"name": "mid", "priority": 3, "font": "BLACK", "background": "WHITE"},
   {"name": "late", "priority": 2, "font": "BLACK", "background": "#8db4e2"}];
-  var numberOfTables = 19;
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
   var schoolDays = { 1 : 'E', 2 : 'G', 3 : 'A', 4 : 'C', 5 : 'F', 6 : 'H', 7 : 'B', 8 : 'D',
@@ -57,7 +58,6 @@ function testting() {
   setAssignedLunches([{"time": "early", "by":"table", "numStudents": 133, "numTables": 19, "priority": 1}]);
   setNonAssignedLunches([{"time": "mid", "by":"none", "numStudents": 133, "priority": 3},
     {"time": "late", "by": "house", "numStudents": 133, "priority": 2}]);
-  setNumberOfTables(numberOfTables);
   setSchoolDays(schoolDays);
   setHouses(houses);
   
@@ -184,12 +184,12 @@ function setLunchTimes(value) {
 }
 
 /**
- * @desc - Sets the document property for the number of table as an int
- * @param - Int - the number of tables
- * @author - hendersonam
+ * @desc - Sets the document property for the houses as a JSON.stringify value
+ * @param - Array[] - the houses and their attributes
+ * @author - dicksontc
  */
-function setNumberOfTables(value) {
-  PropertiesService.getDocumentProperties().setProperty("numberOfTables", value);
+function setHouses(value) {
+  PropertiesService.getDocumentProperties().setProperty("houses", JSON.stringify(value));
 }
 
 /**
