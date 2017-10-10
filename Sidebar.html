@@ -4,6 +4,7 @@
     <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+    <?!= include('Stylesheet'); ?>
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
     
     <!-- Latest compiled and minified CSS -->
@@ -15,7 +16,7 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <?!= include('SidebarCSS.html'); ?>
+    <?!= include('Stylesheet.html'); ?>
     
     <script>
     //JSHint Verified 5/14/17
@@ -443,8 +444,8 @@
      </div>
      
      <div id="statsPage">
-       <button id="scanButton" class="action" onclick="scanData();">Scan Data</button>
-       <button id="changeButton" class="action" onclick="google.script.run.parseStudentChanges()">Auto-Reassign</button>
+       <button id="scanButton" class="action" onclick="scanData();">Check Statistics</button>
+       <button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button>
        <div id="changes"></div>
        <div id="stats"></div>
      </div>
@@ -518,6 +519,7 @@
        </table>
        
      </div>
+      <?!= include('Javascript'); ?>
      
 <div id="settingsPage">
 

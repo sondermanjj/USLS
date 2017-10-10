@@ -1,7 +1,8 @@
 
 
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperty("headers"));
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
+  Logger.log(PropertiesService.getDocumentProperties().getProperties());
   
 }
 
@@ -13,10 +14,10 @@ function testting() {
  *     teacherTables - Faculty Table List
  *     dodList - DOD List
  *    
- *   Column Indices for Students:
+ *   Column Indices for Student Data Sheet:
  *     "Student " + column name
  *
- *   Column Indices for Teachers:
+ *   Column Indices for Teachers Choices Sheet:
  *     "Teacher " + column name
  *
  *
@@ -25,6 +26,7 @@ function testting() {
  *     letterDays - A list of the letter days for the school
  *     lunchTimes - A list of the lunch times for the school
  *     houses - A list of the houses for the school
+ *     courses - A list of the courses with course name, the day it runs, and the lunch time
  *     assignedLunches - A list of the lunches that have assigned seating
  *     nonAssignedLunches - A list of the lunches that do not have assigned seating
  *
@@ -40,7 +42,6 @@ function setLunchProperties() {
   var lunchTimes = [{"name": "early", "priority": 1, "font": "BLACK", "background": "YELLOW"},
   {"name": "mid", "priority": 3, "font": "BLACK", "background": "WHITE"},
   {"name": "late", "priority": 2, "font": "BLACK", "background": "#8db4e2"}];
-  
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
   var schoolDays = { 1 : 'E', 2 : 'G', 3 : 'A', 4 : 'C', 5 : 'F', 6 : 'H', 7 : 'B', 8 : 'D',
@@ -147,6 +148,15 @@ function setLetterDays(value) {
 }
 
 /**
+ * @desc - Sets courses and corresponding day
+ * @param - Object courses
+ * @author - clemensam
+ */
+function setCourses(courses) {
+  PropertiesService.getDocumentProperties().setProperty("courses", JSON.stringify(courses));
+}
+
+/**
  * @desc - Sets the document property for the assigned lunch times as a JSON.stringify value
  * @param - Array[][] - array with the lunch times have assigned seating by lunch table
  * @author - dicksontc
@@ -171,6 +181,15 @@ function setNonAssignedLunches(value) {
  */
 function setLunchTimes(value) {
   PropertiesService.getDocumentProperties().setProperty("lunchTimes", JSON.stringify(value));
+}
+
+/**
+ * @desc - Sets the document property for the houses as a JSON.stringify value
+ * @param - Array[] - the houses and their attributes
+ * @author - dicksontc
+ */
+function setHouses(value) {
+  PropertiesService.getDocumentProperties().setProperty("houses", JSON.stringify(value));
 }
 
 /**

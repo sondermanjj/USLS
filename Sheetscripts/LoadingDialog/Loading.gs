@@ -45,7 +45,6 @@ function callMethod(args) {
       showAllValues();
       break;
     case 'sc':
-      updateChanges();
       getStatistics();
       var stats = getStatisticsHTML();
       break;

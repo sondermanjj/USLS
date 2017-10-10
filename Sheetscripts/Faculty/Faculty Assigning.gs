@@ -212,25 +212,31 @@
   function populateTableList() {
   
     var documentProperties = PropertiesService.getDocumentProperties();
-     
-    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherTables"));
+    var properties = documentProperties.getProperties();
+    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
+    var assignedLunches = JSON.parse(properties.assignedLunches);
     var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
-    var numberOfTables = documentProperties.getProperty("numberOfTables");
-    var letterDays = JSON.parse(documentProperties.getProperty("letterDays"));
+    var letterDays = JSON.parse(properties.letterDays);
     
     tableList.getRange("A1:F1").setValues(headerList);
     
     //Then populate the tableList with the letter day and table #'s, 19 tables to each day.
     var rowNumber;
-    for (var i = 0; i<8;i++) {
-      rowNumber = 2+(i*numberOfTables);
-      tableList.getRange(rowNumber, 3, numberOfTables).setValue(letterDays[i]);
+    var rowInit = 2;
+    for(var j = 0; j < assignedLunches.length; j++){
+      if(j > 0){
+          rowInit = rowNumber + assignedLunches[j-1].numTables;
+      }
+      var numberOfTables = assignedLunches[j].numTables;
+      for (var i = 0; i < letterDays.length; i++) {
+        rowNumber = rowInit + (i * numberOfTables);
+        tableList.getRange(rowNumber, 3, numberOfTables).setValue(letterDays[i]);
+      }
+      
+      for (i = rowInit; i <= ((numberOfTables * letterDays.length)+rowInit-1); i++) {
+        tableList.getRange(i, 6).setValue(((i-2)%numberOfTables)+1);
+      }
     }
-    
-    for (i = 2; i <= ((numberOfTables*8)+1); i++) {
-      tableList.getRange(i, 6).setValue(((i-2)%numberOfTables)+1);
-    }
-    
     return true;
   }
   
