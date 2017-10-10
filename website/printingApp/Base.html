@@ -111,6 +111,7 @@ function formPrintSubmit(json) {
     
     strSched = "";
     
+    //If tables are selected as a choice.
     if (tables) {
       console.log("Printing Tables with tables value: "+tables);
       //Creates the HTML to put in the page. This is the first table.
@@ -146,6 +147,10 @@ function formPrintSubmit(json) {
       }   
       strSched += "</table><div></div>";
     }
+    
+    
+    strSched += '<div class="largePrintingDivision"></div>';
+
     //If the user wants the master list, then inserts it here.
     if (masterList) {
       console.log("Printing Master List with masterList values: "+masterList);
