@@ -135,9 +135,11 @@
               var teacherFound = false;
               for(var k = 0; k < values.length; k++) {
                 if(newCourseTitle.toString().toLowerCase() == values[k][courseTitleColumn].toString().toLowerCase()) {
-                  var teacherFirstName = values[k][facultyFirstNameColumn]; 
-                  var teacherLastName = values[k][facultyLastNameColumn];
-                  teacherFound = true;
+                  if(lunchDay.toString().toLowerCase() == values[k][lunchDayColumn].toString().toLowerCase()) {
+                    var teacherFirstName = values[k][facultyFirstNameColumn]; 
+                    var teacherLastName = values[k][facultyLastNameColumn];
+                    teacherFound = true;
+                  }
                 }
               
                 if(teacherFound) {
