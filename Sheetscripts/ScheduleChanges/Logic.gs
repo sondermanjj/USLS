@@ -162,8 +162,42 @@
         }
       }
     }
-    return parseStudentChanges(changes);
     
+    Logger.log("Hi");
+    var newChanges = parseStudentChanges(changes);
+    Logger.log("Why");
+    pushToScheduleChangesSheet(newChanges);
+    return newChanges;
+    
+  }
+  
+  /*****************************************************************
+      * @desc - Saves all student schedule to a hidden sheet in the spreadsheet
+      * @param - changes - Array - Course Title
+      * @author - hendersonam
+  *******************************************************************/
+  function pushToScheduleChangesSheet(changes) {
+    Logger.log("got here");
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("Schedule Changes");
+    sheet.hideSheet();
+    
+    if( sheet == null ) {
+      ss.insertSheet("Schedule Changes");
+      sheet = ss.getSheetByName("Schedule Changes");
+      sheet.hideSheet();
+    }
+  
+    Logger.log("pushing changes ");
+    for(var i = 0; i < changes.length; i++) {
+      Logger.log(changes[0]);
+//      sheet.appendRow(changes[0]);
+    }
+//    changes.forEach(function(change) {
+//        Logger.log(change);
+////        sheet.appendRow(change);
+//      });
+//  
   }
   
   
