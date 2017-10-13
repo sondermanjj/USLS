@@ -179,6 +179,55 @@ function getCourses() {
   return courses;
 }
 
+/*
+* @desc - creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
+* @author - clemensam
+*/
+function pushCoursesToCourseSheet() {
+  var docProps = PropertiesService.getDocumentProperties();
+  var properties = docProps.getProperties();
+  var studentDataProp = properties.studentData;
+  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
+  
+  var primaryData = primarySheet.getDataRange();
+  var pValues = primaryData.getValues();
+  var pNumRows = primaryData.getNumRows();
+
+  var lunchDayCol = parseInt(docProps.getProperty("Student Lunch Day"));
+  var courseTitleCol = parseInt(docProps.getProperty("Student Course Title"));
+  var lunchTimeCol = parseInt(docProps.getProperty("Student Lunch Time"));
+  var facultyFirstNameCol = parseInt(docProps.getProperty("Student Faculty First Name"));
+  var facultyLastNameCol = parseInt(docProps.getProperty("Student Faculty Last Name"));
+  
+  var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
+  var newData = [];
+  var courses = [];
+  //newData.push(headerRow);
+  var i; 
+  for(var i = 0; i < pNumRows; i++){
+    var courseTitle = pValues[i][courseTitleCol];
+    var lunchDay = pValues[i][lunchDayCol];
+    var lunchTime = pValues[i][lunchTimeCol];
+    var facultyFirstName = pValues[i][facultyFirstNameCol];
+    var facultyLastName = pValues[i][facultyLastNameCol];
+    
+    var newRow = [courseTitle, lunchDay, lunchTime, facultyFirstName, facultyLastName];
+    
+    var courseDayTimeConcat = courseTitle + lunchDay + lunchTime;
+    
+    if(courses.indexOf(courseDayTimeConcat) < 0) {
+      courses.push(courseDayTimeConcat);
+      newData.push(newRow);
+    }
+  }
+  
+  newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
+  //newData.sort();
+  
+  createNewSheet(newData, "Courses");
+  console.log("Course Sheet Created");
+}
+
 /**
 @desc Uses the students and changes arrays to change student schedules 
 @funtional - yes
