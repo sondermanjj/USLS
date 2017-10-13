@@ -87,9 +87,6 @@ function setColumnProperties(){
  */
 function setSheetProperties(studentSheet) {
 
-  var docProperties = PropertiesService.getDocumentProperties();
-  var properties = docProperties.getProperties();
-
   var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet has the  faculty lunch choices?");
   var dodSheet = promptForSettingSheetProperty("Which sheet has the DOD list?");
   var teacherTableSheet = promptForSettingSheetProperty("Please enter the name of the sheet you would like to save the faculty tables to");
@@ -99,6 +96,9 @@ function setSheetProperties(studentSheet) {
   setTeacherChoicesSheet(teacherChoicesSheet);
   setTeacherTableSheet(teacherTableSheet);
   setDODSheet(dodSheet);
+  
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
   
   //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(

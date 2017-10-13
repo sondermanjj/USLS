@@ -323,6 +323,9 @@ function parseStudentChanges(listOfChanges){
                 students[j].lunches[k].title = change.newCourseName;
                 changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
               }
+              if(students[j].lunches[k].isItzScore === true){
+                students[j].lunches[k].isItzScore === false;
+              }
               k = stu.lunches.length;
             }
           }
