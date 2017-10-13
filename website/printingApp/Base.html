@@ -137,9 +137,16 @@ function formPrintSubmit() {
       if (isNumeric(a[4]) && isNumeric(b[4])) return (parseInt(a[4])-parseInt(b[4]));
       if (isNumeric(a[4]) && !(isNumeric(b[4]))) return -1;
       if (!(isNumeric(a[4])) && isNumeric(b[4])) return 1;
-    
+      
+      
+      
       if(a[4] < b[4]) return -1;
       if(a[4] > b[4]) return 1; 
+      
+      //If the tables are the same, organize them by name.
+      if (a[0] < b[0]) return -1;
+      if (a[0] > b[0]) return 1;
+      
       return 0;
     });
     
