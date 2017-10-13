@@ -1,0 +1,89 @@
+<Module>
+<ModulePrefs title="schedChangeApp" /> 
+<Content type="html">
+<?!= include('website/schedChangeApp/CSS'); ?>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+</script>
+
+<script>
+    // on document load..
+    $(function() {
+      console.log('Loading Database...')
+      google.script.run.withSuccessHandler(assignValue).getJSON();
+    });   
+ </script>
+
+<script type="text/javascript"> 
+
+  var json = "empty";
+
+
+  /**
+  * Method to be called when the website loads up.
+  * @param json the JSON string returned when calling getJSON from the script file
+  */ 
+  function assignValue(newJson) {
+    json = newJson;
+    console.log("Spreadsheet loaded");
+    showScheduleChanges();
+  }
+
+
+//verified with JSHint 9/22/2017 by sondermanjj
+  /**
+  * Method to be called when we want to show the data.
+  */
+function showScheduleChanges() {
+  
+  console.log("Changing codes");
+  // Variables pointing to parts of the HTML document so that their contents can be edited
+  var nameDiv = document.getElementById('printDiv');
+      
+  var resultsArray = [];
+  
+  // Start of string containing html to display matched results
+  var strSched;
+  var length = json.length;    
+  Master List with masterList values: "+masterList);
+  arr = resultsArray.sort();
+  strSched += '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Grade</th><th>Table</th><th>Attendance</th></tr>';    
+  strSched += "<h2>Master List</h2>";
+    for(i=0; i<arr.length; i++) {
+      strSched += "<tr>";
+      for(var j=0; j<arr[i].length; j++){
+        strSched += "<td>" + arr[i][j] + "</td>";
+      }
+      strSched += "</tr>";
+    }
+    strSched += "</table>";      
+    //Set the inner HTML of the necessary components to the proper contents
+  
+  nameDiv.innerHTML = strSched;
+}
+ 
+ function printPage() {
+   var header = document.getElementById('nameDiv').innerHTML;
+   var schedToPrint = header + document.getElementById('schedDiv').innerHTML;
+   var printhtml = 'https://sites.google.com/site/usmlunch/jarfunklemcree/printpage?schedule=' + schedToPrint + '&tmpl=/system/app/templates/print';
+   window.open(printhtml);
+ }
+ 
+</script>
+<div id="printButtonDiv"><input id="printButton" onclick="window.print()" type="button" value=" " /> </div>
+<br>
+<div id="printDiv">
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Block</th>
+    <th>Day</th>
+    <th>Time</th>
+    <th>Table</th>
+  </tr>
+</table>
+</div>
+</Content>
+</Module>
+
+
