@@ -157,9 +157,9 @@ function getCourses() {
   var pValues = primaryData.getValues();
   var pNumRows = primaryData.getNumRows();
 
-  var lunchDayCol = parseInt(docProps.getProperty("Student Lunch Day"));
-  var courseTitleCol = parseInt(docProps.getProperty("Student Course Title"));
-  var lunchTimeCol = parseInt(docProps.getProperty("Student Lunch Time"));
+  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
+  var courseTitleCol = parseInt(properties["Student Course Title"]);
+  var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
   
   var courses = {};
   var i; 
@@ -716,32 +716,34 @@ function getStudents(studentValues, numRows, teachersList, properties){
     var gender = studentValues[i][genderCol];
     var title = studentValues[i][cTitleCol];
     var time = studentValues[i][lunchTimeCol];
-        
+    
     var zScoreCheckAndTime = getLunchTimeAndZCheckBasedOnTeacher(teacherFName, teacherLName, time, day, teachersList, properties);
     time = zScoreCheckAndTime.time;
     var zCheck = zScoreCheckAndTime.zCheck;
-    
-    if(fname != "First Name" && lname != "Last Name"){
-      house = getHouseForStudent(advisor, teachersList);
-    }
-    
-    var lunchObj = {"day": day, "time": time, "isItzScore": zCheck, "table": table, "code": code,
-                    "length": length, "cID": cID, "sID": sID, "block": block, "tableHead": tableHead, "title": title,
-                    "teacherFName": teacherFName, "teacherLName": teacherLName};
-    
-    if(newStudentsList.length === 0){
-      newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
-                 "advisor": advisor, "dob": dob, "gender": gender});
-    }else{
-      for(j = 0; j < newStudentsList.length; j++){
-        if(newStudentsList[j].fName === fname && newStudentsList[j].lName === lname){
-          newStudentsList[j].lunches.push(lunchObj);
-          j = newStudentsList.length;
-        }
-        if(j === newStudentsList.length - 1){
-          newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
-                 "advisor": advisor, "dob": dob, "gender": gender});
-          j = newStudentsList.length;
+    if(grad !== ""){
+      
+      if(fname != "First Name" && lname != "Last Name"){
+        house = getHouseForStudent(advisor, teachersList);
+      }
+      
+      var lunchObj = {"day": day, "time": time, "isItzScore": zCheck, "table": table, "code": code,
+                      "length": length, "cID": cID, "sID": sID, "block": block, "tableHead": tableHead, "title": title,
+                      "teacherFName": teacherFName, "teacherLName": teacherLName};
+      
+      if(newStudentsList.length === 0){
+        newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
+                              "advisor": advisor, "dob": dob, "gender": gender});
+      }else{
+        for(j = 0; j < newStudentsList.length; j++){
+          if(newStudentsList[j].fName === fname && newStudentsList[j].lName === lname){
+            newStudentsList[j].lunches.push(lunchObj);
+            j = newStudentsList.length;
+          }
+          if(j === newStudentsList.length - 1){
+            newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
+                                  "advisor": advisor, "dob": dob, "gender": gender});
+            j = newStudentsList.length;
+          }
         }
       }
     }
