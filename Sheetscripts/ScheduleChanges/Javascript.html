@@ -44,13 +44,14 @@
     if ( changes == null || changes == undefined) {
     
     } else if (changes.length > 0) {
-    var headers = ["First Name", "Last Name", "Old Lunch Time", "New Lunch Time", "Old Table", "New Table"];
+    var headers = ["First Name", "Last Name", "Lunch Day","New Course", "Old Lunch Time", "New Lunch Time", "New Table"];
     html += createHeaders(html, headers);
     
     for ( var i = 0; i < changes.length; i++) {
       html += '<tr>';
-      for( var j = 0; j < changes[i].length; j++) {
-        html += '<td >' + changes[i][j] + '</td>';
+      var row = [changes[i][0], changes[i][1], changes[i][2], changes[i][3], changes[i][5], changes[i][6], changes[i][8]];
+      for( var j = 0; j < row.length; j++) {
+        html += '<td >' + row[j] + '</td>';
       }
         html += "</tr>";
     }

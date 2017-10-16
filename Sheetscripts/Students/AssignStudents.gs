@@ -260,7 +260,7 @@ function parseStudentChanges(listOfChanges){
                   students[j].lunches[k].teacherFName = change.facultyFName;
                   students[j].lunches[k].teacherLName = change.facultyLName;
                   students[j].lunches[k].title = change.newCourseName;
-                  changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
+                  changesToBeReturned.push([change.fName, change.lName, lunch.day, change.newCourseName, change.oldCourseName, oldtime, newtime, change.oldTable, newTable]);
                 }else{
                   var affectedStu;
                   var affectedLunch;
@@ -313,15 +313,15 @@ function parseStudentChanges(listOfChanges){
                   students[j].lunches[k].teacherLName = change.facultyLName;
                   students[j].lunches[k].title = change.newCourseName;
                   assignZScore(students[affectedStu], properties);
-                  changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, newTable]);
-                  changesToBeReturned.push([students[affectedStu].fName, students[affectedStu].lName, newtime, oldtime, affectedTableOld, affectedTableNew]);
+                  changesToBeReturned.push([change.fName, change.lName, lunch.day, change.newCourseName, change.oldCourseName, oldtime, newtime, change.oldTable, newTable]);
+                  changesToBeReturned.push([students[affectedStu].fName, students[affectedStu].lName, lunch.day, change.newCourseName, change.oldCourseName, newtime, oldtime, affectedTableOld, affectedTableNew]);
                 }
                 assignZScore(students[j], properties);
               }else{
                 students[j].lunches[k].teacherFName = change.facultyFName;
                 students[j].lunches[k].teacherLName = change.facultyLName;
                 students[j].lunches[k].title = change.newCourseName;
-                changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
+                changesToBeReturned.push([change.fName, change.lName, lunch.day, change.newCourseName, change.oldCourseName, oldtime, newtime, change.oldTable, change.oldTable]);
               }
               if(students[j].lunches[k].isItzScore === true){
                 students[j].lunches[k].isItzScore === false;
