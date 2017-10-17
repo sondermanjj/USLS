@@ -23,7 +23,6 @@ function initialization() {
     
     setSheetProperties(cleanedSheet);
     assignStudentLunchDays();
-    setCourses(getCourses());
     pushCoursesToCourseSheet();
     addFacultyTables();
   

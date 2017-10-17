@@ -94,7 +94,7 @@
     var facultyFirstNameColumn = parseInt(properties["Student Faculty First Name"]);
     var facultyLastNameColumn = parseInt(properties["Student Faculty Last Name"]);
     
-    var courseTimes = JSON.parse(properties["courses"]);
+    var courseTimes = getCourses();
     
     values.sort(compareByColumnIndex(lunchDayColumn));
     

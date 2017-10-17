@@ -12,10 +12,12 @@ function getStatisticsHTML(){
  * @author - hendersonam
  */
 function getStatistics() {
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
   var d = new Date();
   var statshtml = "<h4>Last Updated: " + d.toLocaleTimeString() + " " + d.toLocaleDateString() + " </h4>";
-  statshtml += "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true);
-  statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getStats(false);
+  statshtml += "<h3 id='studentTableHeader'>Number of Students:</h3>" + getStats(true, properties);
+  statshtml += "<h3 id='teacherTableHeader'>Number of Teachers:</h3>" + getStats(false, properties);
   return statshtml;
 }
 
@@ -25,16 +27,15 @@ function getStatistics() {
  * @return - An html table with the number of students in each lunch on each day
  * @author - hendersonam
  */
-function getStats(students) {
+function getStats(students, properties) {
 
-  var properties = PropertiesService.getDocumentProperties();
-  var days = JSON.parse(properties.getProperty("letterDays"));
-  var times = JSON.parse(properties.getProperty("lunchTimes"));
+  var days = JSON.parse(properties.letterDays);
+  var times = JSON.parse(properties.lunchTimes);
 
   if (students) {
   var values = SpreadsheetApp
                   .getActiveSpreadsheet()
-                  .getSheetByName(properties.getProperty("studentData"))
+                  .getSheetByName(properties.studentData)
                   .getDataRange()
                   .getValues();
                   
@@ -42,12 +43,12 @@ function getStats(students) {
   
   var values = SpreadsheetApp
                   .getActiveSpreadsheet()
-                  .getSheetByName(properties.getProperty("teacherChoices"))
+                  .getSheetByName(properties.teacherChoices)
                   .getDataRange()
                   .getValues();
   }
 
-  var tableValues = statistics(times, days, values, students);
+  var tableValues = statistics(times, days, values, students, properties);
   return "<table id='studentStatsTable'>" + getHTMLTable(times, days, tableValues);
 }
 
@@ -90,13 +91,11 @@ function getHTMLTable(columns, rows, values) {
  * @return - Array[row][column] - the number of students for each lunch
  * @author - hendersonam
  */
-function statistics(time, day, values, students) {
-
-  var properties = PropertiesService.getDocumentProperties();
+function statistics(time, day, values, students, properties) {
   
-  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
-  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
-  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
+  var gradeColumn = parseInt(properties["Student Grade Level"]);
+  var lunchTimeColumn = parseInt(properties["Student Lunch Time"]);
   var flag;
   var lunchDay;
   var lunchTime;
@@ -117,15 +116,15 @@ function statistics(time, day, values, students) {
   var properties = PropertiesService.getDocumentProperties();
   
   if (students) {
-  var lunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
-  var gradeColumn = parseInt(properties.getProperty("Student Grade Level"));
-  var lunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
+  var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
+  var gradeColumn = parseInt(properties["Student Grade Level"]);
+  var lunchTimeColumn = parseInt(properties["Student Lunch Time"]);
   Logger.log("Finding Student stats...");
 
   } else {
-  var lunchDayColumn = parseInt(properties.getProperty("Teacher Lunch Day"));
+  var lunchDayColumn = parseInt(properties["Teacher Lunch Day"]);
   var gradeColumn = values[0].length+1;
-  var lunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
+  var lunchTimeColumn = parseInt(properties["Teacher Lunch Assignment"]);
   Logger.log("Finding Teacher stats...");
   Logger.log(lunchDayColumn);
   Logger.log(gradeColumn);
