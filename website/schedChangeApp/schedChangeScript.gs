@@ -1,9 +1,10 @@
 //ID of the Google spreadsheet being accessed
-var fallID = "1rkFCONHTo9XuBw-0OY37DO9XeEjkOyXLJAE8jtttrh0";
+var fallID = "1JsqgABDi402dddQqja_sMRhaCiMLJueS6pryspANVas";
+var testID = "1dFD0r5HK5p6zTFse2yIZvbwBB6RmKxw_XmfwPF46Dzs"
+var tab = "1";
 
 //URL for retrieving data from sheets directly as JSON
-//var url = "https://spreadsheets.google.com/feeds/list/" + currentSpringID + "/" + "1" + "/public/values?alt=json";
-var url = "https://spreadsheets.google.com/feeds/list/" + fallID + "/" + getWebsiteSheetLocation(fallID).toString() + "/public/values?alt=json";
+var url = "https://spreadsheets.google.com/feeds/list/" + testID + "/" + getWebsiteSheetLocation(testID).toString() + "/public/values?alt=json";
 
 /**
 * Tells the script how to serve the page when a GET request is made
@@ -12,10 +13,11 @@ var url = "https://spreadsheets.google.com/feeds/list/" + fallID + "/" + getWebs
 function doGet(e) {
   var params = JSON.stringify(e);
   var apphtml = HtmlService.createTemplateFromFile('website/schedChangeApp/Base').evaluate();
+  var paramhtml = HtmlService.createHtmlOutput(params);
+  
+  Logger.log(params);
+  
   return apphtml;
-}
-
-function doPost(e){
 }
 
 /**
@@ -28,6 +30,9 @@ function getWebsiteSheetLocation(id){
   var websiteSheet = spreadSheet.getSheetByName("Schedule Changes");
   var sheetId = websiteSheet.getIndex().toFixed(0);
   return sheetId;  
+}
+
+function doPost(e){
 }
 
 /**
@@ -44,15 +49,16 @@ function include(filename) {
 * @return JSON String of the sheets data
 */
 function getJSON() {
-  var json = UrlFetchApp.fetch(url);
+   var json = UrlFetchApp.fetch(url);
   
   var JS = JSON.parse(json.getContentText());
-  Logger.log(JS);
   
   var feed = JS.feed;
   
   var entries = feed.entry;
-
+  
+  Logger.log(entries);
+   
   return entries;
 }
 
