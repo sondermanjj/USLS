@@ -1,4 +1,4 @@
-<script tpye="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
 <script>
 
@@ -91,7 +91,7 @@
       selected.push([firstName, lastName, course, day]);
     });
     $('#classes').data('selected', selected);
-    createNewScheduleInputs(selected);
+    google.script.run.withSuccessHandler(createNewScheduleInputs).getCourses(selected);
   }
   
   /*****************************************************************
@@ -134,21 +134,52 @@
       *                                        Lunch Day]
       * @author - hendersonam
   *******************************************************************/
-  function createNewScheduleInputs(oldCourses) {
+  function createNewScheduleInputs(courses) {
+    var oldCourses = courses.selected;
+    var allCourses = courses.courses;
+    var titles = courses.titles;
     var newSchedules = document.getElementById('newSchedule');
     var html = "";
     var headers = ["New Course", "Day"];
     html += createHeaders(html, headers);
+    var dropdown = createDropdown(allCourses, titles, oldCourses);
     for(var i = 0; i < oldCourses.length; i++) {
       html += '<tr>';
-      html += '<td><input type="text" required=true size="20" /></td>';
+      html += '<td><select id = coursesSelect>';
+      html += dropdown[i];
+      html += '</select></td>';
       html += '<td>' + oldCourses[i][3] + '</td>';
       html += '</tr>';
     }
     document.getElementById('newClasses').innerHTML = html;
     showDiv('newSchedule');
   }
+  
+  function createDropdown(courses, titles, oldCourses){
+  var coursesHTMLArray = [];
+  
+  for(var j = 0; j < oldCourses.length; j++){
+    var day = oldCourses[j][3];
+    var coursesHTML = "";
+    var coursesArray = [];
+    for (var key in courses) {
+      if (courses.hasOwnProperty(key) && titles[key].day == day) {
+        coursesArray.push(key);
+      }
+    }
     
+    coursesArray.sort();
+    
+    for(var i = 0; i < coursesArray.length; i++){
+      var value = coursesArray[i];
+      var shown = titles[value].title + " : " + titles[value].day + " Day";
+      coursesHTML += "<option value = " + value + ">" + shown + "</option>";
+    }
+    coursesHTMLArray.push(coursesHTML);
+  }
+    
+    return coursesHTMLArray;
+  }
   /*****************************************************************
       * @desc - If the student was a valid student, creates a table that 
       *         displays the schedule for the given student.

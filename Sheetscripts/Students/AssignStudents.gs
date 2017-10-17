@@ -147,7 +147,7 @@ function assignStudentLunchDays() {
 @funtional - yes
 @author - dicksontc
 */
-function getCourses() {
+function getCourses(selected) {
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
   var coursesData = SpreadsheetApp
@@ -157,17 +157,18 @@ function getCourses() {
                   .getValues();
 
   var courses = {};
-  
+  var titles = {};
   for(var i = 0; i < coursesData.length; i++){
-    var lunchTime = coursesData[i][2];
+    var lunchTime = coursesData[i][2]; //change to 4
     var courseTitle = coursesData[i][0];
-    var lunchDay = coursesData[i][1];
+    var lunchDay = coursesData[i][1]; //change to 3
     var courseDayConcat = courseTitle + lunchDay;
     courseDayConcat = courseDayConcat.replace(/\s/g,'').toLowerCase();
     courses[courseDayConcat] = lunchTime;
+    titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay};
   }
   
-  return courses;
+  return {"courses": courses, "selected" : selected, "titles" : titles};
 }
 
 /*            
