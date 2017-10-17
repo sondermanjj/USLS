@@ -93,52 +93,55 @@ function formPrintSubmit() {
   
   // Start of string containing html to display matched results
   var strSched;
-  var length = json.length;    
-  console.log(json);
   //puts each row of the students in a large array. Does not put them in if it does not match the day or the table is empty.
-  for(var index=0; index<length; index++) { 
-    var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
-    var day = json[index].gsx$lunchday.$t;
-    var newcourse = json[index].gsx$newcourse.$t;
-    var newtime = json[index].gsx$newtime.$t;
-    var oldcourse = json[index].gsx$oldcourse.$t;
-    var oldtime = json[index].gsx$oldtime.$t;
-    var timestamp = new Date(parseInt(json[index].gsx$timestamp.$t));
-        
-    var dayArray = [];
-    dayArray.push(name);
-    dayArray.push(day);
-    dayArray.push(oldcourse);
-    dayArray.push(newcourse);
-    dayArray.push(oldtime);
-    dayArray.push(newtime);
-    dayArray.push(formatDate(timestamp));
-    resultsArray.push(dayArray);   
-  }
-  
-    strSched = "";
-    arr = resultsArray.sort();
-    strSched += '<table class="textTable"><tr>'
-      + '<th>Name</th>' 
-      + '<th>Lunch Day</th>'
-      + '<th>Old Course</th>'
-      + '<th>New Course</th>'
-      + '<th>Old Time</th>'
-      + '<th>New Time</th>'
-      + '<th>Date Changed</th>'
-      + '</tr>';    
-    strSched += "<h2>Student Schedule Changes</h2>";
-    for(i=0; i<arr.length; i++) {
-      strSched += "<tr>";
-        for(var j=0; j<arr[i].length; j++){
-          strSched += "<td>" + arr[i][j] + "</td>";
-        }
-      strSched += "</tr>";
+  if (json) {
+    var length = json.length;    
+    for(var index=0; index<length; index++) { 
+      var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+      var day = json[index].gsx$lunchday.$t;
+      var newcourse = json[index].gsx$newcourse.$t;
+      var newtime = json[index].gsx$newtime.$t;
+      var oldcourse = json[index].gsx$oldcourse.$t;
+      var oldtime = json[index].gsx$oldtime.$t;
+      var timestamp = new Date(parseInt(json[index].gsx$timestamp.$t));
+      if (name && day && newcourse && newtime && oldcourse && oldtime && timestamp) {
+        var dayArray = [];
+        dayArray.push(name);
+        dayArray.push(day);
+        dayArray.push(oldcourse);
+        dayArray.push(newcourse);
+        dayArray.push(oldtime);
+        dayArray.push(newtime);
+        dayArray.push(formatDate(timestamp));
+        resultsArray.push(dayArray);
+          }
+      }
+    
+      strSched = "";
+      arr = resultsArray.sort();
+      strSched += '<table class="textTable"><tr>'
+        + '<th>Name</th>' 
+        + '<th>Lunch Day</th>'
+        + '<th>Old Course</th>'
+        + '<th>New Course</th>'
+        + '<th>Old Time</th>'
+        + '<th>New Time</th>'
+        + '<th>Date Changed</th>'
+        + '</tr>';    
+      strSched += "<h2>Student Schedule Changes</h2>";
+      for(i=0; i<arr.length; i++) {
+        strSched += "<tr>";
+          for(var j=0; j<arr[i].length; j++){
+            strSched += "<td>" + arr[i][j] + "</td>";
+          }
+        strSched += "</tr>";
+      }
+      strSched += "</table>";      
+      //Set the inner HTML of the necessary components to the proper contents
+      schedDiv.innerHTML = strSched;
+    } else {
+        schedDiv.innerHTML = "<h2>Data Import Error</h2>";
     }
-    strSched += "</table>";      
-    //Set the inner HTML of the necessary components to the proper contents
-    schedDiv.innerHTML = strSched;
-    document.getElementById('loadingDiv').innerHTML = "";
 }
 
 //Checks a group of checkboxes for ticked values.
