@@ -163,9 +163,11 @@ function getCourses(selected) {
     var courseTitle = coursesData[i][0];
     var lunchDay = coursesData[i][1]; //change to 3
     var courseDayConcat = courseTitle + lunchDay;
-    courseDayConcat = courseDayConcat.replace(/\s/g,'').toLowerCase();
-    courses[courseDayConcat] = lunchTime;
-    titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay};
+    if(lunchTime !== "Lunch Time"){
+      courseDayConcat = courseDayConcat.replace(/\s/g,'');
+      courses[courseDayConcat] = lunchTime;
+      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay};
+    }
   }
   
   return {"courses": courses, "selected" : selected, "titles" : titles};

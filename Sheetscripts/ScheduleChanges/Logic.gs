@@ -8,9 +8,9 @@
       * @author - hendersonam
   *******************************************************************/
   function showScheduleChangesPrompt() {
-    var html = HtmlService.createTemplateFromFile('Sheetscripts/ScheduleChanges/HTML')
+    var html = HtmlService.createTemplateFromFile("Sheetscripts/ScheduleChanges/HTML")
       .evaluate();
-    SpreadsheetApp.getUi().showModalDialog(html, ' ');
+    SpreadsheetApp.getUi().showModalDialog(html, " ");
   }
 
   /*****************************************************************
@@ -36,7 +36,6 @@
       * @author - hendersonam
   *******************************************************************/
   function getValidSchedule(data) {
-  
     var schedule = [];
     
     var headers = ["First Name", "Last Name", "Course Ttile", "Lunch Day"];
@@ -94,7 +93,7 @@
     var facultyFirstNameColumn = parseInt(properties["Student Faculty First Name"]);
     var facultyLastNameColumn = parseInt(properties["Student Faculty Last Name"]);
     
-    var courseTimes = getCourses(null);
+    var courseTimes = getCourses(null).courses;
     
     values.sort(compareByColumnIndex(lunchDayColumn));
     
@@ -106,10 +105,9 @@
     var changes = [];
     for(var i = 0; i < values.length; i++) {
       
-      if(firstname == values[i][firstNameColumn].toString().toLowerCase()) {
-        if(lastname == values[i][lastNameColumn].toString().toLowerCase()) {
+      if(firstname.toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
+        if(lastname.toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {
           if(oldCourses[numOfChangesMade][3].toString().toLowerCase() == values[i][lunchDayColumn].toString().toLowerCase()) {
-            
             //Save the old row and the old time, and old course
             var oldRow = values[i];
             var oldTimee = values[i][lunchTimeColumn];
@@ -121,10 +119,9 @@
             //Get the course title and lunch day concat
             var course = newCourses[numOfChangesMade][0];
             var lunchDay = values[i][lunchDayColumn];
-            
             //Course title and lunch day concat
             var courseAndDay = course + lunchDay;
-            courseAndDay = courseAndDay.toString().toLowerCase().replace(/\s/g,'');
+            courseAndDay = courseAndDay.toString().toLowerCase().replace(/\s/g,"");
             //Get the lunch time for that particular course and day pair
             var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
             //Only if not null do we count this as a change
@@ -245,7 +242,7 @@
 //    if(changes.length === 0) {
 //      changeshtml += "No Schedule changes to display.";
 //    }  else {
-//      changeshtml += "<ul id='changes'>";
+//      changeshtml += "<ul id="changes">";
 //      for (var i = 0; i < changes.length; i++) {
 //        if (changes[i][0] == 1 ) {
 //          changeshtml += "<li> The following column values have been changed for " + changes[i][1] + " on " + changes[i][2] + " days: ";
@@ -257,11 +254,11 @@
 //          changeshtml += "<li> Lunch time in row " + changes[i][0] + " is misspelt. Currently says " + changes[i][1] + ".</li>";
 //        } else if (changes[i].length < 6) {
 //          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " added to the roster.</li>";
-//        } else if (changes[i][3] == 'early' && changes[i][5] == 'early') {
+//        } else if (changes[i][3] == "early" && changes[i][5] == "early") {
 //          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to table " + changes [i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
-//        } else if (changes[i][3] == 'early') {
+//        } else if (changes[i][3] == "early") {
 //          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from table " + changes[i][6] + " " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
-//        } else if (changes[i][5] == 'early') {
+//        } else if (changes[i][5] == "early") {
 //          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to table " + changes[i][7] + " " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
 //        } else {
 //          changeshtml += "<li>" + changes[i][0] + " " + changes[i][1] + " changed from " + changes[i][3] + " lunch to " + changes[i][5] + " lunch on " + changes[i][4] + " days.</li>";
