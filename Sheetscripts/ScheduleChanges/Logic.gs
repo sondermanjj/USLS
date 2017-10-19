@@ -138,7 +138,7 @@
                     teacherFound = true;
                   }
                 }
-              
+                
                 if(teacherFound) {
                   k = values.length;
                 }
