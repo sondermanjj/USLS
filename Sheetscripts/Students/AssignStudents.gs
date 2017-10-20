@@ -219,7 +219,6 @@ function pushCoursesToCourseSheet() {
   //newData.sort();
   
   createNewSheet(newData, "Courses");
-  docProps.setProperty("coursesList", "Courses");
   console.log("Course Sheet Created");
 }
 
