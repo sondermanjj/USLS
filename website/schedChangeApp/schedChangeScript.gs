@@ -4,7 +4,7 @@ var testID = "1dFD0r5HK5p6zTFse2yIZvbwBB6RmKxw_XmfwPF46Dzs"
 var tab = "1";
 
 //URL for retrieving data from sheets directly as JSON
-var url = "https://spreadsheets.google.com/feeds/list/" + testID + "/" + getWebsiteSheetLocation(testID).toString() + "/public/values?alt=json";
+var schedURL = "https://spreadsheets.google.com/feeds/list/" + testID + "/" + getWebsiteSchedChangeSheetLocation(testID).toString() + "/public/values?alt=json";
 
 /**
 * Tells the script how to serve the page when a GET request is made
@@ -25,10 +25,12 @@ function doGet(e) {
 * @param id ID for the spreadsheet
 * @return integer representing the location of the website sheet
 */
-function getWebsiteSheetLocation(id){
+function getWebsiteSchedChangeSheetLocation(id){
+  console.log("Getting Schedule Changes from sheets...");
   var spreadSheet = SpreadsheetApp.openById(id);
   var websiteSheet = spreadSheet.getSheetByName("Schedule Changes");
   var sheetId = websiteSheet.getIndex().toFixed(0);
+
   return sheetId;  
 }
 
@@ -48,8 +50,8 @@ function include(filename) {
 * Retrieves the sheet data from the global URL as a JSON String
 * @return JSON String of the sheets data
 */
-function getJSON() {
-   var json = UrlFetchApp.fetch(url);
+function getSchedJSON() {
+   var json = UrlFetchApp.fetch(schedURL);
   
   var JS = JSON.parse(json.getContentText());
   

@@ -9,8 +9,8 @@
 <script>
     // on document load..
     $(function() {
-      console.log('Loading Database...')
-      google.script.run.withSuccessHandler(assignValue).getJSON();       
+      console.log('Loading Schedule Change Database...')
+      google.script.run.withSuccessHandler(assignSchedChangeValue).getSchedJSON();       
     });   
  </script>
 
@@ -25,7 +25,7 @@ var json = "empty";
       console.log("No database loaded yet");
       interval = 5000;
     }
-    setTimeout(formPrintSubmit, interval);
+    setTimeout(formSchedChangeSubmit, interval);
   }
 
 function isNumeric(n) {
@@ -36,7 +36,7 @@ function isNumeric(n) {
   * Method to be called when the website loads up.
   * @param json the JSON string returned when calling getJSON from the script file
   */ 
-  function assignValue(newJson) {
+  function assignSchedChangeValue(newJson) {
     json = newJson;
     console.log("Spreadsheet loaded");
     console.log(json);
@@ -63,7 +63,7 @@ function formatDate(date) {
   * Method to be called when the Search button is pressed
   * @param json the JSON string returned when calling getJSON from the script file
   */
-function formPrintSubmit() {
+function formSchedChangeSubmit() {
   /**
   * Takes in a string and capitalizes each word in the string
   * @param string the string to capitalize
