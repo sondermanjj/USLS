@@ -159,9 +159,9 @@ function getCourses(selected) {
   var courses = {};
   var titles = {};
   for(var i = 0; i < coursesData.length; i++){
-    var lunchTime = coursesData[i][2]; //change to 4
+    var lunchTime = coursesData[i][4];
     var courseTitle = coursesData[i][0];
-    var lunchDay = coursesData[i][1]; //change to 3
+    var lunchDay = coursesData[i][3];
     var courseDayConcat = courseTitle + lunchDay;
     if(lunchTime !== "Lunch Time"){
       courseDayConcat = courseDayConcat.replace(/\s/g,'');
