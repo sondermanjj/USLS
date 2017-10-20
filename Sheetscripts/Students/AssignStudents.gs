@@ -157,9 +157,9 @@ function getCourses() {
   var pValues = primaryData.getValues();
   var pNumRows = primaryData.getNumRows();
 
-  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
-  var courseTitleCol = parseInt(properties["Student Course Title"]);
-  var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
+  var lunchDayCol = parseInt(docProps.getProperty("Student Lunch Day"));
+  var courseTitleCol = parseInt(docProps.getProperty("Student Course Title"));
+  var lunchTimeCol = parseInt(docProps.getProperty("Student Lunch Time"));
   
   var courses = {};
   var i; 
@@ -177,6 +177,54 @@ function getCourses() {
   }
   
   return courses;
+}
+
+/*
+* @desc - creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
+* @author - clemensam
+*/
+function pushCoursesToCourseSheet() {
+  var docProps = PropertiesService.getDocumentProperties();
+  var properties = docProps.getProperties();
+  var studentDataProp = properties.studentData;
+  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
+  
+  var primaryData = primarySheet.getDataRange();
+  var pValues = primaryData.getValues();
+  var pNumRows = primaryData.getNumRows();
+
+  var lunchDayCol = parseInt(docProps.getProperty("Student Lunch Day"));
+  var courseTitleCol = parseInt(docProps.getProperty("Student Course Title"));
+  var lunchTimeCol = parseInt(docProps.getProperty("Student Lunch Time"));
+  var facultyFirstNameCol = parseInt(docProps.getProperty("Student Faculty First Name"));
+  var facultyLastNameCol = parseInt(docProps.getProperty("Student Faculty Last Name"));
+  
+  var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
+  var newData = [];
+  var courses = [];
+  //newData.push(headerRow);
+  var i; 
+  for(var i = 0; i < pNumRows; i++){
+    var courseTitle = pValues[i][courseTitleCol];
+    var lunchDay = pValues[i][lunchDayCol];
+    var lunchTime = pValues[i][lunchTimeCol];
+    var facultyFirstName = pValues[i][facultyFirstNameCol];
+    var facultyLastName = pValues[i][facultyLastNameCol];
+    
+    var newRow = [courseTitle, facultyFirstName, facultyLastName, lunchDay, lunchTime];
+    
+    var courseDayTimeConcat = courseTitle + lunchDay + lunchTime;
+    
+     if((courses.indexOf(courseDayTimeConcat) < 0) && (facultyFirstName !== '' && facultyLastName !== '')) {
+      courses.push(courseDayTimeConcat);
+      newData.push(newRow);
+    }
+  }
+  
+  newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
+  
+  createNewSheet(newData, "Courses");
+  Logger.log("Course Sheet Created");
 }
 
 /**
@@ -323,9 +371,6 @@ function parseStudentChanges(listOfChanges){
                 students[j].lunches[k].title = change.newCourseName;
                 changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
               }
-              if(students[j].lunches[k].isItzScore === true){
-                students[j].lunches[k].isItzScore === false;
-              }
               k = stu.lunches.length;
             }
           }
@@ -471,6 +516,17 @@ function randomlyAssign(gradeArray, indexNum, numberArray){
 @author - dicksontc
 */
 function getTeachers(tValues, tNumRows, properties){
+  var docProps = PropertiesService.getDocumentProperties();
+  var properties = docProps.getProperties();
+  var teacherSheetName = properties.teacherChoices;
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(teacherSheetName);
+
+  var teacherData = teacher.getDataRange();
+
+  var tValues = teacherData.getValues();
+
+  var tNumRows = teacherData.getNumRows();
+  
   var teachers = [];
   var fNameCol = parseInt(properties["Teacher First Name"]);
   var lNameCol = parseInt(properties["Teacher Last Name"]);
@@ -499,7 +555,9 @@ function getTeachers(tValues, tNumRows, properties){
         }
       }
     }
+    Logger.log("teacher: " + fname + ", " + lname + ", "+ time + ", "+ day + ", " + house);
   }
+  Logger.log("teachers: " + teachers);
   return teachers;
 }
 
@@ -641,7 +699,22 @@ function printStudentsToSheet(students, primary, properties){
         pushArray[tLNameCol] = "";
         pushArray[blockCol] = "";
         pushArray[tableHeadCol] = "";
-      }else{
+      } //else if ((lunch.teacherFName === "" || lunch.teacherFName === undefined) &&  (lunch.teacherLName === "" || lunch.teacherLName === undefined)){
+//        var facultyName = findFacultyName(title, lunch.day, properties);
+//        var firstName = facultyName.firstName;
+//        var lastName = facultyName.lastName;
+//        pushArray[cTitleCol] =  title;
+//        pushArray[cCodeCol] =  lunch.code;
+//        pushArray[cLengthCol] = lunch.length;
+//        pushArray[cIDCol] =  lunch.cID;
+//        pushArray[sIDCol] = lunch.sID;
+//        pushArray[tFNameCol] = firstName;
+//        pushArray[tLNameCol] = lastName;
+//        pushArray[blockCol] = lunch.block;
+//        pushArray[tableHeadCol] = lunch.tableHead;
+//        
+//      }
+      else{
           pushArray[cTitleCol] =  title;
           pushArray[cCodeCol] =  lunch.code;
           pushArray[cLengthCol] = lunch.length;
@@ -661,6 +734,43 @@ function printStudentsToSheet(students, primary, properties){
   sheetRange.setValues(finalArray);
   colorBackgrounds(lunchTimeCol, properties);
   colorBackgrounds(lunchTableCol, properties);
+}
+
+function findFacultyName(course, day, properties){
+  //course = "Latin II";
+  //day = "C";
+  
+  var courseSheetProp = properties.courseSheet;
+  var courseSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(courseSheetProp);
+  
+  var courseData = courseSheet.getDataRange();
+  var values = courseData.getValues();
+  var numRows = courseData.getNumRows();
+
+  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
+  var courseTitleCol = parseInt(properties["Student Course Title"]);
+  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
+  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
+
+  var facultyName = {};
+  var i; 
+  for(var i = 0; i < numRows; i++){
+    var courseTitle = values[i][courseTitleCol];
+    var lunchDay = values[i][lunchDayCol];
+    var facultyFirstName = values[i][facultyFirstNameCol];
+    var facultyLastName = values[i][facultyLastNameCol];
+    
+    if(courseTitle === course && lunchDay === day) {
+      Logger.log("match");
+      Logger.log(facultyFirstName);
+      facultyName.firstName = facultyFirstName;
+      facultyName.lastName = facultyLastName;
+    }
+  }
+  
+  Logger.log(facultyName);
+  return facultyName;
+  
 }
 
 /**
@@ -720,33 +830,41 @@ function getStudents(studentValues, numRows, teachersList, properties){
     var title = studentValues[i][cTitleCol];
     var time = studentValues[i][lunchTimeCol];
     
-    var zScoreCheckAndTime = getLunchTimeAndZCheckBasedOnTeacher(teacherFName, teacherLName, time, day, teachersList, properties);
+    if ((teacherFName === "" || teacherFName === undefined) &&  (teacherLName === "" || teacherLName === undefined)){
+        Logger.log("getting teacher name");
+        var facultyName = findFacultyName(title, day, properties);
+        Logger.log("facultyName");
+        var firstName = facultyName['firstName'];
+        var lastName = facultyName;
+        var teacherFName = firstName;
+        var teacherLName = lastName;
+    }
+    
+    var zScoreCheckAndTime = getLunchTimeAndZCheckBasedOnTeacher(teacherFName, teacherLName, time, day, title, teachersList, properties);
     time = zScoreCheckAndTime.time;
     var zCheck = zScoreCheckAndTime.zCheck;
-    if(grad !== ""){
-      
-      if(fname != "First Name" && lname != "Last Name"){
-        house = getHouseForStudent(advisor, teachersList);
-      }
-      
-      var lunchObj = {"day": day, "time": time, "isItzScore": zCheck, "table": table, "code": code,
-                      "length": length, "cID": cID, "sID": sID, "block": block, "tableHead": tableHead, "title": title,
-                      "teacherFName": teacherFName, "teacherLName": teacherLName};
-      
-      if(newStudentsList.length === 0){
-        newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
-                              "advisor": advisor, "dob": dob, "gender": gender});
-      }else{
-        for(j = 0; j < newStudentsList.length; j++){
-          if(newStudentsList[j].fName === fname && newStudentsList[j].lName === lname){
-            newStudentsList[j].lunches.push(lunchObj);
-            j = newStudentsList.length;
-          }
-          if(j === newStudentsList.length - 1){
-            newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
-                                  "advisor": advisor, "dob": dob, "gender": gender});
-            j = newStudentsList.length;
-          }
+    
+    if(fname != "First Name" && lname != "Last Name"){
+      house = getHouseForStudent(advisor, teachersList);
+    }
+    
+    var lunchObj = {"day": day, "time": time, "isItzScore": zCheck, "table": table, "code": code,
+                    "length": length, "cID": cID, "sID": sID, "block": block, "tableHead": tableHead, "title": title,
+                    "teacherFName": teacherFName, "teacherLName": teacherLName};
+    
+    if(newStudentsList.length === 0){
+      newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
+                 "advisor": advisor, "dob": dob, "gender": gender});
+    }else{
+      for(j = 0; j < newStudentsList.length; j++){
+        if(newStudentsList[j].fName === fname && newStudentsList[j].lName === lname){
+          newStudentsList[j].lunches.push(lunchObj);
+          j = newStudentsList.length;
+        }
+        if(j === newStudentsList.length - 1){
+          newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
+                 "advisor": advisor, "dob": dob, "gender": gender});
+          j = newStudentsList.length;
         }
       }
     }
@@ -789,29 +907,43 @@ function getHouseForStudent(advisor, teachersList){
 @funtional - yes
 @author - dicksontc
 */
-function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, teachersList, properties){
+function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, courseName, teachersList, properties){
   var assignedLunchTimes = JSON.parse(properties.assignedLunches);
   var nonAssignedLunchTimes = JSON.parse(properties.nonAssignedLunches);
   var zCheck = false;
   var i, j;
   var zCheckAndTime;
+  Logger.log('Getting time and Z');
   
   for(i = 0; i < teachersList.length; i++){
     var teacher = teachersList[i];
     
     if(firstName === '' && lastName === ''){
-      zCheck = true;
-      i = teachersList.length;
-      var bool = true;
-      for(j = 0; j < assignedLunchTimes.length; j++){
-        if(time === assignedLunchTimes[0].time){
-          bool = false;
-          j = assignedLunchTimes.length;
+      
+//      Logger.log("getting teacher name");
+//      var facultyName = findFacultyName(courseName, day, properties);
+//      
+//      if(facultyName !== null || facultyName !== undefined){
+//        var firstName = facultyName.firstName;
+//        var lastName = facultyName.lastName;
+//        Logger.log("setting first name");
+//      }
+//      else {
+        zCheck = true;
+        i = teachersList.length;
+        var bool = true;
+        for(j = 0; j < assignedLunchTimes.length; j++){
+          if(time === assignedLunchTimes[0].time){
+            bool = false;
+            j = assignedLunchTimes.length;
+          }
         }
-      }
-      if(bool){
-        time = nonAssignedLunchTimes[0].time;
-      }
+        if(bool){
+          time = nonAssignedLunchTimes[0].time;
+        }
+//      }
+        
+      
     }else if(teacher.fName === firstName && teacher.lName === lastName){
       for(j = 0; j < teacher.lunches.length; j++){
         if(teacher.lunches[j].day === day){
