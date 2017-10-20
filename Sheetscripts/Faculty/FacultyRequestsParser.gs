@@ -6,10 +6,11 @@
  * @author - dicksontc
  */
 function parseRequests() {
-  var properties = PropertiesService.getDocumentProperties();
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
   var sheet = SpreadsheetApp.getActiveSheet();
   var responses = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1");
-  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices"));
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
   
   //var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Faculty Choices");
   
@@ -38,12 +39,12 @@ function parseRequests() {
   var rLateColumn;
   var rCommentsColumn;
   
-  var tFNameColumn = properties.getProperty("Teacher First Name");
-  var tLNameColumn = properties.getProperty("Teacher Last Name");
-  var tLunchDayColumn = properties.getProperty("Teacher Lunch Day");
-  var tLunchPreferenceColumn = properties.getProperty("Teacher Lunch Preference");
-  var tCommentsColumn = properties.getProperty("Teacher Comments");
-  var tSectionColumn = properties.getProperty("Teacher Section");
+  var tFNameColumn = parseInt(properties["Teacher First Name"]);
+  var tLNameColumn = parseInt(properties["Teacher Last Name"]);
+  var tLunchDayColumn = parseInt(properties["Teacher Lunch Day"]);
+  var tLunchPreferenceColumn = parseInt(properties["Teacher Lunch Preference"]);
+  var tCommentsColumn = parseInt(properties["Teacher Comments"]);
+  var tSectionColumn = parseInt(properties["Teacher Section"]);
   
   var finalRows = [];
   var column;

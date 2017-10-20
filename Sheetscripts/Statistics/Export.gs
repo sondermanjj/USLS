@@ -32,21 +32,22 @@ function exportToWebsitePrompt() {
  *@author sondermanjj
  */
 function exportInfoToWebsite(webSheet) {
-  var properties = PropertiesService.getDocumentProperties();
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
   
-  var pSFNameColumn = parseInt(properties.getProperty("Student First Name"));
-  var pSLNameColumn = parseInt(properties.getProperty("Student Last Name"));
-  var pHouseColumn = parseInt(properties.getProperty("Student House"));  
-  var slunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
-  var pTableColumn = parseInt(properties.getProperty("Student Lunch Table"));
-  var pLunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
-  var sgradeColumn = parseInt(properties.getProperty("Student Grade Level"));
+  var pSFNameColumn = parseInt(properties["Student First Name"]);
+  var pSLNameColumn = parseInt(properties["Student Last Name"]);
+  var pHouseColumn = parseInt(properties["Student House"]);  
+  var slunchDayColumn = parseInt(properties["Student Lunch Day"]);
+  var pTableColumn = parseInt(properties["Student Lunch Table"]);
+  var pLunchTimeColumn = parseInt(properties["Student Lunch Time"]);
+  var sgradeColumn = parseInt(properties["Student Grade Level"]);
 
   var student = [];
   var finalData = [];
   var studentValues = SpreadsheetApp
                   .getActiveSpreadsheet()
-                  .getSheetByName(properties.getProperty("studentData"))
+                  .getSheetByName(properties.studentData)
                   .getDataRange()
                   .getValues();
   if (checkData(studentValues, "Student Data")) {
@@ -64,17 +65,17 @@ function exportInfoToWebsite(webSheet) {
   
     var teacherValues = SpreadsheetApp
                     .getActiveSpreadsheet()
-                    .getSheetByName(properties.getProperty("teacherChoices"))
+                    .getSheetByName(properties.teacherChoices)
                     .getDataRange()
                     .getValues();
   
-    var tFNameColumn = parseInt(properties.getProperty("Teacher First Name"));
+    var tFNameColumn = parseInt(properties["Teacher First Name"]);
     Logger.log(teacherValues);
-    var tLNameColumn = parseInt(properties.getProperty("Teacher Last Name"));
-    var tHouseColumn = parseInt(properties.getProperty("Teacher House"));  
-    var tLunchDayColumn = parseInt(properties.getProperty("Teacher Lunch Day"));
-    var tTableColumn = parseInt(properties.getProperty("Teacher Table"));
-    var tLunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
+    var tLNameColumn = parseInt(properties["Teacher Last Name"]);
+    var tHouseColumn = parseInt(properties["Teacher House"]);  
+    var tLunchDayColumn = parseInt(properties["Teacher Lunch Day"]);
+    var tTableColumn = parseInt(properties["Teacher Table"]);
+    var tLunchTimeColumn = parseInt(properties["Teacher Lunch Assignment"]);
     
     if (checkData(teacherValues, "Teacher Data")) {
       for (var i = 0; i < teacherValues.length; i++) {

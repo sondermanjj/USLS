@@ -143,43 +143,37 @@ function assignStudentLunchDays() {
 }
 
 /**
-@desc Gets all courses and their corresponding days
-@funtional - maybe
-@author - clemensam
+@desc Gets all courses and their corresponding days from the courses sheet
+@funtional - yes
+@author - dicksontc
 */
-function getCourses() {
+function getCourses(selected) {
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
-  var studentDataProp = properties.studentData;
-  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
-  
-  var primaryData = primarySheet.getDataRange();
-  var pValues = primaryData.getValues();
-  var pNumRows = primaryData.getNumRows();
+  var coursesData = SpreadsheetApp
+                  .getActiveSpreadsheet()
+                  .getSheetByName(properties.coursesList)
+                  .getDataRange()
+                  .getValues();
 
-  var lunchDayCol = parseInt(docProps.getProperty("Student Lunch Day"));
-  var courseTitleCol = parseInt(docProps.getProperty("Student Course Title"));
-  var lunchTimeCol = parseInt(docProps.getProperty("Student Lunch Time"));
-  
   var courses = {};
-  var i; 
-  for(var i = 0; i < pNumRows; i++){
-    var lunchDay = pValues[i][lunchDayCol];
-    var courseTitle = pValues[i][courseTitleCol];
+  var titles = {};
+  for(var i = 0; i < coursesData.length; i++){
+    var lunchTime = coursesData[i][2]; //change to 4
+    var courseTitle = coursesData[i][0];
+    var lunchDay = coursesData[i][1]; //change to 3
     var courseDayConcat = courseTitle + lunchDay;
-    courseDayConcat = courseDayConcat.replace(/\s/g,'').toLowerCase();
-
-    var lunchTime = pValues[i][lunchTimeCol];
-    
-    if(!courses.hasOwnProperty(courseDayConcat)) {
+    if(lunchTime !== "Lunch Time"){
+      courseDayConcat = courseDayConcat.replace(/\s/g,'');
       courses[courseDayConcat] = lunchTime;
+      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay};
     }
   }
   
-  return courses;
+  return {"courses": courses, "selected" : selected, "titles" : titles};
 }
 
-/*
+/*            
 * @desc - creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
 * @author - clemensam
 */
@@ -193,11 +187,11 @@ function pushCoursesToCourseSheet() {
   var pValues = primaryData.getValues();
   var pNumRows = primaryData.getNumRows();
 
-  var lunchDayCol = parseInt(docProps.getProperty("Student Lunch Day"));
-  var courseTitleCol = parseInt(docProps.getProperty("Student Course Title"));
-  var lunchTimeCol = parseInt(docProps.getProperty("Student Lunch Time"));
-  var facultyFirstNameCol = parseInt(docProps.getProperty("Student Faculty First Name"));
-  var facultyLastNameCol = parseInt(docProps.getProperty("Student Faculty Last Name"));
+  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
+  var courseTitleCol = parseInt(properties["Student Course Title"]);
+  var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
+  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
+  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
   
   var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
   var newData = [];
@@ -225,6 +219,7 @@ function pushCoursesToCourseSheet() {
   //newData.sort();
   
   createNewSheet(newData, "Courses");
+  docProps.setProperty("coursesList", "Courses");
   console.log("Course Sheet Created");
 }
 
@@ -371,6 +366,9 @@ function parseStudentChanges(listOfChanges){
                 students[j].lunches[k].teacherLName = change.facultyLName;
                 students[j].lunches[k].title = change.newCourseName;
                 changesToBeReturned.push([change.fName, change.lName, oldtime, newtime, change.oldTable, change.oldTable]);
+              }
+              if(students[j].lunches[k].isItzScore === true){
+                students[j].lunches[k].isItzScore === false;
               }
               k = stu.lunches.length;
             }
@@ -765,32 +763,34 @@ function getStudents(studentValues, numRows, teachersList, properties){
     var gender = studentValues[i][genderCol];
     var title = studentValues[i][cTitleCol];
     var time = studentValues[i][lunchTimeCol];
-        
+    
     var zScoreCheckAndTime = getLunchTimeAndZCheckBasedOnTeacher(teacherFName, teacherLName, time, day, teachersList, properties);
     time = zScoreCheckAndTime.time;
     var zCheck = zScoreCheckAndTime.zCheck;
-    
-    if(fname != "First Name" && lname != "Last Name"){
-      house = getHouseForStudent(advisor, teachersList);
-    }
-    
-    var lunchObj = {"day": day, "time": time, "isItzScore": zCheck, "table": table, "code": code,
-                    "length": length, "cID": cID, "sID": sID, "block": block, "tableHead": tableHead, "title": title,
-                    "teacherFName": teacherFName, "teacherLName": teacherLName};
-    
-    if(newStudentsList.length === 0){
-      newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
-                 "advisor": advisor, "dob": dob, "gender": gender});
-    }else{
-      for(j = 0; j < newStudentsList.length; j++){
-        if(newStudentsList[j].fName === fname && newStudentsList[j].lName === lname){
-          newStudentsList[j].lunches.push(lunchObj);
-          j = newStudentsList.length;
-        }
-        if(j === newStudentsList.length - 1){
-          newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
-                 "advisor": advisor, "dob": dob, "gender": gender});
-          j = newStudentsList.length;
+    if(grad !== ""){
+      
+      if(fname != "First Name" && lname != "Last Name"){
+        house = getHouseForStudent(advisor, teachersList);
+      }
+      
+      var lunchObj = {"day": day, "time": time, "isItzScore": zCheck, "table": table, "code": code,
+                      "length": length, "cID": cID, "sID": sID, "block": block, "tableHead": tableHead, "title": title,
+                      "teacherFName": teacherFName, "teacherLName": teacherLName};
+      
+      if(newStudentsList.length === 0){
+        newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
+                              "advisor": advisor, "dob": dob, "gender": gender});
+      }else{
+        for(j = 0; j < newStudentsList.length; j++){
+          if(newStudentsList[j].fName === fname && newStudentsList[j].lName === lname){
+            newStudentsList[j].lunches.push(lunchObj);
+            j = newStudentsList.length;
+          }
+          if(j === newStudentsList.length - 1){
+            newStudentsList.push({"fName": fname, "lName": lname, "grade": grad, "lunches": [lunchObj], "zScore": 0, "house": house,
+                                  "advisor": advisor, "dob": dob, "gender": gender});
+            j = newStudentsList.length;
+          }
         }
       }
     }
