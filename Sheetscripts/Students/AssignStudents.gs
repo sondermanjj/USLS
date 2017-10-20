@@ -211,7 +211,7 @@ function pushCoursesToCourseSheet() {
     var facultyFirstName = pValues[i][facultyFirstNameCol];
     var facultyLastName = pValues[i][facultyLastNameCol];
     
-    var newRow = [courseTitle, lunchDay, lunchTime, facultyFirstName, facultyLastName];
+    var newRow = [courseTitle, facultyFirstName, facultyLastName, lunchDay, lunchTime];
     
     var courseDayTimeConcat = courseTitle + lunchDay + lunchTime;
     
