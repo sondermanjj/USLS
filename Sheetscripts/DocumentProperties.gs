@@ -1,7 +1,7 @@
 
 
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
+  //Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
   Logger.log(PropertiesService.getDocumentProperties().getProperties());
   
 }
@@ -202,6 +202,15 @@ function setHouses(value) {
 }
 
 /**
+ * @desc - Sets the document property for the raw data sheet as the sheet name
+ * @param - sheetName - the raw data sheet name
+ * @author - clemensam
+ */
+function setRawSheetProperty(sheetName){
+  PropertiesService.getDocumentProperties().setProperty("rawData", sheetName);
+}
+
+/**
  * @desc - Sets the document property for the student data sheet as the sheet name
  * @param - sheet - the student data sheet
  * @author - hendersonam
@@ -209,6 +218,14 @@ function setHouses(value) {
 function setStudentSheet(sheet) {
   var value = sheet.getName();
   PropertiesService.getDocumentProperties().setProperty("studentData", value);
+}
+
+/*
+*
+* author - clemensam
+*/
+function setCoursesSheet(sheetName) {
+  PropertiesService.getDocumentProperties().setProperty("courseSheet", sheetName);
 }
 
 /**
