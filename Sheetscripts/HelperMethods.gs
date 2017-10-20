@@ -86,6 +86,21 @@ function sortSheetBy(sheet, sorts) {
 }
 
 /**
+ *
+ * @author - clemensam
+ */
+function searchSheet(filter, column, sheetName){
+  var properties = PropertiesService.getDocumentProperties();
+  var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var index = 0;
+
+  for(index; index < values.length; index++){
+    if(values[index].toString().search(filter) > 0){
+    }
+  }
+}
+
+/**
  * @desc - Searches the Final Student Data and hides all rows that do not contain the filter string
  * @param - String - String to search for
  * @author - hendersonam

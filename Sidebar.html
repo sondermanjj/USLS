@@ -271,7 +271,38 @@
     function search(){
       var filter = document.getElementById('filter').value.toLowerCase();
       var column = document.getElementById('dropdownfilter').value;
-      google.script.run.showDialog('search, ' + filter + ', ' + column);
+      //google.script.run.showDialog('search, ' + filter + ', ' + column);
+      //var e = new KeyboardEvent('keydown',{'keyCode':32,'which':32});
+      //document.dispatchEvent(e);
+      simulateCtrlF();
+    }
+    
+    /*
+    *
+    * @author - clemensam
+    */
+    function simulateCtrlF(){
+    
+      var kbdEvent = new KeyboardEvent('keydown', {'key':'f', 'ctrlKey': true, 'code': 'KeyF', 'which': 70, 'keyCode': 70});
+      document.dispatchEvent(kbdEvent);
+      console.log("simulate search");
+      console.log(kbdEvent);
+//      var keyboardEvent = document.createEvent("KeyboardEvent");
+//      var initMethod = typeof keyboardEvent.initKeyboardEvent !== 'undefined' ? "initKeyboardEvent" : "initKeyEvent";
+//
+//      keyboardEvent[initMethod](
+//                   "keydown", // event type : keydown, keyup, keypress
+//                    true, // bubbles
+//                    true, // cancelable
+//                    window, // viewArg: should be window
+//                    true, // ctrlKeyArg
+//                    false, // altKeyArg
+//                    false, // shiftKeyArg
+//                    false, // metaKeyArg
+//                    70, // keyCodeArg : unsigned long the virtual key code, else 0
+//                    0 // charCodeArgs : unsigned long the Unicode character associated with the depressed key, else 0
+//      );
+//      document.dispatchEvent(keyboardEvent);
     }
     
     /*
@@ -425,9 +456,9 @@
       <div id="tabs">
       <span>
       <ul>
-        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Clean-Up</li>
+        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Assign/Reschedule</li>
         <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideSettingsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
-        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Search/Sort</li>
+        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Data Tools</li>
      </ul>
      </span>
      <span>
@@ -436,16 +467,20 @@
      </div>
      
      <div id="cleanPage">
+       <h3>Assign and Reschedule</h3>
+       <p>Use the options below for initial student assigning or making schedule changes.</p>
 
-       <button id="cleanButton" class="action" onclick="google.script.run.initialization();">Initialize</button>
-
-       <button id="exportButton" class="share" onclick="google.script.run.exportToWebsite();">Export</button>
+       <div class="button-div"><button id="cleanButton" class="action" onclick="google.script.run.initialization();">Clean and Assign</button></div>
+       <div class="button-div"><button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button></div>
+       
+       <br>
+       <p>Use the button below to save the current assignments and export them to the website.</p>
+       <div class="button-div"><button id="exportButton" class="share" onclick="google.script.run.exportToWebsite();">Export</button></div>
 
      </div>
      
      <div id="statsPage">
-       <button id="scanButton" class="action" onclick="scanData();">Check Statistics</button>
-       <button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button>
+       <button id="scanButton" class="action" onclick="scanData();">Refresh Statistics</button>
        <div id="changes"></div>
        <div id="stats"></div>
      </div>
