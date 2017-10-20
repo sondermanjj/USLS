@@ -94,7 +94,6 @@
     var facultyLastNameColumn = parseInt(properties["Student Faculty Last Name"]);
     
     var courseTimes = getCourses(null).courses;
-    
     values.sort(compareByColumnIndex(lunchDayColumn));
     
     oldCourses.sort(compareByColumnIndex(3));
@@ -103,11 +102,12 @@
     var numOfChangesMade = 0;
     var studentChanges = [];
     var changes = [];
+
     for(var i = 0; i < values.length; i++) {
       
       if(firstname.toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
         if(lastname.toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {
-          if(oldCourses[numOfChangesMade][3].toString().toLowerCase() == values[i][lunchDayColumn].toString().toLowerCase()) {
+          if(oldCourses[numOfChangesMade][3].toString() == values[i][lunchDayColumn].toString()) {
             //Save the old row and the old time, and old course
             var oldRow = values[i];
             var oldTimee = values[i][lunchTimeColumn];
@@ -121,9 +121,9 @@
             var lunchDay = values[i][lunchDayColumn];
             //Course title and lunch day concat
             var courseAndDay = course + lunchDay;
-            courseAndDay = courseAndDay.toString().toLowerCase().replace(/\s/g,"");
+            courseAndDay = courseAndDay.toString().replace(/\s/g,"");
             //Get the lunch time for that particular course and day pair
-            var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
+            var newTime = courseTimes[courseAndDay];
             //Only if not null do we count this as a change
             if(newTime != null) {
               //Create the change object
