@@ -1,0 +1,193 @@
+<Module>
+<ModulePrefs title="Search Script" /> 
+<Content type="html">
+<?!= include('website/schedChangeApp/CSS'); ?>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+</script>
+
+<script>
+    // on document load..
+    $(function() {
+      console.log('Loading Schedule Change Database...')
+      google.script.run.withSuccessHandler(assignSchedChangeValue).getSchedJSON();       
+    });   
+ </script>
+
+<script type="text/javascript"> 
+
+var json = "empty";
+
+  //Checks if the database is loaded up yet.
+  function checkDatabase() {
+    var interval = 0;
+    if (json == "empty") {
+      console.log("No database loaded yet");
+      interval = 5000;
+    }
+    setTimeout(formSchedChangeSubmit, interval);
+  }
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+  /**
+  * Method to be called when the website loads up.
+  * @param json the JSON string returned when calling getJSON from the script file
+  */ 
+  function assignSchedChangeValue(newJson) {
+    json = newJson;
+    console.log("Spreadsheet loaded");
+    console.log(json);
+    checkDatabase();
+  }
+  
+function formatDate(date) {
+  var monthNames = [
+    "January", "February", "March",
+    "April", "May", "June", "July",
+    "August", "September", "October",
+    "November", "December"
+  ];
+
+  var day = date.getDate();
+  var monthIndex = date.getMonth();
+  var year = date.getFullYear();
+
+  return day + ' ' + monthNames[monthIndex] + ' ' + year;
+}
+
+
+  /**
+  * Method to be called when the Search button is pressed
+  * @param json the JSON string returned when calling getJSON from the script file
+  */
+function formSchedChangeSubmit() {
+  /**
+  * Takes in a string and capitalizes each word in the string
+  * @param string the string to capitalize
+  * @return the capitalized version of the string
+  */
+  function capitalize(string){
+    
+    var stringArray = string.split(" ");
+    var newString = "";
+    
+    for(var i=0; i<stringArray.length; i++){
+      newString += stringArray[i].charAt(0).toUpperCase() + stringArray[i].slice(1) + " ";
+    }
+    
+    return newString.trim();
+  }  
+  
+  // Variables pointing to parts of the HTML document so that their contents can be edited
+  var nameDiv = document.getElementById('nameDiv');
+  var schedDiv = document.getElementById('schedDiv');
+  var heading = "";
+  var subHeading = "";
+    
+  var radios = document.getElementsByName('masterList');
+  
+  var resultsArray = [];
+  
+  // Start of string containing html to display matched results
+  var strSched;
+  //puts each row of the students in a large array. Does not put them in if it does not match the day or the table is empty.
+  if (json) {
+    var length = json.length;    
+    for(var index=0; index<length; index++) { 
+      var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+      var day = json[index].gsx$lunchday.$t;
+      var newcourse = json[index].gsx$newcourse.$t;
+      var newtime = json[index].gsx$newtime.$t;
+      var oldcourse = json[index].gsx$oldcourse.$t;
+      var oldtime = json[index].gsx$oldtime.$t;
+      var timestamp = new Date(parseInt(json[index].gsx$timestamp.$t));
+      if (name && day && newcourse && newtime && oldcourse && oldtime && timestamp) {
+        var dayArray = [];
+        dayArray.push(name);
+        dayArray.push(day);
+        dayArray.push(oldcourse);
+        dayArray.push(newcourse);
+        dayArray.push(oldtime);
+        dayArray.push(newtime);
+        dayArray.push(formatDate(timestamp));
+        resultsArray.push(dayArray);
+          }
+      }
+    
+      strSched = "";
+      arr = resultsArray.sort();
+      strSched += '<table class="textTable"><tr>'
+        + '<th>Name</th>' 
+        + '<th>Lunch Day</th>'
+        + '<th>Old Course</th>'
+        + '<th>New Course</th>'
+        + '<th>Old Time</th>'
+        + '<th>New Time</th>'
+        + '<th>Date Changed</th>'
+        + '</tr>';    
+      strSched += "<h2>Student Schedule Changes</h2>";
+      for(i=0; i<arr.length; i++) {
+        strSched += "<tr>";
+          for(var j=0; j<arr[i].length; j++){
+            strSched += "<td>" + arr[i][j] + "</td>";
+          }
+        strSched += "</tr>";
+      }
+      strSched += "</table>";      
+      //Set the inner HTML of the necessary components to the proper contents
+      schedDiv.innerHTML = strSched;
+    } else {
+        schedDiv.innerHTML = "<h2>Data Import Error</h2>";
+    }
+}
+
+//Checks a group of checkboxes for ticked values.
+function checkCheckBoxes(name, value) {
+  var inputElements = document.getElementsByName(name);
+  var oneChecked = false;
+  for(var i=0; inputElements[i]; ++i){
+      if(inputElements[i].checked){
+           oneChecked = true;
+           if (inputElements[i].value.toLowerCase().includes(value.toLowerCase())) {
+               return true;
+           }
+      }
+  }
+  if (oneChecked) {
+      return false;
+  } else {
+      return true;
+  }  
+}
+
+function handle(e){
+  if(e.keyCode === 13){
+    e.preventDefault(); // Ensure it is only this code that runs
+    
+    checkDatabase();
+    //document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
+  }
+}
+ 
+ function printPage() {
+   var header = document.getElementById('nameDiv').innerHTML;
+   var schedToPrint = header + document.getElementById('schedDiv').innerHTML;
+   var printhtml = 'https://sites.google.com/site/usmlunch/jarfunklemcree/printpage?schedule=' + schedToPrint + '&tmpl=/system/app/templates/print';
+   window.open(printhtml);
+ }
+ 
+</script>
+
+
+<div id="printButtonDiv"><input id="printButton" onclick="window.print()" type="button" value=" " /> </div>
+<div id="loadingDiv"></div>
+<div id="printDiv">
+  <div id="nameDiv"></div>
+  <div id="subHeadingDiv"></div>
+  <div id="schedDiv"><h2>Loading...</h2></div>
+</div>
+</Content>
+</Module>
