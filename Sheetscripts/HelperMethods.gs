@@ -14,8 +14,9 @@ function getDropdownHTML(){
  * @author - hendersonam
  */
 function getDropdownList() {
-  var properties = PropertiesService.getDocumentProperties();
-  var list = getListOfColumns(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues());
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
+  var list = getListOfColumns(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData).getDataRange().getValues());
   return getHTMLDropdown(list);
 }
 

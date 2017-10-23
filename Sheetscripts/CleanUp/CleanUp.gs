@@ -32,14 +32,17 @@ function cleanUp(sheetName, newSheetName) {
     ss.insertSheet(newSheetName);
     newSheet = ss.getSheetByName(newSheetName);
   }
+
   
   var oldValues = sheet.getDataRange().getValues();
-  
-  var newValues = removeIrrelevantData(oldValues);
+
+  //Remove irrelevant data
+  var newValues = removeIrrelevantData(oldValues, properties);
   
   newValues = addColumnNames(newValues, ["Table Head", "Lunch Day", "Lunch Time", "Lunch Table", "House"]);
-  
-  newValues = populateLunchDay(newValues);
+
+  //Populate the Lunch Day Table
+  newValues = populateLunchDay(newValues, properties);
   
   newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
   
@@ -55,11 +58,10 @@ function cleanUp(sheetName, newSheetName) {
  * @funtional - yes
  * @author - hendersonam
  */
-function removeIrrelevantData(oldValues) {
+function removeIrrelevantData(oldValues, properties) {
   
   //Get necessary properties
-  var properties = PropertiesService.getDocumentProperties();
-  var schoolDays = JSON.parse(properties.getProperty('schoolDays'));
+  var schoolDays = JSON.parse(properties.schoolDays);
   
   //Create a new array for the cleaned data
   var revisedValues = [];
@@ -89,10 +91,9 @@ function removeIrrelevantData(oldValues) {
  * @functional - yes
  * @author - hendersonam
  */
-function populateLunchDay(values) {
+function populateLunchDay(values, properties) {
   
-  var properties = PropertiesService.getDocumentProperties();
-  var schoolDays = JSON.parse(properties.getProperty('schoolDays'));
+  var schoolDays = JSON.parse(properties.schoolDays);
   var headers = getListOfColumns(values);
   var blockColumn = getColumnIndex(headers, "Block");
   var lunchDayColumn = getColumnIndex(headers, "Lunch Day");

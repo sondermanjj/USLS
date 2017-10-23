@@ -67,14 +67,15 @@ function setLunchProperties() {
 * @ desc - re-sets column indices and column name properties
 */
 function setColumnProperties(){
-  var properties = PropertiesService.getDocumentProperties();
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
    //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("studentData")).getDataRange().getValues());
+                          properties.studentData).getDataRange().getValues());
   var teacherHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("teacherChoices")).getDataRange().getValues());
+                          properties.teacherChoices).getDataRange().getValues());
   setStudentColumnIndices(studentHeaders);
   setHeaderColumnNames(studentHeaders);
   setTeacherColumnIndices(teacherHeaders);
@@ -91,6 +92,7 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   var teacherChoicesSheet = ss.getSheetByName(choicesSheetName);
   var dodSheet = ss.getSheetByName(dodSheetName);
   var teacherTableSheet = ss.getSheetByName(teacherSheetName);
+
   
   if(teacherChoicesSheet == null) {
     SpreadsheetApp.getUi().alert("The Faculty Preferences Sheet cannot be a newly made sheet. It must contain the preferred lunch times for the faculty.");
@@ -110,13 +112,16 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   setTeacherTableSheet(teacherTableSheet);
   setDODSheet(dodSheet);
   
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
+  
   //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("studentData")).getDataRange().getValues());
+                          properties.studentData).getDataRange().getValues());
   var teacherHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("teacherChoices")).getDataRange().getValues());
+                          properties.teacherChoices).getDataRange().getValues());
   setStudentColumnIndices(studentHeaders);
   setHeaderColumnNames(studentHeaders);
   setTeacherColumnIndices(teacherHeaders);

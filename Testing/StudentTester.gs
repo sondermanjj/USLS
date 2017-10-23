@@ -10,10 +10,11 @@ function studentTester(){
   
   assignStudentLunchDays();
 
-  var properties = PropertiesService.getDocumentProperties();
+  var documentProperties = PropertiesService.getDocumentProperties();
+  var properties = documentProperties.getProperties();
   var sheet = SpreadsheetApp.getActiveSheet();
-  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
-  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices"));
+  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
 
   
   var primaryData = primary.getDataRange();
@@ -26,19 +27,19 @@ function studentTester(){
   var pNumColumns = primaryData.getNumColumns();
   var tNumColumns = teacherData.getNumColumns();
   
-  var pLunchTimeColumn = parseInt(properties.getProperty("pLunchTimeColumn"));
-  var pLunchDayColumn = parseInt(properties.getProperty("pLunchDayColumn"));
-  var pSFNameColumn = parseInt(properties.getProperty("pSFNameColumn"));
-  var pSLNameColumn = parseInt(properties.getProperty("pSLNameColumn"));
-  var pTFNameColumn = parseInt(properties.getProperty("pTFNameColumn"));
-  var pTLNameColumn = parseInt(properties.getProperty("pTLNameColumn"));
-  var pTableColumn = parseInt(properties.getProperty("pTableColumn"));
-  var pGradeColumn = parseInt(properties.getProperty("pGradeColumn"));
-  var pHouseColumn = parseInt(properties.getProperty("pHouseColumn"));
-  var tFNameColumn = parseInt(properties.getProperty("tFNameColumn"));
-  var tLNameColumn = parseInt(properties.getProperty("pLNameColumn"));
-  var tLunchDayColumn = parseInt(properties.getProperty("tLunchDayColumn"));
-  var tLunchTimeColumn = parseInt(properties.getProperty("tLunchTimeColumn"));
+  var pLunchTimeColumn = parseInt(properties.pLunchTimeColumn);
+  var pLunchDayColumn = parseInt(properties.pLunchDayColumn);
+  var pSFNameColumn = parseInt(properties.pSFNameColumn);
+  var pSLNameColumn = parseInt(properties.pSLNameColumn);
+  var pTFNameColumn = parseInt(properties.pTFNameColumn);
+  var pTLNameColumn = parseInt(properties.pTLNameColumn);
+  var pTableColumn = parseInt(properties.pTableColumn);
+  var pGradeColumn = parseInt(properties.pGradeColumn);
+  var pHouseColumn = parseInt(properties.pHouseColumn);
+  var tFNameColumn = parseInt(properties.tFNameColumn);
+  var tLNameColumn = parseInt(properties.pLNameColumn);
+  var tLunchDayColumn = parseInt(properties.tLunchDayColumn);
+  var tLunchTimeColumn = parseInt(properties.tLunchTimeColumn);
   
   var students = [];
   
@@ -74,8 +75,8 @@ function studentTester(){
   var messages = [];  
   messages[0] = "TestForFilledEarlyLunches: " + testForFilledEarlyLunches(students);
   messages[1] = "TestAllStudentsHaveLunchForEachDay: " + testAllStudentsHaveALunchForEachDay(students);
-  messages[2] = "TestColorByTime: " +testColorByTime(pLunchTimeColumn);
-  //messages[3] = "TestColorByTable: " +testColorByTable(pTableColumn);
+  messages[2] = "TestColorByTime: " +testColorByTime(pLunchTimeColumn, properties);
+  //messages[3] = "TestColorByTable: " +testColorByTable(pTableColumn, properties);
   
   Logger.log(messages[2]);
   
@@ -91,11 +92,10 @@ Fails - Any background colors are incorrect
 @funtional - yes
 @author - dicksontc
 */
-function testColorByTime(column){
+function testColorByTime(column, properties){
   return allTests(function(t) {
-    var properties = PropertiesService.getDocumentProperties();
     var sheet = SpreadsheetApp.getActiveSheet();
-    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
     var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
     var vals = range.getValues();
     
@@ -147,11 +147,11 @@ Fails - Any background or font colors are incorrect
 @funtional - yes
 @author - dicksontc
 */
-function testColorByTable(column){
+function testColorByTable(column, properties){
   return allTests(function(t) {
      var properties = PropertiesService.getDocumentProperties();
     var sheet = SpreadsheetApp.getActiveSheet();
-    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData"));
+    var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
     var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
     var vals = range.getValues();
     var check = 0;
