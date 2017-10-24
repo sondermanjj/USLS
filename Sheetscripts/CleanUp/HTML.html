@@ -3,18 +3,20 @@
   <head>
     <base target="_top">
   </head>
-  <body id="bodyyy">
+  <body>
     
     <div id="rawFilePrompt">
-     <label for="firstname">Raw Student Data Sheet:</label>
+     <label>Raw Student Data Sheet:</label>
+     <br/>
       <select class="listOfSheets">
       </select>
       <br/>
-      <input id="hello" class="action" type="button" onClick="addRawSheet()" value="Next" />
+      <input class="action" type="button" onClick="addRawSheet()" value="Next" />
     </div>
     
     <div id="studentDataPrompt">
-     <label for="firstname">Final Student Data Sheet:</label>
+     <label>Final Student Data Sheet:</label>
+     <br/>
       <select class="listOfSheets">
       </select>
       <br/>
@@ -23,7 +25,8 @@
     </div>
     
     <div id="facultyDataPrompt">
-     <label for="firstname">Faculty Table Sheet:</label>
+     <label>Faculty Table Sheet:</label>
+     <br/>
       <select class="listOfSheets">
       </select>
       <br/>
@@ -32,7 +35,8 @@
     </div>
     
     <div id="dodSheetPrompt">
-     <label for="firstname">DOD List Sheet:</label>
+     <label>DOD List Sheet:</label>
+     <br/>
       <select class="listOfSheets">
       </select>
       <br/>
@@ -41,12 +45,13 @@
     </div>
     
     <div id="facultyChoicesPrompt">
-     <label for="firstname">Faculty Preferences Sheet:</label>
+     <label>Faculty Preferences Sheet:</label>
+     <br/>
       <select class="listOfSheets">
       </select>
       <br/>
-      <input type="button" onClick="showDiv('dodSheetPrompt', this)" value="Back"/>
-      <input class="action" type="button" onClick="addFacultyChoicesSheet()" value="Done" />
+      <input id="finalBackButton" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Back"/>
+      <input id="doneButton" class="action" type="button" onClick="addFacultyChoicesSheet()" value="Done" />
     </div>
     
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">

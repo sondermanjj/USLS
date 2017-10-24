@@ -20,6 +20,7 @@
  * @author - hendersonam
  */
 function cleanUp(sheetName, newSheetName) {
+
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(sheetName);
   var newSheet = ss.getSheetByName(newSheetName);
@@ -31,7 +32,11 @@ function cleanUp(sheetName, newSheetName) {
   if(newSheet == null) {
     ss.insertSheet(newSheetName);
     newSheet = ss.getSheetByName(newSheetName);
+  } else {
+    newSheet.clear();
   }
+  
+  var properties = PropertiesService.getDocumentProperties().getProperties();
 
   
   var oldValues = sheet.getDataRange().getValues();

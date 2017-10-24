@@ -96,6 +96,8 @@
       * @author - hendersonam
   *******************************************************************/
   function addFacultyChoicesSheet() {
+    $('#doneButton').prop("disabled", true);
+    $('#finalBackButton').prop("Disbaled", true);
     var rawSheetName = determineSheetName($('#rawFilePrompt'), $('#rawFilePrompt').children('.listOfSheets').val());
     var studentDataSheetName = determineSheetName($('#studentDataPrompt'), $('#studentDataPrompt').children('.listOfSheets').val());
     var facultyDataSheetName = determineSheetName($('#facultyDataPrompt'), $('#facultyDataPrompt').children('.listOfSheets').val());
@@ -105,12 +107,7 @@
     var sheetNames = {raw: rawSheetName, student: studentDataSheetName, faculty:facultyDataSheetName,
                       dod: dodSheetName, choices: facultyChoicesSheetName};
                       
-    google.script.run.withSuccessHandler(done).initialization(sheetNames);
-    console.log(sheetNames);
-  }
-  
-  function done() {
-  console.log(Done);
+    google.script.run.withSuccessHandler(closePopup).initialization(sheetNames);
   }
   
   /*****************************************************************
