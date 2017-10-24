@@ -1,9 +1,3 @@
-/**
- * @desc - Prompts the user to enter the name of the sheet they would like to clean
- * @functional - yes
- * @author - hendersonam
- */
-function sheetCleanupPrompt(){
 
   var cleanedSheet;
   
@@ -24,34 +18,54 @@ function sheetCleanupPrompt(){
       ui.alert("Whoops! That sheet does not exist. Please check for proper spelling and spacing and try again.");
       sheetCleanupPrompt();
     }
+/*****************************************************************
+      * @desc - Brings up the Schedule Change Prompt
+      * @author - hendersonam
+  *******************************************************************/
+  function showCleanUpPrompt() {
+    var html = HtmlService.createTemplateFromFile('Sheetscripts/CleanUp/HTML')
+      .evaluate()
+      .setHeight(100)
+      .setWidth(400);
+    SpreadsheetApp.getUi().showModalDialog(html, ' ');
   }
-  return cleanedSheet;
-}
 
 /**
  * @desc - Takes the relevant data from the RAW file and adds it to the "Final Student Data" sheet
  *         Also, creates the necessary columns that are not included in the RAW file
- * @param - sheet - the RAW sheet file
+ * @param - sheet - Sheet - the RAW sheet file
+ *          newSheet - Sheet - Sheet to save the new student data to
  * @functional - yes
  * @author - hendersonam
  */
-function cleanUp(sheet) {
+function cleanUp(sheetName, newSheetName) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(sheetName);
+  var newSheet = ss.getSheetByName(newSheetName);
+  if(sheet == null) {
+    SpreadsheetApp.getUi().alert("The Raw Data Sheet cannot be a newly made sheet. It must contain student records provided by administration.");
+    return;
+  }
+  
+  if(newSheet == null) {
+    ss.insertSheet(newSheetName);
+    newSheet = ss.getSheetByName(newSheetName);
+  }
+
   
   var oldValues = sheet.getDataRange().getValues();
-  var masterList = promptForNewSheet("Please enter the name of the sheet you would like to save the cleaned student information to.");
-  
+
   //Remove irrelevant data
   var newValues = removeIrrelevantData(oldValues);
   
-  //Add new columns
   newValues = addColumnNames(newValues, ["Table Head", "Lunch Day", "Lunch Time", "Lunch Table", "House"]);
-  
+
   //Populate the Lunch Day Table
   newValues = populateLunchDay(newValues);
   
-  masterList.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
+  newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
   
-  return masterList;
+  return newSheet;
   
 }
 

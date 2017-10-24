@@ -29,12 +29,12 @@
       var day = row.childNodes[1].innerText;
       newCourses.push([newCourse, day]);
     });
-    google.
-      script.
-      run.
-      withSuccessHandler(showChanges).
-      validateCourses($('#firstname').val(), 
-                         $('#lastname').val(), 
+    google
+      .script
+      .run
+      .withSuccessHandler(showChanges)
+      .validateCourses($('#firstname').val()
+                          , $('#lastname').val(), 
                          $('#classes').data('selected'),
                          newCourses);
   }

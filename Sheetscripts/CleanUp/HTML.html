@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body id="bodyyy">
+    
+    <div id="rawFilePrompt">
+     <label for="firstname">Raw Student Data Sheet:</label>
+      <select class="listOfSheets">
+      </select>
+      <br/>
+      <input id="hello" class="action" type="button" onClick="addRawSheet()" value="Next" />
+    </div>
+    
+    <div id="studentDataPrompt">
+     <label for="firstname">Final Student Data Sheet:</label>
+      <select class="listOfSheets">
+      </select>
+      <br/>
+      <input type="button" onClick="showDiv('rawFilePrompt', this)" value="Back"/>
+      <input class="action" type="button" onClick="addStudentDataSheet()" value="Next" />
+    </div>
+    
+    <div id="facultyDataPrompt">
+     <label for="firstname">Faculty Table Sheet:</label>
+      <select class="listOfSheets">
+      </select>
+      <br/>
+      <input type="button" onClick="showDiv('studentDataPrompt', this)" value="Back"/>
+      <input class="action" type="button" onClick="addFacultyDataSheet()" value="Next" />
+    </div>
+    
+    <div id="dodSheetPrompt">
+     <label for="firstname">DOD List Sheet:</label>
+      <select class="listOfSheets">
+      </select>
+      <br/>
+      <input type="button" onClick="showDiv('facultyDataPrompt', this)" value="Back"/>
+      <input class="action" type="button" onClick="addDODSheet()" value="Next" />
+    </div>
+    
+    <div id="facultyChoicesPrompt">
+     <label for="firstname">Faculty Preferences Sheet:</label>
+      <select class="listOfSheets">
+      </select>
+      <br/>
+      <input type="button" onClick="showDiv('dodSheetPrompt', this)" value="Back"/>
+      <input class="action" type="button" onClick="addFacultyChoicesSheet()" value="Done" />
+    </div>
+    
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <?!= include('Sheetscripts/CleanUp/Javascript'); ?>
+    <?!= include('Sheetscripts/CleanUp/Stylesheet'); ?>
+  </body>
+</html>
+
+
