@@ -67,14 +67,15 @@ function setLunchProperties() {
 * @ desc - re-sets column indices and column name properties
 */
 function setColumnProperties(){
-  var properties = PropertiesService.getDocumentProperties();
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
    //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("studentData")).getDataRange().getValues());
+                          properties.studentData).getDataRange().getValues());
   var teacherHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("teacherChoices")).getDataRange().getValues());
+                          properties.teacherChoices).getDataRange().getValues());
   setStudentColumnIndices(studentHeaders);
   setHeaderColumnNames(studentHeaders);
   setTeacherColumnIndices(teacherHeaders);
@@ -84,27 +85,43 @@ function setColumnProperties(){
  * @desc - Sets the document properties for the sheets that will be used throughout the program inlcuding column indices
  * @author - hendersonam
  */
-function setSheetProperties(studentSheet) {
-
+function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choicesSheetName) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var properties = PropertiesService.getDocumentProperties();
 
-  var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet has the  faculty lunch choices?");
-  var dodSheet = promptForSettingSheetProperty("Which sheet has the DOD list?");
-  var teacherTableSheet = promptForSettingSheetProperty("Please enter the name of the sheet you would like to save the faculty tables to");
+  var teacherChoicesSheet = ss.getSheetByName(choicesSheetName);
+  var dodSheet = ss.getSheetByName(dodSheetName);
+  var teacherTableSheet = ss.getSheetByName(teacherSheetName);
+
   
+  if(teacherChoicesSheet == null) {
+    SpreadsheetApp.getUi().alert("The Faculty Preferences Sheet cannot be a newly made sheet. It must contain the preferred lunch times for the faculty.");
+    return;
+  }
+  if(dodSheet == null) {
+    SpreadsheetApp.getUi().alert("The DOD List Sheet cannot be a newly made sheet. It must contain the list of DODs for the lunches.");
+    return;
+  }
+  if(teacherTableSheet == null) {
+    ss.insertSheet(teacherSheetName);
+    teacherTableSheet = ss.getSheetByName(teacherSheetName);
+  }
   
   setStudentSheet(studentSheet);
   setTeacherChoicesSheet(teacherChoicesSheet);
   setTeacherTableSheet(teacherTableSheet);
   setDODSheet(dodSheet);
   
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
+  
   //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("studentData")).getDataRange().getValues());
+                          properties.studentData).getDataRange().getValues());
   var teacherHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.getProperty("teacherChoices")).getDataRange().getValues());
+                          properties.teacherChoices).getDataRange().getValues());
   setStudentColumnIndices(studentHeaders);
   setHeaderColumnNames(studentHeaders);
   setTeacherColumnIndices(teacherHeaders);

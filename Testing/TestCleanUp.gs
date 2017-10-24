@@ -5,14 +5,16 @@
 * @hendersam
 */
 function runCleanUpTests() {
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
   
   var dataSheet = SpreadsheetApp.getActive().getSheetByName("Raw Data");
   cleanUp(dataSheet);
   
   var cleanUpMessages = [];
   
-  cleanUpMessages[0] = "CorrectBlockDataTest: " + runCorrectBlockDataTest();
-  cleanUpMessages[1] = "CorrectLunchDayDataTest: "+ runCorrectLunchDayDataTest();
+  cleanUpMessages[0] = "CorrectBlockDataTest: " + runCorrectBlockDataTest(properties);
+  cleanUpMessages[1] = "CorrectLunchDayDataTest: "+ runCorrectLunchDayDataTest(properties);
 
   Logger.log(cleanUpMessages[0]);
   Logger.log(cleanUpMessages[1]);
@@ -25,12 +27,11 @@ function runCleanUpTests() {
 * @desc - Checks the blocks and make sure all are correct
 * @hendersam
 */
-function runCorrectBlockDataTest() {  
+function runCorrectBlockDataTest(properties) {  
   
   // Here's where we actually run the tests:
   return allTests(function(t) {
 
-    var properties = PropertiesService.getDocumentProperties();
     var errors = 0;
 
     //Check the framework is working
@@ -38,7 +39,7 @@ function runCorrectBlockDataTest() {
     //Get necessary data 
     var range = SpreadsheetApp
     .getActiveSpreadsheet()
-    .getSheetByName(properties.getProperty("studentData"))
+    .getSheetByName(properties.studentData)
     .getDataRange();
     
     var values = range.getValues();
@@ -80,7 +81,7 @@ function runCorrectBlockDataTest() {
 * @desc - checks that the day is correct for the lunch day
 * @hendersam
 */
-function runCorrectLunchDayDataTest() {  
+function runCorrectLunchDayDataTest(properties) {  
   
   // Here's where we actually run the tests:
   return allTests(function(t) {
@@ -88,18 +89,15 @@ function runCorrectLunchDayDataTest() {
     //Check the framework is working
     t.areEqual(1,1);
     
-    var properties = PropertiesService.getDocumentProperties();
     //Get necessary data 
     var range = SpreadsheetApp
     .getActiveSpreadsheet()
-    .getSheetByName(properties.getProperty("studentData"))
+    .getSheetByName(properties.studentData)
     .getDataRange();
     
-    var blockColumn;
-    var lunchDayColumn;
     var values = range.getValues();
-    var blockColumn = properties.getProperty("pBlockColumn");
-    var lunchDayColumn = properties.getProperty("pLunchDayColumn");
+    var blockColumn = parseInt(properties["Student Block"]);
+    var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
     var numRows = values.length;
     var numColumns = values[0].length;
     
