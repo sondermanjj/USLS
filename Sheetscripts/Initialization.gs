@@ -25,7 +25,7 @@ function initialization() {
     setFacultyCourses();
     assignStudentLunchDays();
     //setCourses(getCourses());
-    //pushCoursesToCourseSheet();
+    pushCoursesToCourseSheet();
     addFacultyTables();
   
   } else {
