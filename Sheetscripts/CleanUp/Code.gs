@@ -12,7 +12,6 @@ function onOpen() {
       .addItem("View Menu", "showSidebar");
       
     ui.addToUi();
-    showSidebar();
 }
 
 

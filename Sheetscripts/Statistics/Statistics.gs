@@ -113,7 +113,7 @@ function statistics(time, day, values, students, properties) {
     }
   }
   
-  var properties = PropertiesService.getDocumentProperties();
+  var properties = PropertiesService.getDocumentProperties().getProperties();
   
   if (students) {
   var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
