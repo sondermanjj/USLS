@@ -219,6 +219,24 @@ function setHouses(value) {
 }
 
 /**
+  * @desc - Sets the document property for the raw data sheet as the sheet name
+  * @param - sheetName - the raw data sheet name
+  * @author - clemensam
+  */
+ function setRawSheetProperty(sheetName){
+   PropertiesService.getDocumentProperties().setProperty("rawData", sheetName);
+ }
+
+ /*
+ *
+ * author - clemensam
+ */
+ function setCoursesSheet(sheetName) {
+   PropertiesService.getDocumentProperties().setProperty("courseSheet", sheetName);
+ }
+ 
+
+/**
  * @desc - Sets the document property for the student data sheet as the sheet name
  * @param - sheet - the student data sheet
  * @author - hendersonam
