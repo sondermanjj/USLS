@@ -23,14 +23,15 @@
     
     Logger.clear();
     var documentProperties = PropertiesService.getDocumentProperties();
+    var properties = documentProperties.getProperties();
     populateTableList();
     
     Logger.log("Adding teachers begun");
 
-    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherTables"));
-    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherChoices"));
-    var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("DODList"));
-    var letterDays = JSON.parse(documentProperties.getProperty("letterDays"));
+    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
+    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
+    var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.DODList);
+    var letterDays = JSON.parse(properties.letterDays);
 
     
     var teacherRow;
@@ -167,7 +168,8 @@
   */
   function copyTeacherDataToPrimary() {
     var documentProperties = PropertiesService.getDocumentProperties();
-    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(documentProperties.getProperty("teacherChoices"));
+    var properties = documentProperties.getProperties();
+    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
     teacherList.sort(1);
     teacherList.getRange(2, 11, teacherList.getLastRow(), 15).clear();
     var teacherData = teacherList.getRange(2, 1, teacherList.getLastRow(), 6).getValues();
@@ -276,10 +278,11 @@ function facultyAddingPrompt(){
   var ui = SpreadsheetApp.getUi();
   var response = ui.alert('Do you want to add the faculty to the final student data?', ui.ButtonSet.YES_NO);
   if(response == ui.Button.YES) {
-    var properties = PropertiesService.getDocumentProperties();
-    var pValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().getValues();
-    var advisorCol = parseInt(properties.getProperty("Student Advisor"));
-    var gradeCol = parseInt(properties.getProperty("Student Grade Level"));
+    var docProperties = PropertiesService.getDocumentProperties();
+    var properties = docProperties.getProperties();
+    var pValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData).getDataRange().getValues();
+    var advisorCol = parseInt(properties["Student Advisor"]);
+    var gradeCol = parseInt(properties["Student Grade Level"]);
     for (var i = 0; i < pValues.length;i++) {
       if (pValues[advisorCol][i] == "Advisor") {
       //do nothing
@@ -291,10 +294,10 @@ function facultyAddingPrompt(){
       }
     }
     
-    pValues = addFacultyToStudentData(pValues);
+    pValues = addFacultyToStudentData(pValues, properties);
     
-    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getDataRange().clear();
-    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("studentData")).getRange(1, 1, pValues.length, pValues[0].length).setValues(pValues);
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData).getDataRange().clear();
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData).getRange(1, 1, pValues.length, pValues[0].length).setValues(pValues);
   }
 }
 
@@ -303,24 +306,23 @@ function facultyAddingPrompt(){
  * @functional - yes
  * @author - sondermanjj
  */
-function addFacultyToStudentData(pValues){  
+function addFacultyToStudentData(pValues, properties){  
 
-  var properties = PropertiesService.getDocumentProperties();
-  var tValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.getProperty("teacherChoices")).getDataRange().getValues();
+  var tValues = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices).getDataRange().getValues();
   //First get all the teacher property column indexes
-  var tFNameColumn = parseInt(properties.getProperty("Teacher First Name"));
-  var tLNameColumn = parseInt(properties.getProperty("Teacher Last Name"));
-  var tLunchDayColumn = parseInt(properties.getProperty("Teacher Lunch Day"));
-  var tLunchTimeColumn = parseInt(properties.getProperty("Teacher Lunch Assignment"));
-  var tTableColumn = parseInt(properties.getProperty("Teacher Table"));
-  var tHouseColumn = parseInt(properties.getProperty("Teacher House"));
+  var tFNameColumn = parseInt(properties["Teacher First Name"]);
+  var tLNameColumn = parseInt(properties["Teacher Last Name"]);
+  var tLunchDayColumn = parseInt(properties["Teacher Lunch Day"]);
+  var tLunchTimeColumn = parseInt(properties["Teacher Lunch Assignment"]);
+  var tTableColumn = parseInt(properties["Teacher Table"]);
+  var tHouseColumn = parseInt(properties["Teacher House"]);
   //Then the where the teacher values should be put in.
-  var pSFNameColumn = parseInt(properties.getProperty("Student First Name"));
-  var pSLFNameColumn = parseInt(properties.getProperty("Student Last Name"));
-  var pLunchDayColumn = parseInt(properties.getProperty("Student Lunch Day"));
-  var pLunchTimeColumn = parseInt(properties.getProperty("Student Lunch Time"));
-  var pTableColumn = parseInt(properties.getProperty("Student Lunch Table"));
-  var pHouseColumn = parseInt(properties.getProperty("Student House"));
+  var pSFNameColumn = parseInt(properties["Student First Name"]);
+  var pSLFNameColumn = parseInt(properties["Student Last Name"]);
+  var pLunchDayColumn = parseInt(properties["Student Lunch Day"]);
+  var pLunchTimeColumn = parseInt(properties["Student Lunch Time"]);
+  var pTableColumn = parseInt(properties["Student Lunch Table"]);
+  var pHouseColumn = parseInt(properties["Student House"]);
   
   var placeHolder;
   for (var i = 0; i < tValues.length; i++) {

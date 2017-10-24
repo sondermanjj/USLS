@@ -22,8 +22,9 @@ function initialization() {
     }
     
     setSheetProperties(cleanedSheet);
+    setFacultyCourses();
     assignStudentLunchDays();
-    setCourses(getCourses());
+    pushCoursesToCourseSheet();
     addFacultyTables();
   
   } else {

@@ -8,9 +8,9 @@
       * @author - hendersonam
   *******************************************************************/
   function showScheduleChangesPrompt() {
-    var html = HtmlService.createTemplateFromFile('Sheetscripts/ScheduleChanges/HTML')
+    var html = HtmlService.createTemplateFromFile("Sheetscripts/ScheduleChanges/HTML")
       .evaluate();
-    SpreadsheetApp.getUi().showModalDialog(html, ' ');
+    SpreadsheetApp.getUi().showModalDialog(html, " ");
   }
 
   /*****************************************************************
@@ -36,7 +36,6 @@
       * @author - hendersonam
   *******************************************************************/
   function getValidSchedule(data) {
-  
     var schedule = [];
     
     var headers = ["First Name", "Last Name", "Course Ttile", "Lunch Day"];
@@ -94,8 +93,7 @@
     var facultyFirstNameColumn = parseInt(properties["Student Faculty First Name"]);
     var facultyLastNameColumn = parseInt(properties["Student Faculty Last Name"]);
     
-    var courseTimes = JSON.parse(properties["courses"]);
-    
+    var courseTimes = getCourses(null).courses;
     values.sort(compareByColumnIndex(lunchDayColumn));
     
     oldCourses.sort(compareByColumnIndex(3));
@@ -104,12 +102,12 @@
     var numOfChangesMade = 0;
     var studentChanges = [];
     var changes = [];
+
     for(var i = 0; i < values.length; i++) {
       
-      if(firstname == values[i][firstNameColumn].toString().toLowerCase()) {
-        if(lastname == values[i][lastNameColumn].toString().toLowerCase()) {
-          if(oldCourses[numOfChangesMade][3].toString().toLowerCase() == values[i][lunchDayColumn].toString().toLowerCase()) {
-            
+      if(firstname.toLowerCase() == values[i][firstNameColumn].toString().toLowerCase()) {
+        if(lastname.toLowerCase() == values[i][lastNameColumn].toString().toLowerCase()) {
+          if(oldCourses[numOfChangesMade][3].toString() == values[i][lunchDayColumn].toString()) {
             //Save the old row and the old time, and old course
             var oldRow = values[i];
             var oldTimee = values[i][lunchTimeColumn];
@@ -121,12 +119,11 @@
             //Get the course title and lunch day concat
             var course = newCourses[numOfChangesMade][0];
             var lunchDay = values[i][lunchDayColumn];
-            
             //Course title and lunch day concat
             var courseAndDay = course + lunchDay;
-            courseAndDay = courseAndDay.toString().toLowerCase().replace(/\s/g,'');
+            courseAndDay = courseAndDay.toString().replace(/\s/g,"");
             //Get the lunch time for that particular course and day pair
-            var newTime = courseTimes[courseAndDay.toString().toLowerCase()];
+            var newTime = courseTimes[courseAndDay];
             //Only if not null do we count this as a change
             if(newTime != null) {
               //Create the change object
@@ -140,7 +137,7 @@
                     teacherFound = true;
                   }
                 }
-              
+                
                 if(teacherFound) {
                   k = values.length;
                 }
@@ -278,7 +275,6 @@
     return html;
   }
 
- 
 function getChangesHTML() {
   return changeshtml;
 }

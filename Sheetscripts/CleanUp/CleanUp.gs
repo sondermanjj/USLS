@@ -11,6 +11,7 @@ function sheetCleanupPrompt(){
   response = ui.prompt('Preparing to clean raw data sheet...', 'Please enter the name of the raw data sheet.\n Note: Sheet names are listed on the bottom tabs.', ui.ButtonSet.OK_CANCEL);
   if(response.getSelectedButton() == ui.Button.OK){
     var sheetName = response.getResponseText();
+    setRawSheetProperty(sheetName);
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
     if(sheet != null){
       cleanedSheet = cleanUp(sheet);
@@ -35,22 +36,71 @@ function sheetCleanupPrompt(){
  * @author - hendersonam
  */
 function cleanUp(sheet) {
+  var documentProperties = PropertiesService.getDocumentProperties();
+  var properties = documentProperties.getProperties();
   
   var oldValues = sheet.getDataRange().getValues();
   var masterList = promptForNewSheet("Please enter the name of the sheet you would like to save the cleaned student information to.");
   
   //Remove irrelevant data
-  var newValues = removeIrrelevantData(oldValues);
+  var newValues = removeIrrelevantData(oldValues, properties);
   
   //Add new columns
   newValues = addColumnNames(newValues, ["Table Head", "Lunch Day", "Lunch Time", "Lunch Table", "House"]);
   
   //Populate the Lunch Day Table
-  newValues = populateLunchDay(newValues);
+  newValues = populateLunchDay(newValues, properties);
   
   masterList.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
   
   return masterList;
+  
+}
+
+/*
+*
+* @author - clemensam
+*/
+function setFacultyCourses() {
+  var studentDataSheetName = PropertiesService.getDocumentProperties().getProperty("studentData");
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataSheetName);
+  var data = sheet.getDataRange();
+  
+  var values = data.getValues();
+  var numRows = data.getNumRows();
+  var headers = getListOfColumns(values);
+
+  var courseTitleCol = getColumnIndex(headers, "Course Title");
+  var facultyFirstNameCol = getColumnIndex(headers, "Faculty First Name");;
+  var facultyLastNameCol = getColumnIndex(headers, "Faculty Last Name");
+  var lunchDayCol = getColumnIndex(headers, "Lunch Day");
+  
+  var headerRow = ["Course Title", "Faculty First Name", "Faculty Last Name", "Lunch Day", "Lunch Time"];
+  var newData = [];
+  var courses = [];
+  //newData.push(headerRow);
+  var i; 
+  for(var i = 0; i < numRows; i++){
+    var courseTitle = values[i][courseTitleCol];
+    var facultyFirstName = values[i][facultyFirstNameCol];
+    var facultyLastName = values[i][facultyLastNameCol];
+    var lunchDay = values[i][lunchDayCol];
+    
+    var newRow = [courseTitle, facultyFirstName, facultyLastName, lunchDay];
+    
+    var courseDayConcat = courseTitle + lunchDay;
+    
+    if(courses.indexOf(courseDayConcat) < 0) {
+      courses.push(courseDayConcat);
+      newData.push(newRow);
+    }
+  }
+  
+  newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
+  
+  createNewSheet(newData, "Courses");
+  console.log("Course Sheet Created");
+  setCoursesSheet("Courses");
   
 }
 
@@ -62,11 +112,10 @@ function cleanUp(sheet) {
  * @funtional - yes
  * @author - hendersonam
  */
-function removeIrrelevantData(oldValues) {
+function removeIrrelevantData(oldValues, properties) {
   
   //Get necessary properties
-  var properties = PropertiesService.getDocumentProperties();
-  var schoolDays = JSON.parse(properties.getProperty('schoolDays'));
+  var schoolDays = JSON.parse(properties.schoolDays);
   
   //Create a new array for the cleaned data
   var revisedValues = [];
@@ -80,7 +129,7 @@ function removeIrrelevantData(oldValues) {
   
   //Grab any relevant rows (courses that meet during lunch times)
   //and push them to the new data array
-  for (var j = 0; j < oldValues.length - 1; j++) {
+  for (var j = 0; j < oldValues.length; j++) {
     var row = oldValues[j][blockColumn];
     if(schoolDays[row] != null) {
       revisedValues.push(oldValues[j]);
@@ -96,10 +145,9 @@ function removeIrrelevantData(oldValues) {
  * @functional - yes
  * @author - hendersonam
  */
-function populateLunchDay(values) {
+function populateLunchDay(values, properties) {
   
-  var properties = PropertiesService.getDocumentProperties();
-  var schoolDays = JSON.parse(properties.getProperty('schoolDays'));
+  var schoolDays = JSON.parse(properties.schoolDays);
   var headers = getListOfColumns(values);
   var blockColumn = getColumnIndex(headers, "Block");
   var lunchDayColumn = getColumnIndex(headers, "Lunch Day");

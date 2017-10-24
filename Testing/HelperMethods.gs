@@ -16,6 +16,10 @@ function runHelperMethodTests() {
   
 }
 
+function testSaveButton() {
+  Logger.log("button pressed");
+}
+
 /**
   * @desc - Test to make sure the sorting works
   * @author - hendersonam

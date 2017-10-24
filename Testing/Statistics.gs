@@ -5,6 +5,9 @@
  * @author dicksontc
  */
 function runStatisticsTests() {
+  var docProperties = PropertiesService.getDocumentProperties();
+  var properties = docProperties.getProperties();
+  
   var time = ["Early", "Mid", "Late"];
   var day = ["A", "B", "C", "D", "E", "F", "G", "H"];
   
@@ -49,8 +52,8 @@ function runStatisticsTests() {
                            [0,0,0]];
                     
   
-  var teacherValues = statistics(time, day, fakeSheetData, false);
-  var studentValues = statistics(time, day, fakeSheetData, true);
+  var teacherValues = statistics(time, day, fakeSheetData, false, properties);
+  var studentValues = statistics(time, day, fakeSheetData, true, properties);
   
   testCorrectNumberOfTeachers(actualTeacherData, teacherValues);
   testCorrectNumberOfStudents(actualStudentData, studentValues);
