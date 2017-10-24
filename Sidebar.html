@@ -456,9 +456,9 @@
       <div id="tabs">
       <span>
       <ul>
-        <li class="active" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Assign/Reschedule</li>
+        <li class="active" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Data Tools</li>      
+        <li class="inactive" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Assign/Reschedule</li>
         <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideSettingsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
-        <li class="inactive" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Data Tools</li>
      </ul>
      </span>
      <span>
@@ -473,7 +473,7 @@
        <div class="button-div"><button id="cleanButton" class="action" onclick="google.script.run.initialization();">Clean and Assign</button></div>
        <div class="button-div"><button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button></div>
        
-       <br>
+       <h3>Export to Website</h3>
        <p>Use the button below to save the current assignments and export them to the website.</p>
        <div class="button-div"><button id="exportButton" class="share" onclick="google.script.run.exportToWebsite();">Export</button></div>
 
@@ -487,8 +487,9 @@
      
      <div id="searchPage">
        <h2>Search</h2>
-       <div>Must do an initial scan on data before searching. Use the search to hide values not matching you search.</div>
-       <div>Searches can be stacked on top of one another. "Show All" will show all rows again.</div>
+       <div class="search-info">Must do an initial scan on data before searching. Use the search to hide values not matching you search.</div>
+       <br>
+       <div class="search-info">Searches can be stacked on top of one another. "Show All" will show all rows again.</div>
        <select onload="listHeaders" id="dropdownfilter">
         
          <script>
