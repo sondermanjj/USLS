@@ -96,13 +96,20 @@
       font-weight: bold;
     }
     
+    #sortButtons {
+      width: 90%;
+    }
+    
+    .button-div {
+      width: 100%;
+    }
+    
     #sortButtons, #sortButtons tr, #searchButtons, #searchButtons tr, #searchButtons td, #customSort, #customSort tr{
       border: none;
       padding: 8px 0px;
       
     }
     
-
     .table-striped tr:nth-child(2n+1) td {
       background-color: #e6e6e6;
     }
@@ -152,8 +159,9 @@
   #sortButtons td, #customSort td {
       text-align: left;
       font-weight: bold;
+      font-size: 11px;
       border: none;
-      padding: 8px 5px;
+      padding: 3px 5px;
     }
     
     #sortButtons button {
@@ -167,6 +175,7 @@
     
     #settingsButton {
       float: right;
+      margin: 5px 0 5px 5px;
     }
     
      #changes li{
@@ -196,7 +205,6 @@
     }
     
     #tabs ul {
-
       list-style-type: none;
       margin: 0;
       padding: 0;
@@ -215,13 +223,13 @@
       border-radius: 0 0 8px 8px;
       background-color: #e6e6e6;
       font-weight: bold;
+      font-size: 11px;
     }
     
     #tabs li:hover {
       /*top color: background-color: #333;*/
       /*button color: background-color: #4a8bf5;*/
       /*school color: background-color: #002967;*/
-      font-size: 0.9em;
       font-weight: bold;   
       background-color: #0d47a1;
       color: #fff;
@@ -233,12 +241,20 @@
     }
     
 
-    #statsPage, #searchPage, #settingsPage {
+    #cleanPage, #statsPage, #settingsPage {
       display: none;
     }
     
     #statsPage, #searchPage, #cleanPage, #settingsPage{
       margin-top: 10px;
+    }
+    
+    .search-info {
+      font-size: 12px;
+    }
+    
+    #searchPage h2 {
+      margin-top: 5px;
     }
     
     </style>
