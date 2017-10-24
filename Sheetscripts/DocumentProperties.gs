@@ -86,12 +86,27 @@ function setColumnProperties(){
  * @desc - Sets the document properties for the sheets that will be used throughout the program inlcuding column indices
  * @author - hendersonam
  */
-function setSheetProperties(studentSheet) {
 
-  var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet has the  faculty lunch choices?");
-  var dodSheet = promptForSettingSheetProperty("Which sheet has the DOD list?");
-  var teacherTableSheet = promptForSettingSheetProperty("Please enter the name of the sheet you would like to save the faculty tables to");
+function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choicesSheetName) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var properties = PropertiesService.getDocumentProperties();
+
+  var teacherChoicesSheet = ss.getSheetByName(choicesSheetName);
+  var dodSheet = ss.getSheetByName(dodSheetName);
+  var teacherTableSheet = ss.getSheetByName(teacherSheetName);
   
+  if(teacherChoicesSheet == null) {
+    SpreadsheetApp.getUi().alert("The Faculty Preferences Sheet cannot be a newly made sheet. It must contain the preferred lunch times for the faculty.");
+    return;
+  }
+  if(dodSheet == null) {
+    SpreadsheetApp.getUi().alert("The DOD List Sheet cannot be a newly made sheet. It must contain the list of DODs for the lunches.");
+    return;
+  }
+  if(teacherTableSheet == null) {
+    ss.insertSheet(teacherSheetName);
+    teacherTableSheet = ss.getSheetByName(teacherSheetName);
+  }
   
   setStudentSheet(studentSheet);
   setTeacherChoicesSheet(teacherChoicesSheet);
@@ -196,14 +211,22 @@ function setHouses(value) {
 }
 
 /**
- * @desc - Sets the document property for the raw data sheet as the sheet name
- * @param - sheetName - the raw data sheet name
- * @author - clemensam
- */
-function setRawSheetProperty(sheetName){
-  PropertiesService.getDocumentProperties().setProperty("rawData", sheetName);
-}
+  * @desc - Sets the document property for the raw data sheet as the sheet name
+  * @param - sheetName - the raw data sheet name
+  * @author - clemensam
+  */
+ function setRawSheetProperty(sheetName){
+   PropertiesService.getDocumentProperties().setProperty("rawData", sheetName);
+ }
 
+ /*
+ *
+ * author - clemensam
+ */
+ function setCoursesSheet(sheetName) {
+   PropertiesService.getDocumentProperties().setProperty("courseSheet", sheetName);
+ }
+ 
 /**
  * @desc - Sets the document property for the student data sheet as the sheet name
  * @param - sheet - the student data sheet

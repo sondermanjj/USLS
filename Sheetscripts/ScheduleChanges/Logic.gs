@@ -23,7 +23,6 @@
     for(var j=0; j<list.length; j++){            
       numChanges += 1;            
     }            
-    Logger.log(numChanges);            
   }
   
   /*****************************************************************
