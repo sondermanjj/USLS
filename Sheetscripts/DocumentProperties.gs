@@ -1,7 +1,7 @@
 
 
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
+  //Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
   Logger.log(PropertiesService.getDocumentProperties().getProperties());
   
 }
@@ -67,15 +67,14 @@ function setLunchProperties() {
 * @ desc - re-sets column indices and column name properties
 */
 function setColumnProperties(){
-  var docProperties = PropertiesService.getDocumentProperties();
-  var properties = docProperties.getProperties();
+  var properties = PropertiesService.getDocumentProperties();
    //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.studentData).getDataRange().getValues());
+                          properties.getProperty("studentData")).getDataRange().getValues());
   var teacherHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.teacherChoices).getDataRange().getValues());
+                          properties.getProperty("teacherChoices")).getDataRange().getValues());
   setStudentColumnIndices(studentHeaders);
   setHeaderColumnNames(studentHeaders);
   setTeacherColumnIndices(teacherHeaders);
@@ -92,6 +91,12 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   var teacherChoicesSheet = ss.getSheetByName(choicesSheetName);
   var dodSheet = ss.getSheetByName(dodSheetName);
   var teacherTableSheet = ss.getSheetByName(teacherSheetName);
+
+  var properties = PropertiesService.getDocumentProperties();
+
+  var teacherChoicesSheet = promptForSettingSheetProperty("Which sheet has the  faculty lunch choices?");
+  var dodSheet = promptForSettingSheetProperty("Which sheet has the DOD list?");
+  var teacherTableSheet = promptForSettingSheetProperty("Please enter the name of the sheet you would like to save the faculty tables to");
 
   
   if(teacherChoicesSheet == null) {
@@ -112,16 +117,13 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   setTeacherTableSheet(teacherTableSheet);
   setDODSheet(dodSheet);
   
-  var docProperties = PropertiesService.getDocumentProperties();
-  var properties = docProperties.getProperties();
-  
   //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.studentData).getDataRange().getValues());
+                          properties.getProperty("studentData")).getDataRange().getValues());
   var teacherHeaders = getListOfColumns(
                           SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-                          properties.teacherChoices).getDataRange().getValues());
+                          properties.getProperty("teacherChoices")).getDataRange().getValues());
   setStudentColumnIndices(studentHeaders);
   setHeaderColumnNames(studentHeaders);
   setTeacherColumnIndices(teacherHeaders);
@@ -219,6 +221,15 @@ function setHouses(value) {
 }
 
 /**
+ * @desc - Sets the document property for the raw data sheet as the sheet name
+ * @param - sheetName - the raw data sheet name
+ * @author - clemensam
+ */
+function setRawSheetProperty(sheetName){
+  PropertiesService.getDocumentProperties().setProperty("rawData", sheetName);
+}
+
+/**
  * @desc - Sets the document property for the student data sheet as the sheet name
  * @param - sheet - the student data sheet
  * @author - hendersonam
@@ -226,6 +237,14 @@ function setHouses(value) {
 function setStudentSheet(sheet) {
   var value = sheet.getName();
   PropertiesService.getDocumentProperties().setProperty("studentData", value);
+}
+
+/*
+*
+* author - clemensam
+*/
+function setCoursesSheet(sheetName) {
+  PropertiesService.getDocumentProperties().setProperty("courseSheet", sheetName);
 }
 
 /**

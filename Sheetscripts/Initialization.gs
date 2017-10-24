@@ -22,9 +22,12 @@ function initialization(sheetNames) {
       SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
     }
     
+    setFacultyCourses();
     setSheetProperties(cleanedSheet, sheetNames.faculty, sheetNames.dod, sheetNames.choices);
+
     assignStudentLunchDays();
-    setCourses(getCourses());
+    //setCourses(getCourses());
+    pushCoursesToCourseSheet();
     addFacultyTables();
   
   } else {
