@@ -1,7 +1,7 @@
 
 
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
+  //Logger.log(PropertiesService.getDocumentProperties().getProperty("courses"));
   Logger.log(PropertiesService.getDocumentProperties().getProperties());
   
 }
@@ -13,6 +13,7 @@ function testting() {
  *     teacherChoices - Faculty Choices List
  *     teacherTables - Faculty Table List
  *     dodList - DOD List
+ *     coursesList - Course Title and Day List
  *    
  *   Column Indices for Student Data Sheet:
  *     "Student " + column name
@@ -85,6 +86,7 @@ function setColumnProperties(){
  * @desc - Sets the document properties for the sheets that will be used throughout the program inlcuding column indices
  * @author - hendersonam
  */
+
 function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choicesSheetName) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var properties = PropertiesService.getDocumentProperties();
@@ -92,7 +94,6 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   var teacherChoicesSheet = ss.getSheetByName(choicesSheetName);
   var dodSheet = ss.getSheetByName(dodSheetName);
   var teacherTableSheet = ss.getSheetByName(teacherSheetName);
-
   
   if(teacherChoicesSheet == null) {
     SpreadsheetApp.getUi().alert("The Faculty Preferences Sheet cannot be a newly made sheet. It must contain the preferred lunch times for the faculty.");
@@ -165,15 +166,6 @@ function setLetterDays(value) {
 }
 
 /**
- * @desc - Sets courses and corresponding day
- * @param - Object courses
- * @author - clemensam
- */
-function setCourses(courses) {
-  PropertiesService.getDocumentProperties().setProperty("courses", JSON.stringify(courses));
-}
-
-/**
  * @desc - Sets the document property for the assigned lunch times as a JSON.stringify value
  * @param - Array[][] - array with the lunch times have assigned seating by lunch table
  * @author - dicksontc
@@ -235,7 +227,6 @@ function setHouses(value) {
    PropertiesService.getDocumentProperties().setProperty("courseSheet", sheetName);
  }
  
-
 /**
  * @desc - Sets the document property for the student data sheet as the sheet name
  * @param - sheet - the student data sheet
@@ -244,6 +235,14 @@ function setHouses(value) {
 function setStudentSheet(sheet) {
   var value = sheet.getName();
   PropertiesService.getDocumentProperties().setProperty("studentData", value);
+}
+
+/*
+*
+* author - clemensam
+*/
+function setCoursesSheet(sheetName) {
+  PropertiesService.getDocumentProperties().setProperty("courseSheet", sheetName);
 }
 
 /**

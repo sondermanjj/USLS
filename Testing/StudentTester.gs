@@ -27,19 +27,19 @@ function studentTester(){
   var pNumColumns = primaryData.getNumColumns();
   var tNumColumns = teacherData.getNumColumns();
   
-  var pLunchTimeColumn = parseInt(properties.pLunchTimeColumn);
-  var pLunchDayColumn = parseInt(properties.pLunchDayColumn);
-  var pSFNameColumn = parseInt(properties.pSFNameColumn);
-  var pSLNameColumn = parseInt(properties.pSLNameColumn);
-  var pTFNameColumn = parseInt(properties.pTFNameColumn);
-  var pTLNameColumn = parseInt(properties.pTLNameColumn);
-  var pTableColumn = parseInt(properties.pTableColumn);
-  var pGradeColumn = parseInt(properties.pGradeColumn);
-  var pHouseColumn = parseInt(properties.pHouseColumn);
-  var tFNameColumn = parseInt(properties.tFNameColumn);
-  var tLNameColumn = parseInt(properties.pLNameColumn);
-  var tLunchDayColumn = parseInt(properties.tLunchDayColumn);
-  var tLunchTimeColumn = parseInt(properties.tLunchTimeColumn);
+  var pLunchTimeColumn = parseInt(properties["Student Lunch Time"]);
+  var pLunchDayColumn = parseInt(properties["Student Lunch Day"]);
+  var pSFNameColumn = parseInt(properties["Student First Name"]);
+  var pSLNameColumn = parseInt(properties["Student Last Name"]);
+  var pTFNameColumn = parseInt(properties["Student Faculty First Name"]);
+  var pTLNameColumn = parseInt(properties["Student Faculty Last Name"]);
+  var pTableColumn = parseInt(properties["Student Table"]);
+  var pGradeColumn = parseInt(properties["Student Grade Level"]);
+  var pHouseColumn = parseInt(properties["Student House"]);
+  var tFNameColumn = parseInt(properties["Teacher First Name"]);
+  var tLNameColumn = parseInt(properties["Teacher Last Name"]);
+  var tLunchDayColumn = parseInt(properties["Teacher Lunch Day"]);
+  var tLunchTimeColumn = parseInt(properties["Teacher Lunch Assignment"]);
   
   var students = [];
   

@@ -112,23 +112,15 @@ function statistics(time, day, values, students, properties) {
       stats[i][j] = 0;
     }
   }
-  
-  var properties = PropertiesService.getDocumentProperties().getProperties();
-  
+
   if (students) {
   var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
   var gradeColumn = parseInt(properties["Student Grade Level"]);
   var lunchTimeColumn = parseInt(properties["Student Lunch Time"]);
-  Logger.log("Finding Student stats...");
-
   } else {
   var lunchDayColumn = parseInt(properties["Teacher Lunch Day"]);
   var gradeColumn = values[0].length+1;
   var lunchTimeColumn = parseInt(properties["Teacher Lunch Assignment"]);
-  Logger.log("Finding Teacher stats...");
-  Logger.log(lunchDayColumn);
-  Logger.log(gradeColumn);
-  Logger.log(lunchTimeColumn);
   }
   
   var flag;
@@ -136,9 +128,6 @@ function statistics(time, day, values, students, properties) {
   var lunchTime;
   var count;
   
-
-Logger.log(day);
-Logger.log(time);
   //For each row in the data...
   for( var k = 0; k < values.length; k++) {
   

@@ -1,4 +1,3 @@
-
 /*****************************************************************
       * @desc - Brings up the Schedule Change Prompt
       * @author - hendersonam
@@ -53,6 +52,53 @@ function cleanUp(sheetName, newSheetName) {
   newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
   
   return newSheet;
+  
+}
+
+/*
+*
+* @author - clemensam
+*/
+function setFacultyCourses() {
+  var studentDataSheetName = PropertiesService.getDocumentProperties().getProperty("studentData");
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataSheetName);
+  var data = sheet.getDataRange();
+  
+  var values = data.getValues();
+  var numRows = data.getNumRows();
+  var headers = getListOfColumns(values);
+
+  var courseTitleCol = getColumnIndex(headers, "Course Title");
+  var facultyFirstNameCol = getColumnIndex(headers, "Faculty First Name");;
+  var facultyLastNameCol = getColumnIndex(headers, "Faculty Last Name");
+  var lunchDayCol = getColumnIndex(headers, "Lunch Day");
+  
+  var headerRow = ["Course Title", "Faculty First Name", "Faculty Last Name", "Lunch Day", "Lunch Time"];
+  var newData = [];
+  var courses = [];
+  //newData.push(headerRow);
+  var i; 
+  for(var i = 0; i < numRows; i++){
+    var courseTitle = values[i][courseTitleCol];
+    var facultyFirstName = values[i][facultyFirstNameCol];
+    var facultyLastName = values[i][facultyLastNameCol];
+    var lunchDay = values[i][lunchDayCol];
+    
+    var newRow = [courseTitle, facultyFirstName, facultyLastName, lunchDay];
+    
+    var courseDayConcat = courseTitle + lunchDay;
+    
+    if(courses.indexOf(courseDayConcat) < 0) {
+      courses.push(courseDayConcat);
+      newData.push(newRow);
+    }
+  }
+  
+  newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
+  
+  createNewSheet(newData, "Courses");
+  console.log("Course Sheet Created");
+  setCoursesSheet("Courses");
   
 }
 

@@ -1,4 +1,4 @@
-<script tpye="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
 <script>
 
@@ -6,7 +6,7 @@
       * @desc - Creates an onClick event for a table row to highlight the row
       * @author - hendersonam
   *******************************************************************/
-  $(document).on('click', '.selectable', function() {
+  $(document).on("click", ".selectable", function() {
     $(this).toggleClass("selected");
   });
   
@@ -23,19 +23,19 @@
     $("#backButton").prop("disabled",true);
     $("#assignStudents").prop("disabled",true);
     var newCourses = [];
-    $('#newSchedule tr').each( function() {
+    $("#newSchedule tr").each( function() {
       var row = $(this)[0];
       var newCourse = row.childNodes[0].childNodes[0].value;
       var day = row.childNodes[1].innerText;
       newCourses.push([newCourse, day]);
     });
-    google
-      .script
-      .run
-      .withSuccessHandler(showChanges)
-      .validateCourses($('#firstname').val()
-                          , $('#lastname').val(), 
-                         $('#classes').data('selected'),
+    google.
+      script.
+      run.
+      withSuccessHandler(showChanges).
+      validateCourses($("#firstname").val(), 
+                         $("#lastname").val(), 
+                         $("#classes").data("selected"),
                          newCourses);
   }
   
@@ -44,13 +44,14 @@
     if ( changes == null || changes == undefined) {
     
     } else if (changes.length > 0) {
-    var headers = ["First Name", "Last Name", "Old Lunch Time", "New Lunch Time", "Old Table", "New Table"];
+    var headers = ["First Name", "Last Name", "Lunch Day","New Course", "Old Lunch Time", "New Lunch Time", "New Table"];
     html += createHeaders(html, headers);
     
     for ( var i = 0; i < changes.length; i++) {
       html += '<tr>';
-      for( var j = 0; j < changes[i].length; j++) {
-        html += '<td >' + changes[i][j] + '</td>';
+      var row = [changes[i][0], changes[i][1], changes[i][2], changes[i][3], changes[i][5], changes[i][6], changes[i][8]];
+      for( var j = 0; j < row.length; j++) {
+        html += '<td >' + row[j] + '</td>';
       }
         html += "</tr>";
     }
@@ -59,21 +60,21 @@
       html += "There were no schedule changes!";
     }
       document.getElementById("scheduleChanges").innerHTML = html;
-      showDiv('potentialChanges');    
+      showDiv("potentialChanges");    
     
   }
   
   /*****************************************************************
-      * @desc - Sets the display for the given divId to 'block' and all other divs to 'none'
+      * @desc - Sets the display for the given divId to "block" and all other divs to "none"
       * @param - divID - String - the id of the div to toggle
       * @author - hendersonam
   *******************************************************************/
   function showDiv(divID) {
-    var divs = document.getElementsByTagName('div');
+    var divs = document.getElementsByTagName("div");
     for(var i = 0; i < divs.length; i++){
-      divs[i].style.display = 'none';
+      divs[i].style.display = "none";
     }
-    document.getElementById(divID).style.display = 'block';
+    document.getElementById(divID).style.display = "block";
   }
   
   /*****************************************************************
@@ -90,8 +91,8 @@
       var day = row.childNodes[3].innerText;
       selected.push([firstName, lastName, course, day]);
     });
-    $('#classes').data('selected', selected);
-    createNewScheduleInputs(selected);
+    $("#classes").data("selected", selected);
+    google.script.run.withSuccessHandler(createNewScheduleInputs).getCourses(selected);
   }
   
   /*****************************************************************
@@ -100,7 +101,7 @@
       * @author - hendersonam
   *******************************************************************/
   function sendStudentName() {
-    var formData = [$('#firstname').val(), $('#lastname').val()];
+    var formData = [$("#firstname").val(), $("#lastname").val()];
     google.script.run.withSuccessHandler(showStudentSchedule).getValidSchedule(formData);
   }
   
@@ -134,21 +135,61 @@
       *                                        Lunch Day]
       * @author - hendersonam
   *******************************************************************/
-  function createNewScheduleInputs(oldCourses) {
-    var newSchedules = document.getElementById('newSchedule');
+  function createNewScheduleInputs(courses) {
+    var oldCourses = courses.selected;
+    var allCourses = courses.courses;
+    var titles = courses.titles;
+    var newSchedules = document.getElementById("newSchedule");
     var html = "";
     var headers = ["New Course", "Day"];
     html += createHeaders(html, headers);
+    var dropdown = createDropdown(allCourses, titles, oldCourses);
     for(var i = 0; i < oldCourses.length; i++) {
-      html += '<tr>';
-      html += '<td><input type="text" required=true size="20" /></td>';
-      html += '<td>' + oldCourses[i][3] + '</td>';
-      html += '</tr>';
+      html += "<tr>";
+      html += "<td><select id = coursesSelect>";
+      html += dropdown[i];
+      html += "</select></td>";
+      html += "<td>" + oldCourses[i][3] + "</td>";
+      html += "</tr>";
     }
-    document.getElementById('newClasses').innerHTML = html;
-    showDiv('newSchedule');
+    document.getElementById("newClasses").innerHTML = html;
+    showDiv("newSchedule");
   }
+  
+  /*****************************************************************
+      * @desc - Creates an Array with the options for possible courses to switch into each day
+      * @param - courses - JSON Object - Contains course title and day concat and lunch times
+      *          titles - Array - 1D Array with the JSON objects holding course info
+      *          oldCourses - Array - 1D Array holding the old courses
+      * @return - coursesHTMLArray - Array - Array filled with html that holds the options for each day
+      * @author - dicksontc
+  *******************************************************************/
+  function createDropdown(courses, titles, oldCourses){
+    var coursesHTMLArray = [];
     
+    for(var j = 0; j < oldCourses.length; j++){
+      var day = oldCourses[j][3];
+      var coursesHTML = "";
+      var coursesArray = [];
+      for (var key in courses) {
+        if (courses.hasOwnProperty(key) && titles[key].day == day) {
+          coursesArray.push(key);
+        }
+      }
+      
+      coursesArray.sort();
+      
+      for(var i = 0; i < coursesArray.length; i++){
+        var courseDayConcat = coursesArray[i];
+        var title = titles[courseDayConcat].title;
+        var shown = title + " : " + titles[courseDayConcat].day + " Day";
+        coursesHTML += "<option value = \"" + title + "\">" + shown + "</option>";
+      }
+      coursesHTMLArray.push(coursesHTML);
+    }
+    
+    return coursesHTMLArray;
+  }
   /*****************************************************************
       * @desc - If the student was a valid student, creates a table that 
       *         displays the schedule for the given student.
@@ -176,16 +217,16 @@
       classes.sort(compareByColumnIndex(3));
       
       for ( var i = 0; i < classes.length; i++) {
-        html += '<tr class="selectable">';
+        html += "<tr class='selectable'>";
         for( var j = 0; j < classes[i].length; j++) {
-          html += '<td >' + classes[i][j] + '</td>';
+          html += "<td >" + classes[i][j] + "</td>";
         }
         html += "</tr>";
       }
       
       html += "</table>";
       document.getElementById("classes").innerHTML = html;
-      showDiv('schedule');
+      showDiv("schedule");
     } else {
     
     }
