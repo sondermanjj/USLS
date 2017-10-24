@@ -13,7 +13,7 @@ function testting() {
  *     teacherChoices - Faculty Choices List
  *     teacherTables - Faculty Table List
  *     dodList - DOD List
- *     coursesList - Course Title and Day List
+ *     courseSheet - Course Title and Day List
  *    
  *   Column Indices for Student Data Sheet:
  *     "Student " + column name

@@ -153,9 +153,10 @@ function assignStudentLunchDays() {
 function getCourses(selected) {
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
+  Logger.log(properties);
   var coursesData = SpreadsheetApp
                   .getActiveSpreadsheet()
-                  .getSheetByName(properties.coursesList)
+                  .getSheetByName(properties.courseSheet)
                   .getDataRange()
                   .getValues();
 
