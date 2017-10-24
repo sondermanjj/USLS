@@ -30,11 +30,8 @@ function assignStudentLunchDays() {
   
   var fullStudentsArray = [];
   var fullTeachersArray = [];
-  var hasBeenUpdated = false;
   
   fullTeachersArray = getTeachers(tValues, tNumRows, properties);
-  hasBeenUpdated = updateSheetWithFaculty(properties);
-  pValues = primaryData.getValues();
   fullStudentsArray = getStudents(pValues, pNumRows, fullTeachersArray, properties);
   
   var tableAssignedTimesWithStudents = [];
@@ -143,75 +140,6 @@ function assignStudentLunchDays() {
     Logger.log("Too many or too few students in a lunch (shouldn't happen)");
     SpreadsheetApp.getUi().alert("Not enough students in assigned lunches");
   }
-}
-
-/**
-*
-*
-*/
-function updateSheetWithFaculty(properties) {
-  var studentDataProp = properties.studentData;
-  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
-  
-  var primaryData = primarySheet.getDataRange();
-  var pValues = primaryData.getValues();
-  var pNumRows = primaryData.getNumRows();
-  
-  //["First Name","Last Name","Grade Level","Advisor","Gender","Course Title","Course Code","Course Length","Course ID","Section Identifier","Faculty First Name","Faculty Last Name","Block","Date of Birth","Table Head","Lunch Day","Lunch Time","Lunch Table","House"]
-
-  var firstNameCol = parseInt(properties["Student First Name"]);
-  var lastNameCol = parseInt(properties["Student Last Name"]);
-  var gradeLevelCol = parseInt(properties["Student Grade Level"]);
-  var advisorCol = parseInt(properties["Student Advisor"]);
-  var genderCol = parseInt(properties["Student Gender"]);
-  var courseTitleCol = parseInt(properties["Student Course Title"]);
-  var courseCodeCol = parseInt(properties["Student Course Code"]);
-  var courseLengthCol = parseInt(properties["Student Course Length"]);
-  var courseIDCol = parseInt(properties["Student Course ID"]);
-  var sectionIdentifierCol = parseInt(properties["Student Section Identifier"]);
-  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
-  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
-  var blockCol = parseInt(properties["Student Block"]);
-  var dobCol = parseInt(properties["Student Date of Birth"]);
-  var tableHeadCol = parseInt(properties["Student Table Head"]);
-  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
-  var lunchTimeCol = parseInt(properties["Student Lunch Time"]);  
-  var lunchTableCol = parseInt(properties["Student Lunch Table"]);
-  var houseCol = parseInt(properties["Student House"]);
- 
-  var updatedRow = [];
-  var i; 
-  for(var i = 0; i < pNumRows; i++){
-    var firstName = pValues[i][firstNameCol];
-    var lastName = pValues[i][lastNameCol];
-    var gradeLevel = pValues[i][gradeLevelCol];
-    var advisor = pValues[i][advisorCol];
-    var gender = pValues[i][genderCol];
-    var courseTitle = pValues[i][courseTitleCol];
-    var courseCode = pValues[i][courseCodeCol];
-    var courseLength = pValues[i][courseLengthCol];
-    var courseID = pValues[i][courseIDCol];
-    var sectionIdentifier = pValues[i][sectionIdentifierCol];
-    var facultyFirstName = pValues[i][facultyFirstNameCol];
-    var facultyLastName = pValues[i][facultyLastNameCol];
-    var block = pValues[i][blockCol];
-    var dob = pValues[i][dobCol];
-    var tableHead = pValues[i][tableHeadCol];
-    var lunchDay = pValues[i][lunchDayCol];
-    var lunchTime = pValues[i][lunchTimeCol]; 
-    var lunchTable = pValues[i][lunchTableCol];
-    var house = pValues[i][houseCol];
-    
-    if((facultyFirstName === "" || facultyFirstName === undefined) && (facultyLastName === "" || facultyLastName === undefined) && (courseTitle.indexOf('z') !== 0)) {
-      var facultyName = findFacultyName(courseTitle, lunchDay, properties);
-      facultyFirstName = facultyName.firstName;
-      facultyLastName = facultyName.lastName;  
-      updatedRow = [[firstName, lastName, gradeLevel, advisor, gender, courseTitle, courseCode, courseLength, courseID, sectionIdentifier, facultyFirstName, facultyLastName, block, dob, tableHead, lunchDay, lunchTime, lunchTable, house]];
-      var sheetRange = primarySheet.getRange(i+1, 1, 1, 19);
-      sheetRange.setValues(updatedRow);
-    }
-  }
-  return true;
 }
 
 /**
@@ -587,7 +515,18 @@ function randomlyAssign(gradeArray, indexNum, numberArray){
 @funtional - yes
 @author - dicksontc
 */
-function getTeachers(tValues, tNumRows, properties){  
+function getTeachers(tValues, tNumRows, properties){
+  var docProps = PropertiesService.getDocumentProperties();
+  var properties = docProps.getProperties();
+  var teacherSheetName = properties.teacherChoices;
+  var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(teacherSheetName);
+
+  var teacherData = teacher.getDataRange();
+
+  var tValues = teacherData.getValues();
+
+  var tNumRows = teacherData.getNumRows();
+  
   var teachers = [];
   var fNameCol = parseInt(properties["Teacher First Name"]);
   var lNameCol = parseInt(properties["Teacher Last Name"]);
@@ -616,6 +555,7 @@ function getTeachers(tValues, tNumRows, properties){
         }
       }
     }
+    Logger.log("teacher: " + fname + ", " + lname + ", "+ time + ", "+ day + ", " + house);
   }
   Logger.log("teachers: " + teachers);
   return teachers;
@@ -759,7 +699,21 @@ function printStudentsToSheet(students, primary, properties){
         pushArray[tLNameCol] = "";
         pushArray[blockCol] = "";
         pushArray[tableHeadCol] = "";
-      } 
+      } //else if ((lunch.teacherFName === "" || lunch.teacherFName === undefined) &&  (lunch.teacherLName === "" || lunch.teacherLName === undefined)){
+//        var facultyName = findFacultyName(title, lunch.day, properties);
+//        var firstName = facultyName.firstName;
+//        var lastName = facultyName.lastName;
+//        pushArray[cTitleCol] =  title;
+//        pushArray[cCodeCol] =  lunch.code;
+//        pushArray[cLengthCol] = lunch.length;
+//        pushArray[cIDCol] =  lunch.cID;
+//        pushArray[sIDCol] = lunch.sID;
+//        pushArray[tFNameCol] = firstName;
+//        pushArray[tLNameCol] = lastName;
+//        pushArray[blockCol] = lunch.block;
+//        pushArray[tableHeadCol] = lunch.tableHead;
+//        
+//      }
       else{
           pushArray[cTitleCol] =  title;
           pushArray[cCodeCol] =  lunch.code;
@@ -783,7 +737,9 @@ function printStudentsToSheet(students, primary, properties){
 }
 
 function findFacultyName(course, day, properties){
-
+  //course = "Latin II";
+  //day = "C";
+  
   var courseSheetProp = properties.courseSheet;
   var courseSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(courseSheetProp);
   
@@ -791,24 +747,28 @@ function findFacultyName(course, day, properties){
   var values = courseData.getValues();
   var numRows = courseData.getNumRows();
 
-  var courseTitleCol = 0;
-  var facultyFirstNameCol = 1;
-  var facultyLastNameCol = 2;
-  var lunchDayCol = 3;
+  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
+  var courseTitleCol = parseInt(properties["Student Course Title"]);
+  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
+  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
 
   var facultyName = {};
   var i; 
-  for(i = 1; i < numRows; i++){
+  for(var i = 0; i < numRows; i++){
     var courseTitle = values[i][courseTitleCol];
     var lunchDay = values[i][lunchDayCol];
     var facultyFirstName = values[i][facultyFirstNameCol];
     var facultyLastName = values[i][facultyLastNameCol];
     
-    if(courseTitle.toString() === course && lunchDay.toString() === day) {
+    if(courseTitle === course && lunchDay === day) {
+      Logger.log("match");
+      Logger.log(facultyFirstName);
       facultyName.firstName = facultyFirstName;
       facultyName.lastName = facultyLastName;
     }
   }
+  
+  Logger.log(facultyName);
   return facultyName;
   
 }
@@ -869,6 +829,16 @@ function getStudents(studentValues, numRows, teachersList, properties){
     var gender = studentValues[i][genderCol];
     var title = studentValues[i][cTitleCol];
     var time = studentValues[i][lunchTimeCol];
+    
+    if ((teacherFName === "" || teacherFName === undefined) &&  (teacherLName === "" || teacherLName === undefined)){
+        Logger.log("getting teacher name");
+        var facultyName = findFacultyName(title, day, properties);
+        Logger.log("facultyName");
+        var firstName = facultyName['firstName'];
+        var lastName = facultyName;
+        var teacherFName = firstName;
+        var teacherLName = lastName;
+    }
     
     var zScoreCheckAndTime = getLunchTimeAndZCheckBasedOnTeacher(teacherFName, teacherLName, time, day, title, teachersList, properties);
     time = zScoreCheckAndTime.time;
@@ -943,12 +913,22 @@ function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, cou
   var zCheck = false;
   var i, j;
   var zCheckAndTime;
+  Logger.log('Getting time and Z');
   
   for(i = 0; i < teachersList.length; i++){
     var teacher = teachersList[i];
     
     if(firstName === '' && lastName === ''){
       
+//      Logger.log("getting teacher name");
+//      var facultyName = findFacultyName(courseName, day, properties);
+//      
+//      if(facultyName !== null || facultyName !== undefined){
+//        var firstName = facultyName.firstName;
+//        var lastName = facultyName.lastName;
+//        Logger.log("setting first name");
+//      }
+//      else {
         zCheck = true;
         i = teachersList.length;
         var bool = true;
@@ -961,6 +941,7 @@ function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, cou
         if(bool){
           time = nonAssignedLunchTimes[0].time;
         }
+//      }
         
       
     }else if(teacher.fName === firstName && teacher.lName === lastName){
@@ -1079,7 +1060,7 @@ function addLunches(studentsList,lunchDaysList, tableAssignedTimesWithStudents, 
   
   for(i = 0; i < studentsList.length; i++){
     student = studentsList[i];
-    if(student.fName !== "First Name") {
+    if(student.fName !== "First Name" && student.grade >= 9) {
       for(j = 0; j < lunchDaysList.length; j++){
         stuLunchCheck[j] = false;
       }
@@ -1097,28 +1078,22 @@ function addLunches(studentsList,lunchDaysList, tableAssignedTimesWithStudents, 
         }    
       }
       
-      if(student.grade >=9){
-        
-        //If a student does not have a lunch for any day, add a lunch for that day
-        for(j = 0; j < stuLunchCheck.length; j++){
-          if(!stuLunchCheck[j]){
-            var lunchObj = {"day": lunchDaysList[j], "time": nonAssignedLunches[0].time, "isItzScore": true, "table": "", "code": "",
-                            "length": "", "cID": "", "sID": "", "block": "", "tableHead": "", "title": "",
-                            "teacherFName": "", "teacherLName": ""};
-            student.lunches.push(lunchObj);
-            stuLunchCheck[j] = true;
-          }
-        }
-        
-        if(student.lunches.length === lunchDaysList.length){
-          assignZScore(student, properties);
-          doAssignmentByHouse(student, properties);
-        }else{
-          studentsOver.push(student);
+      //If a student does not have a lunch for any day, add a lunch for that day
+      for(j = 0; j < stuLunchCheck.length; j++){
+        if(!stuLunchCheck[j]){
+        var lunchObj = {"day": lunchDaysList[j], "time": nonAssignedLunches[0].time, "isItzScore": true, "table": "", "code": "",
+                    "length": "", "cID": "", "sID": "", "block": "", "tableHead": "", "title": "",
+                    "teacherFName": "", "teacherLName": ""};
+          student.lunches.push(lunchObj);
+          stuLunchCheck[j] = true;
         }
       }
-      else {
+      
+      if(student.lunches.length === lunchDaysList.length){
+        assignZScore(student, properties);
         doAssignmentByHouse(student, properties);
+      }else{
+        studentsOver.push(student);
       }
     }
   }
