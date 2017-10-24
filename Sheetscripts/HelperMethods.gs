@@ -21,30 +21,41 @@ function getDropdownList() {
 }
 
 /**
-    * @desc - checks if a sheet with the given name exists in the current spreadsheet
-    * @param - name of the sheet to check
-    * @return - bool indicating whether the sheet exists or not
-    * @author - clemensam
-    */
-    function sheetExists(name){
-     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
-     if(sheet !== null){
-       return true;
-     }
-     else {
-       return false;
-     }
-    }
-    
-    /**
-    * @desc - opens a ui to display a message to the user
-    * @param - string message to be displayed in the popup
-    * @author - clemensam
-    */
-    function showMessage(message){
-      var ui = SpreadsheetApp.getUi();
-      ui.alert(message);
-    }
+* @desc - checks if a sheet with the given name exists in the current spreadsheet
+* @param - name of the sheet to check
+* @return - bool indicating whether the sheet exists or not
+* @author - clemensam
+*/
+function sheetExists(name){
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+  if(sheet !== null){
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function getListOfSheetNames() {
+  var list = [];
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  for(var i = 0; i < sheets.length; i++) {
+    list.push(sheets[i].getName());
+  }
+  Logger.log(list);
+  return list;
+}
+
+/**
+* @desc - opens a ui to display a message to the user
+* @param - string message to be displayed in the popup
+* @author - clemensam
+*/
+function showMessage(message){
+  var ui = SpreadsheetApp.getUi();
+  ui.alert(message);
+}
 
 /**
  * @desc - Gets a dropdowon of all the headers for the Final Student Data sheet
@@ -226,67 +237,6 @@ function getListOfColumns(data) {
 
   }
   return list;
-}
-
-/**
- * @desc - Prompts the user to enter the name of a sheet they would like to create
- * @param - String - The message you would like to give the user so they know what the sheet is being created for
- * @functional - yes
- * @author - hendersonam
- */
-function promptForNewSheet(msg) {
-
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var ui = SpreadsheetApp.getUi();
-  var response = ui.prompt('New Sheet', msg, ui.ButtonSet.OK_CANCEL);
-
-  if (response.getSelectedButton() == ui.Button.OK) {
-    var sheetName = response.getResponseText();
-    var sheet = ss.getSheetByName(sheetName);
-    if(sheet == null) {
-      ss.insertSheet(sheetName);
-      sheet = ss.getSheetByName(sheetName);
-    } else {
-      response = ui.alert('Alert!', "That sheet already exists. Are you sure you want to use it?", ui.ButtonSet.YES_NO);
-      if (response == ui.Button.YES) {
-        ss.deleteSheet(sheet);
-        ss.insertSheet(sheetName);
-        sheet = ss.getSheetByName(sheetName);
-      } else if (response == ui.Button.NO) {
-        sheet = promptForNewSheet(msg);
-      }
-    }
-  } 
-  
-  return sheet;
-}
-
-/**
- * @desc - Prompts the user to enter the name of a sheet they would like to use
- * @param - String - The message you would like to give the user so they know what the sheet is being used for
- * @author - hendersonam
- */
-function promptForSettingSheetProperty(msg) {
-
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var ui = SpreadsheetApp.getUi();
-  var response = ui.prompt('Setting Properties...', msg, ui.ButtonSet.OK_CANCEL);
-
-  if (response.getSelectedButton() == ui.Button.OK) {
-    var sheetName = response.getResponseText();
-    var sheet = ss.getSheetByName(sheetName);
-    if(sheet == null) {
-      response = ui.alert('Alert!', "That sheet does not exist. Would you like to create it?", ui.ButtonSet.YES_NO);
-      if (response == ui.Button.YES) {
-        ss.insertSheet(sheetName);
-        sheet = ss.getSheetByName(sheetName);
-        } else {
-        sheet = promptForSettingSheetProperty(msg);
-      }
-    }
-  } 
-  
-  return sheet;
 }
 
 /**
