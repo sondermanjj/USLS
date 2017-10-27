@@ -1,0 +1,308 @@
+<Module>
+<ModulePrefs title="Search Script" height="100%"/> 
+<Content type="html">
+<?!= include('website/searchApp/CSS'); ?>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+</script>
+
+<script>
+    // on document load..
+    $(function() {
+      console.log('was successful!')
+      google.script.run.withSuccessHandler(assignValue).getJSON();       
+    });   
+ </script>
+ 
+<script type="text/javascript"> 
+
+//verified with JSHint 4/26/2017 by sondermanjj
+ 
+  var json = "empty";
+
+  function checkDatabase() {
+    var interval = 0;
+    if (json == "empty") {
+      console.log("No database loaded yet");
+      interval = 5000;
+    }
+    setTimeout(formSubmit, interval);
+  }
+
+  /**
+  * Method to be called when the website loads up.
+  * @param json the JSON string returned when calling getJSON from the script file
+  */ 
+  function assignValue(newJson) {
+    json = newJson;
+    console.log("Spreadsheet loaded");
+  }
+  
+  /**
+  * Method to be called when the Search button is pressed
+  * @param json the JSON string returned when calling getJSON from the script file
+  */
+  function formSubmit(){
+    
+    /**
+    * Takes in a string and capitalizes each word in the string
+    * @param string the string to capitalize
+    * @return the capitalized version of the string
+    */
+    function capitalize(string){
+    
+      var stringArray = string.split(" ");
+      var newString = "";
+      
+      for(var i=0; i<stringArray.length; i++){
+        newString += stringArray[i].charAt(0).toUpperCase() + stringArray[i].slice(1) + " ";
+      }
+      
+      return newString.trim();
+    }
+
+    // Variables pointing to parts of the HTML document so that their contents can be edited
+    var nameDiv = document.getElementById('nameDiv');
+    var schedDiv = document.getElementById('schedDiv');
+    var subHeadingDiv = document.getElementById('subHeadingDiv');
+    var nameEntered = document.getElementById('Name').value.toString().trim().toLowerCase();
+    var tableEntered = document.getElementById('Table').value.toString().trim().toLowerCase();
+    var heading = "";
+    var subHeading = "";
+
+    var resultsArray = [];
+    
+    // Start of string containing html to display matched results
+    var strSched;
+    
+    var length = json.length;
+    
+    //Check for any non-word characters
+    if(/[<>]/.test(nameEntered)) {
+      nameEntered = "Invalid Name";
+    }
+    
+    heading = capitalize(nameEntered);
+    subHeading = "Search Results";
+    strSched = "<table><tr><th>Name</th><th>Grade</th><th>Day</th><th>Lunch Time</th><th>Block</th><th>Table</th><th>House</th</tr>";
+    
+    for(var index=0; index<length; index++){
+    
+        var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+        var day = json[index].gsx$lunchday.$t;
+        var house = json[index].gsx$house.$t.trim();
+        var time = json[index].gsx$lunchtime.$t;
+        var table = json[index].gsx$lunchtable.$t.toLowerCase();
+        var block = json[index].gsx$block.$t;
+        var grade = json[index].gsx$gradelevel.$t.trim();
+        
+        if (name.toLowerCase().includes(nameEntered) && checkCheckBoxes("house", house) && 
+            checkCheckBoxes("time", time)  && checkCheckBoxes("grade", grade) && checkCheckBoxes("day", day) &&
+            (tableEntered.trim() === "" || table == tableEntered) ) {
+            console.log("Match Found");
+            if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
+              var dayArray = [];
+              dayArray.push(name);
+              dayArray.push(grade);
+              dayArray.push(day);
+              dayArray.push(time);
+              dayArray.push(block);
+              dayArray.push(capitalize(table));
+              dayArray.push(house);
+              resultsArray.push(dayArray);   
+            }
+        }   
+    }
+    
+    
+    var arr = resultsArray.sort();
+    
+    
+    for(var i=0; i<arr.length; i++){
+      strSched += "<tr>";
+      for(var j=0; j<arr[i].length; j++){
+        strSched += "<td>" + arr[i][j] + "</td>";
+      }
+      strSched += "</tr>";
+    }
+    
+    strSched += "</table>";
+    
+    if(resultsArray.length === 0){
+      strSched = "Invalid Search. No Results Found.";
+    }
+    
+    //Set the inner HTML of the necessary components to the proper contents
+    schedDiv.innerHTML = strSched;
+    nameDiv.innerHTML = "<h1>" + heading + "</h1>";
+    subHeadingDiv.innerHTML = "<h2>" + subHeading + "</h2>";
+    document.getElementById('loadingDiv').innerHTML = "";
+    
+    setPageFullHeight();
+  }
+  
+function checkValidTime(value) {
+    var trimmedValue = value.toLowerCase().trim();
+    if (trimmedValue == "early" || trimmedValue == "mid" ||  trimmedValue == "late") {
+        return true;
+    } else {
+        return false;
+    }
+}
+  
+function checkCheckBoxes(name, value) {
+  var inputElements = document.getElementsByName(name);
+  var oneChecked = false;
+  for(var i=0; inputElements[i]; ++i){
+      if(inputElements[i].checked){
+           oneChecked = true;
+           if (inputElements[i].value.toLowerCase() === (value.toLowerCase())) {
+               return true;
+           }
+           else if(inputElements[i].value === "middle-school" && (value === "5" || value === "6" || value === "7" || value === "8")) {
+               return true;
+           }
+           else if(inputElements[i].value === "Middle" && value === "mid") {
+               return true;
+           }
+       }
+  }
+  if (oneChecked) {
+      return false;
+  } else {
+      return true;
+  }  
+}
+  
+function toggleSearchTable() {
+    var x = document.getElementById('searchTable');
+    if (x.style.display === 'block') {
+        x.style.display = 'none';
+    } else {
+        x.style.display = 'block';
+    }
+}
+
+function clearSearchOptions() {
+    clearRadioList("house");
+    clearRadioList("day");
+    clearRadioList("time");
+    document.getElementById('Table').value = "";
+}
+
+function clearRadioList(field) {
+    var ele = document.getElementsByName(field);
+    for(var i=0;i<ele.length;i++)
+    ele[i].checked = false;
+}
+
+function findSelection(field) {
+var radios = document.getElementsByName(field);
+
+  for (var i = 0, length = radios.length; i < length; i++) {
+      if (radios[i].checked) {
+          return radios[i].value;
+      }
+  }
+
+return "";
+
+}
+
+ function handle(e){
+   if(e.keyCode === 13){
+       e.preventDefault(); // Ensure it is only this code that runs
+       
+       checkDatabase();
+    }
+ }
+ 
+ function printPage() {
+   var header = document.getElementById('nameDiv').innerHTML;
+   var schedToPrint = header + document.getElementById('schedDiv').innerHTML;
+   var printhtml = 'https://sites.google.com/site/usmlunch/jarfunklemcree/printpage?schedule=' + schedToPrint + '&tmpl=/system/app/templates/print';
+   window.open(printhtml);
+ }
+ 
+ /**
+ * @desc - sets div surrounding page to 100% height on data load to remove scrolling
+ * @author - clemensam
+ */
+ function setPageFullHeight(){
+   var appFrame = document.getElementById('appBackground');
+   appFrame.style.height = "100%";
+ }
+
+
+</script>
+<div id="appBackground">
+<hr>
+<div id="searchForm">
+  <form id="nameForm" action="#">
+    <b>Name: </b><input id="Name" type="text" onkeypress="handle(event)" name="fullname" />
+    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(checkDatabase());" value="Search" /> 
+    <br><br>
+    
+    <div class="small"><b>Advanced Search Options </b>
+    <input id="tableToggle" type="button" name="image" onClick="toggleSearchTable()" value="" display = "none"/> 
+    <table class="noBorder" id="searchTable">
+    <tr class ="noBorder">
+        <td class="noBorder"><b>House: </b></td>
+        <td id="houseList" class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="house" type="checkbox" value="Academy" /> Academy
+            <input name="house" type="checkbox" value="Arrow" /> Arrow
+            <input name="house" type="checkbox" value="Crest" /> Crest
+            <input name="house" type="checkbox" value="Ledger" /> Ledger
+        </form></td>
+      </tr>
+      <tr class="noBorder">
+        <td class="noBorder"><b>Table: </b></td>
+        <td class="noBorder"><input class="h" id="Table" onkeypress="handle(event)" type="text" name="table" /></td>
+      </tr>
+      <tr class="noBorder">
+        <td class="noBorder"><b>Day: </b></td>
+        <td id="dayList" class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="day" type="checkbox" value="A" /> A
+            <input name="day" type="checkbox" value="B" /> B
+            <input name="day" type="checkbox" value="C" /> C
+            <input name="day" type="checkbox" value="D" /> D
+            <input name="day" type="checkbox" value="E" /> E
+            <input name="day" type="checkbox" value="F" /> F
+            <input name="day" type="checkbox" value="G" /> G
+            <input name="day" type="checkbox" value="H" /> H
+        </form></td>
+      </tr>
+      <tr class="noBorder">
+        <td class="noBorder"><b>Time: </b></td>
+        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="time" type="checkbox" value="Early" /> Early
+            <input name="time" type="checkbox" value="Middle" /> Middle
+            <input name="time" type="checkbox" value="Late" /> Late
+        </form></td>
+      </tr>
+      <tr class="noBorder">
+        <td class="noBorder"><b>Grade: </b></td>
+        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="grade" type="checkbox" value="9" /> 9
+            <input name="grade" type="checkbox" value="10" /> 10
+            <input name="grade" type="checkbox" value="11" /> 11
+            <input name="grade" type="checkbox" value="12" /> 12
+            <input name="grade" type="checkbox" value="" /> Faculty
+            <input name="grade" type="checkbox" value="middle-school" /> Other
+        </form></td>
+      </tr>
+    </table>
+    </div>
+  </form>
+</div>
+<hr>
+<div id="printButtonDiv"><input id="printButton" onclick="window.print()" type="button" value=" " /> </div>
+<div id="loadingDiv"></div>
+<div id="printDiv">
+  <div id="nameDiv"></div>
+  <div id="subHeadingDiv"></div>
+  <div id="schedDiv"></div>
+</div>
+</div>
+</Content>
+</Module>
