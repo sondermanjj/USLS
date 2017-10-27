@@ -28,8 +28,6 @@ var json = "empty";
     setTimeout(formPrintSubmit, interval);
   }
 
-
-
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
@@ -43,8 +41,6 @@ function isNumeric(n) {
     console.log("Spreadsheet loaded");
   }
 
-
-//verified with JSHint 9/22/2017 by sondermanjj
   /**
   * Method to be called when the Search button is pressed
   * @param json the JSON string returned when calling getJSON from the script file
@@ -88,10 +84,7 @@ function formPrintSubmit() {
         if (radios[i].value.includes("masterlist")) {
             masterList = true;
             console.log("Master List set to true");    
-          }          
-          
-          console.log(radios[i].value);
-  
+          }            
           // only one radio can be logically checked, don't check the rest
           break;
       }
@@ -110,7 +103,7 @@ function formPrintSubmit() {
     var time = json[index].gsx$lunchtime.$t;
     var table = json[index].gsx$lunchtable.$t.toLowerCase();
     var grade = json[index].gsx$gradelevel.$t.trim();
-    
+        
     if (checkCheckBoxes("time", time) && checkCheckBoxes("day", day) && table != "" ) {
       if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
       var dayArray = [];
@@ -132,20 +125,20 @@ function formPrintSubmit() {
     //Sorts the array by the table.
       var arr = resultsArray.sort(function(a, b){
     
-      var number;
-      
-      if (isNumeric(a[4]) && isNumeric(b[4])) return (parseInt(a[4])-parseInt(b[4]));
-      if (isNumeric(a[4]) && !(isNumeric(b[4]))) return -1;
-      if (!(isNumeric(a[4])) && isNumeric(b[4])) return 1;
-      
-      
-      
-      if(a[4] < b[4]) return -1;
-      if(a[4] > b[4]) return 1; 
-      
-      //If the tables are the same, organize them by name.
-      if (a[0] < b[0]) return -1;
-      if (a[0] > b[0]) return 1;
+        var number;
+        
+        if (isNumeric(a[4]) && isNumeric(b[4])) return (parseInt(a[4])-parseInt(b[4]));
+        if (isNumeric(a[4]) && !(isNumeric(b[4]))) return -1;
+        if (!(isNumeric(a[4])) && isNumeric(b[4])) return 1;
+        
+        
+        
+        if(a[4] < b[4]) return -1;
+        if(a[4] > b[4]) return 1; 
+        
+        //If the tables are the same, organize them by name.
+        if (a[0] < b[0]) return -1;
+        if (a[0] > b[0]) return 1;
       
       return 0;
     });
@@ -189,9 +182,9 @@ function formPrintSubmit() {
       strSched += "</table><div></div>";
     }
     
-    
-    strSched += '<div class="largePrintingDivision"></div>';
-
+    if (tables && masterList) {
+      strSched += '<div class="largePrintingDivision"></div>';    
+    }
     //If the user wants the master list, then inserts it here.
     if (masterList) {
       console.log("Printing Master List with masterList values: "+masterList);
@@ -209,6 +202,7 @@ function formPrintSubmit() {
     }
     //Set the inner HTML of the necessary components to the proper contents
   }
+  strSched += '<div class="printingDivision"></div>';
   schedDiv.innerHTML = strSched;
   document.getElementById('loadingDiv').innerHTML = "";
 }
