@@ -22,7 +22,7 @@ function cleanUp(sheetName, newSheetName) {
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(sheetName);
-  setRawSheetProperty(sheetName);
+  
   var newSheet = ss.getSheetByName(newSheetName);
   if(sheet == null) {
     SpreadsheetApp.getUi().alert("The Raw Data Sheet cannot be a newly made sheet. It must contain student records provided by administration.");
@@ -88,7 +88,7 @@ function setFacultyCourses() {
     
     var courseDayConcat = courseTitle + lunchDay;
     
-    if(courses.indexOf(courseDayConcat) < 0) {
+    if((courses.indexOf(courseDayConcat) < 0) && (facultyFirstName !== '' && facultyLastName !== '')) {
       courses.push(courseDayConcat);
       newData.push(newRow);
     }

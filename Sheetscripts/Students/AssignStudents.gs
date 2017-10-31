@@ -177,54 +177,6 @@ function getCourses(selected) {
   return {"courses": courses, "selected" : selected, "titles" : titles};
 }
 
-/*            
-* @desc - creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
-* @author - clemensam
-*/
-function pushCoursesToCourseSheet() {
-  var docProps = PropertiesService.getDocumentProperties();
-  var properties = docProps.getProperties();
-  var studentDataProp = properties.studentData;
-  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
-  
-  var primaryData = primarySheet.getDataRange();
-  var pValues = primaryData.getValues();
-  var pNumRows = primaryData.getNumRows();
-
-  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
-  var courseTitleCol = parseInt(properties["Student Course Title"]);
-  var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
-  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
-  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
-  
-  var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
-  var newData = [];
-  var courses = [];
-  //newData.push(headerRow);
-  var i; 
-  for(var i = 0; i < pNumRows; i++){
-    var courseTitle = pValues[i][courseTitleCol];
-    var lunchDay = pValues[i][lunchDayCol];
-    var lunchTime = pValues[i][lunchTimeCol];
-    var facultyFirstName = pValues[i][facultyFirstNameCol];
-    var facultyLastName = pValues[i][facultyLastNameCol];
-    
-    var newRow = [courseTitle, facultyFirstName, facultyLastName, lunchDay, lunchTime];
-    
-    var courseDayTimeConcat = courseTitle + lunchDay + lunchTime;
-    
-    if(courses.indexOf(courseDayTimeConcat) < 0) {
-      courses.push(courseDayTimeConcat);
-      newData.push(newRow);
-    }
-  }
-  
-  newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
-  //newData.sort();
-  
-  createNewSheet(newData, "Courses");
-  console.log("Course Sheet Created");
-}
 
 function findFacultyName(course, day, properties){
   
@@ -234,11 +186,11 @@ function findFacultyName(course, day, properties){
   var courseData = courseSheet.getDataRange();
   var values = courseData.getValues();
   var numRows = courseData.getNumRows();
-
-  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
-  var courseTitleCol = parseInt(properties["Student Course Title"]);
-  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
-  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
+ 
+  var courseTitleCol = 0;
+  var facultyFirstNameCol = 1;
+  var facultyLastNameCol = 2;
+  var lunchDayCol = 3;
 
   var facultyName = {};
   var i; 
@@ -248,15 +200,12 @@ function findFacultyName(course, day, properties){
     var facultyFirstName = values[i][facultyFirstNameCol];
     var facultyLastName = values[i][facultyLastNameCol];
     
-    if(courseTitle === course && lunchDay === day) {
-      Logger.log("match");
-      Logger.log(facultyFirstName);
+    if(courseTitle.toString() === course && lunchDay.toString() === day) {
       facultyName.firstName = facultyFirstName;
       facultyName.lastName = facultyLastName;
     }
   }
   
-  Logger.log(facultyName);
   return facultyName;
   
 }
@@ -369,7 +318,7 @@ function findFacultyName(course, day, properties){
      if((facultyFirstName === "" || facultyFirstName === undefined) && (facultyLastName === "" || facultyLastName === undefined) && (courseTitle.indexOf('z') !== 0)) {
        var facultyName = findFacultyName(courseTitle, lunchDay, properties);
        facultyFirstName = facultyName.firstName;
-       facultyLastName = facultyName.lastName;  
+       facultyLastName = facultyName.lastName; 
        updatedRow = [[firstName, lastName, gradeLevel, advisor, gender, courseTitle, courseCode, courseLength, courseID, sectionIdentifier, facultyFirstName, facultyLastName, block, dob, tableHead, lunchDay, lunchTime, lunchTable, house]];
        var sheetRange = primarySheet.getRange(i+1, 1, 1, 19);
        sheetRange.setValues(updatedRow);
@@ -377,7 +326,6 @@ function findFacultyName(course, day, properties){
    }
    return true;
  }
-
  
 
 /**
