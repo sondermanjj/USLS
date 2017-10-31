@@ -82,6 +82,14 @@
       nameEntered = "Invalid Name";
     }
     
+    
+    
+    console.log("Name Entered: "+nameEntered);
+    
+    nameEntered = nameEntered.replace(/\s+/g, " ");
+    
+    console.log("Name Changed: "+nameEntered);
+
     heading = capitalize(nameEntered);
     subHeading = "Search Results";
     strSched = "<table><tr><th>Name</th><th>Grade</th><th>Day</th><th>Lunch Time</th><th>Block</th><th>Table</th><th>House</th</tr>";
