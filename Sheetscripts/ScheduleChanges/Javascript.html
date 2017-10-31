@@ -182,7 +182,7 @@
       for(var i = 0; i < coursesArray.length; i++){
         var courseDayConcat = coursesArray[i];
         var title = titles[courseDayConcat].title;
-        var shown = title + " : " + titles[courseDayConcat].day + " Day";
+        var shown = title + " : " + titles[courseDayConcat].time;
         coursesHTML += "<option value = \"" + title + "\">" + shown + "</option>";
       }
       coursesHTMLArray.push(coursesHTML);

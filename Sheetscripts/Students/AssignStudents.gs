@@ -170,7 +170,7 @@ function getCourses(selected) {
     if(lunchTime !== "Lunch Time"){
       courseDayConcat = courseDayConcat.replace(/\s/g,'');
       courses[courseDayConcat] = lunchTime;
-      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay};
+      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay, "time" : lunchTime};
     }
   }
   
