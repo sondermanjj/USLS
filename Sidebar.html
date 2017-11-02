@@ -197,7 +197,14 @@
       */
     function scanData() {
       google.script.run.withSuccessHandler(scanBoth).showDialog('sc');
-      google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
+    }
+    
+    /**
+      * @desc - Assign students
+      * @author - hendersonam
+      */
+    function doAssigning() {
+      google.script.run.withSuccessHandler(scanBoth).showDialog('assign');
     }
     
     /**
@@ -225,13 +232,6 @@
     }
     
     /**
-      * @desc - Dissplays the dropdown menu to list the columns that can be used for filtering
-      * @author - hendersonam
-      */
-    function displayDropdown(list) {
-    }
-    
-    /**
       * @desc - Displays Lunch Statistics
       * @author - hendersonam
       */
@@ -240,16 +240,6 @@
       html.innerHTML = statistics;
       
     } 
-    
-    /**
-      * @desc - Displays Schedule Changes
-      * @author - hendersonam
-      */
-    function displayScheduleChanges(changes) {
-      var html = document.getElementById('changes');
-      html.innerHTML = changes;
-      
-    }
     
     /**
      * @desc - If the enter key or search button is pressed, hideValues that do not contain the string in the text box
@@ -263,46 +253,6 @@
         var column = document.getElementById('dropdownfilter').value;
         google.script.run.showDialog('search, ' + filter + ', ' + column);
       }
-    }
-    
-    /*
-    * @desc - same as above method, but used on press instead up enter key press
-    */
-    function search(){
-      var filter = document.getElementById('filter').value.toLowerCase();
-      var column = document.getElementById('dropdownfilter').value;
-      //google.script.run.showDialog('search, ' + filter + ', ' + column);
-      //var e = new KeyboardEvent('keydown',{'keyCode':32,'which':32});
-      //document.dispatchEvent(e);
-      simulateCtrlF();
-    }
-    
-    /*
-    *
-    * @author - clemensam
-    */
-    function simulateCtrlF(){
-    
-      var kbdEvent = new KeyboardEvent('keydown', {'key':'f', 'ctrlKey': true, 'code': 'KeyF', 'which': 70, 'keyCode': 70});
-      document.dispatchEvent(kbdEvent);
-      console.log("simulate search");
-      console.log(kbdEvent);
-//      var keyboardEvent = document.createEvent("KeyboardEvent");
-//      var initMethod = typeof keyboardEvent.initKeyboardEvent !== 'undefined' ? "initKeyboardEvent" : "initKeyEvent";
-//
-//      keyboardEvent[initMethod](
-//                   "keydown", // event type : keydown, keyup, keypress
-//                    true, // bubbles
-//                    true, // cancelable
-//                    window, // viewArg: should be window
-//                    true, // ctrlKeyArg
-//                    false, // altKeyArg
-//                    false, // shiftKeyArg
-//                    false, // metaKeyArg
-//                    70, // keyCodeArg : unsigned long the virtual key code, else 0
-//                    0 // charCodeArgs : unsigned long the Unicode character associated with the depressed key, else 0
-//      );
-//      document.dispatchEvent(keyboardEvent);
     }
     
     /*
@@ -437,11 +387,6 @@
     * @author - clemensam
     */
     function saveAll(){
-       /*showCleanupPage(); 
-       hideSettingsPage(); 
-       hideStatisticsPage(); 
-       hideSearchPage(); 
-       changeID('clean');*/
        saveLetterDays();
        saveLunchTimes();
        saveSheetNames();
@@ -471,6 +416,7 @@
        <p>Use the options below for initial student assigning or making schedule changes.</p>
 
        <div class="button-div"><button id="cleanButton" class="action" onclick="google.script.run.showCleanUpPrompt();">Clean and Assign</button></div>
+       <div class="button-div"><button id="assignButton" class="action" onclick="doAssigning();">Assign students</button></div>
        <div class="button-div"><button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button></div>
        
        <h3>Export to Website</h3>
