@@ -22,10 +22,18 @@ function cleanUp(sheetName, newSheetName) {
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(sheetName);
-  setRawSheetProperty(sheetName);
+  
+  
   var newSheet = ss.getSheetByName(newSheetName);
   if(sheet == null) {
     SpreadsheetApp.getUi().alert("The Raw Data Sheet cannot be a newly made sheet. It must contain student records provided by administration.");
+    return;
+  }
+  setRawSheetProperty(sheetName);
+  
+  var neededHeaders = ["First Name", "Last Name", "Grade Level", "Advisor", "Course Title", "Faculty First Name", "Faculty Last Name", "Block"];
+  var valid = validateSheetHeaders(sheetName, neededHeaders);
+  if(!valid) {
     return;
   }
   
@@ -53,6 +61,31 @@ function cleanUp(sheetName, newSheetName) {
   
   return newSheet;
   
+}
+
+function validateSheetHeaders(sheetName, neededHeaders) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var valid = true;
+  var values = sheet.getDataRange().getValues();
+  var headers = getListOfColumns(values);
+  var count = 0;
+  for(var i = 0; i < neededHeaders.length; i++) {
+    for(var j = 0; j < headers.length; j++) {
+      if(headers[j] == neededHeaders[i]) {
+        neededHeaders.splice(i, 1);
+        i--;
+      }
+    }
+  }
+  if(neededHeaders.length > 0) {
+    valid = false;
+    var html = "";
+    for(var k = 0; k < neededHeaders.length;k++) {
+      html += neededHeaders[k] + "\n";
+    }
+    SpreadsheetApp.getUi().alert("The "+ sheetName + " sheet is missing critical headers.\nPlease make sure the following are present in the raw file and spelt exacly as shown:\n\n" + html);
+  }
+  return valid;
 }
 
 /*

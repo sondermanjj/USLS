@@ -24,6 +24,7 @@ function initialization(sheetNames) {
     
     setSheetProperties(cleanedSheet, sheetNames.faculty, sheetNames.dod, sheetNames.choices);
     setFacultyCourses();
+    
     assignStudentLunchDays();
     pushCoursesToCourseSheet();
     addFacultyTables();
@@ -32,3 +33,4 @@ function initialization(sheetNames) {
     return;
   }
 }
+
