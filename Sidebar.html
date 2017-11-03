@@ -34,6 +34,7 @@
     /**
     * @desc - pulls letter day information from the text boxes in the settings page and saves them to the document properties
     * @author - clemensam
+    * //TODO
     */
     function saveLetterDays(){
       var dayBoxes = document.getElementsByClassName('daySettingsBox');
@@ -47,8 +48,7 @@
           schoolDays[dayBoxes[i].value + numBoxes[i].value] = dayBoxes[i].value;
         }
       }
-      google.script.run.setLetterDays(daysList); 
-      google.script.run.setSchoolDays(schoolDays);
+      google.script.run.setLunchDays(daysList); 
     }
     
     function consoleDisplay(toPrint){
@@ -59,6 +59,7 @@
     /*
     * @desc - pulls lunch time information from the text boxes in the settings page and saves them to the document properties
     * @author - clemensam
+    * //TODO
     */
     function saveLunchTimes(){
       var lunchTimeBoxes = document.getElementsByName("timeBox");
@@ -100,19 +101,15 @@
           lunchtimes.push({"name": time, "priority": priority, "font": font, "background": background}); 
         }
       }
-      setLunchProperties(nonAssignedLunchList, assignedLunchList, lunchtimes);
+      setLunchProperties(lunchtimes);
     }
     
     /**
     * @desc - sets the lunch time properties to the correct values
-    * @param - nonAssigned - array of json objects of nonassigned lunch times
-    *          assigned - array of json objects of assigned lunch times
-    *          all - array of all lunch times
+    * @param - all - array of all lunch times
+    * //TODO maybe
     */
-    function setLunchProperties(nonAssigned, assigned, all){
-      google.script.run.setNonAssignedLunches(nonAssigned);
-      google.script.run.setAssignedLunches(assigned);
-      google.script.run.setLunchTimes(all);
+    function setLunchProperties(all){
     }
     
     /**
