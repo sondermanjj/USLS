@@ -5,32 +5,32 @@
   </head>
   <body >
     
-    <div id="form">
+    <section id="form">
       <label for="firstname">First Name:</label>
       <input type="text" id="firstname" required=true size="20" autofocus/><br>
       <label for="lastname">Last Name:</label>
       <input type="text" id="lastname" required=true size="20" /><br>
       <input class="action" type="button" onClick="sendStudentName()" value="Submit" />
-    </div>
+    </section>
     
-    <div id="schedule" >
+    <section id="schedule" >
       <table id="classes" data-selected="">
       </table>
       <input class="action" type="button" onClick="getSelectedCourses()" value="Select" />
-    </div>
+    </section>
     
-    <div id="newSchedule" >
+    <section id="newSchedule" >
       <table id="newClasses">
       </table>
       <input id="backButton" align="left" type="button" onClick="showDiv('schedule')" value="Back"/>
       <input id="assignStudents" class="action" align="right" type="button" onClick="sendNewSchedule()" value="Change"/>
-    </div>
+    </section>
     
-    <div id="potentialChanges" >
-      <table id="scheduleChanges">
-      </table>
+    <section id="potentialChanges" >
+      <div id="scheduleChanges">
+      </div>
       <input class="action" type="button" onClick="closePopup()" value="Ok"/>
-    </div>
+    </section>
     
     
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
