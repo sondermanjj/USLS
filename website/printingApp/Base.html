@@ -1,0 +1,291 @@
+<Module>
+<ModulePrefs title="Search Script" /> 
+<Content type="html">
+<?!= include('website/printingApp/CSS'); ?>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+</script>
+
+<script>
+    // on document load..
+    $(function() {
+      console.log('Loading Database...')
+      google.script.run.withSuccessHandler(assignValue).getJSON();       
+    });   
+ </script>
+
+<script type="text/javascript"> 
+
+var json = "empty";
+
+  //Checks if the database is loaded up yet.
+  function checkDatabase() {
+    var interval = 0;
+    if (json == "empty") {
+      console.log("No database loaded yet");
+      interval = 5000;
+    }
+    setTimeout(formPrintSubmit, interval);
+  }
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+  /**
+  * Method to be called when the website loads up.
+  * @param json the JSON string returned when calling getJSON from the script file
+  */ 
+  function assignValue(newJson) {
+    json = newJson;
+    console.log("Spreadsheet loaded");
+  }
+
+  /**
+  * Method to be called when the Search button is pressed
+  * @param json the JSON string returned when calling getJSON from the script file
+  */
+function formPrintSubmit() {
+  /**
+  * Takes in a string and capitalizes each word in the string
+  * @param string the string to capitalize
+  * @return the capitalized version of the string
+  */
+  function capitalize(string){
+    
+    var stringArray = string.split(" ");
+    var newString = "";
+    
+    for(var i=0; i<stringArray.length; i++){
+      newString += stringArray[i].charAt(0).toUpperCase() + stringArray[i].slice(1) + " ";
+    }
+    
+    return newString.trim();
+  }  
+  
+  // Variables pointing to parts of the HTML document so that their contents can be edited
+  var nameDiv = document.getElementById('nameDiv');
+  var schedDiv = document.getElementById('schedDiv');
+  var heading = "";
+  var subHeading = "";
+  
+  //Sets Boolean values for tables and master lists
+  var masterList = false;
+  var tables = false;
+  
+  var radios = document.getElementsByName('masterList');
+  
+  for (var i = 0, length = radios.length; i < length; i++) {
+      if (radios[i].checked) {
+        if (radios[i].value.includes("tables")) {
+            tables = true;
+            console.log("Tables set to true");
+          }
+        if (radios[i].value.includes("masterlist")) {
+            masterList = true;
+            console.log("Master List set to true");    
+          }            
+          // only one radio can be logically checked, don't check the rest
+          break;
+      }
+  }
+  
+  var resultsArray = [];
+  
+  // Start of string containing html to display matched results
+  var strSched;
+  var length = json.length;    
+  console.log(json);
+  //puts each row of the students in a large array. Does not put them in if it does not match the day or the table is empty.
+  for(var index=0; index<length; index++) { 
+    var name = json[index].gsx$firstname.$t.replace(/\s/g,'') + " " + json[index].gsx$lastname.$t.replace(/\s/g,'');
+    var day = json[index].gsx$lunchday.$t;
+    var time = json[index].gsx$lunchtime.$t;
+    var table = json[index].gsx$lunchtable.$t.toLowerCase();
+    var grade = json[index].gsx$gradelevel.$t.trim();
+        
+    if (checkCheckBoxes("time", time) && checkCheckBoxes("day", day) && table != "" ) {
+      if (day.trim().toLowerCase() !== "i" && time.trim().toLowerCase() !== "") {
+      var dayArray = [];
+      dayArray.push(name);
+      dayArray.push(day);
+      dayArray.push(time);
+      dayArray.push(grade);                    
+      dayArray.push(capitalize(table));      
+      dayArray.push("       ");              
+      resultsArray.push(dayArray);   
+      }
+    }
+  }
+  
+  
+  if(resultsArray.length === 0){
+    strSched = "Invalid Search. No Results Found.";
+  } else {
+    //Sorts the array by the table.
+      var arr = resultsArray.sort(function(a, b){
+    
+        var number;
+        
+        if (isNumeric(a[4]) && isNumeric(b[4])) return (parseInt(a[4])-parseInt(b[4]));
+        if (isNumeric(a[4]) && !(isNumeric(b[4]))) return -1;
+        if (!(isNumeric(a[4])) && isNumeric(b[4])) return 1;
+        
+        
+        
+        if(a[4] < b[4]) return -1;
+        if(a[4] > b[4]) return 1; 
+        
+        //If the tables are the same, organize them by name.
+        if (a[0] < b[0]) return -1;
+        if (a[0] > b[0]) return 1;
+      
+      return 0;
+    });
+    
+    strSched = "";
+    
+    //If tables are selected as a choice.
+    if (tables) {
+      console.log("Printing Tables with tables value: "+tables);
+      //Creates the HTML to put in the page. This is the first table.
+      strSched += '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Grade</th><th>Table</th><th>Attendance</th></tr>';    
+      strSched += "<h2> Table " + arr[0][4] + "</h2>";
+      var currentTable = resultsArray[0][4];
+      var tableCounter = 0;
+          
+      for(var i=0; i<arr.length; i++) {
+        if (currentTable != arr[i][4]) {
+          tableCounter++;
+          strSched += "</table>";
+          //we only want 3 tables per page for the normal ones, so every 3rd put a large division in for printing.
+          if (arr[i][4].length < 3) {
+            if ((tableCounter)%3 != 0) {
+              strSched += '<div class="printingDivision"></div>';
+            } else {
+              strSched += '<div class="largePrintingDivision"></div>';
+            }
+          } else {
+            strSched += '<div class="largePrintingDivision"></div>';
+          }        
+          //Header for the table.
+          strSched += "<h2> Table " + arr[i][4] + "</h2>";
+          strSched += '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Grade</th><th>Table</th><th>Attendance</th></tr>';    
+          currentTable = arr[i][4];
+        }
+        strSched += "<tr>";
+        for(var j=0; j<arr[i].length; j++){
+          strSched += "<td>" + arr[i][j] + "</td>";
+        }
+        strSched += "</tr>";
+      }   
+      strSched += "</table><div></div>";
+    }
+    
+    if (tables && masterList) {
+      strSched += '<div class="largePrintingDivision"></div>';    
+    }
+    //If the user wants the master list, then inserts it here.
+    if (masterList) {
+      console.log("Printing Master List with masterList values: "+masterList);
+      arr = resultsArray.sort();
+      strSched += '<table class="textTable"><tr><th>Name</th><th>Day</th><th>Time</th><th>Grade</th><th>Table</th><th>Attendance</th></tr>';    
+      strSched += "<h2>Master List</h2>";
+      for(i=0; i<arr.length; i++) {
+        strSched += "<tr>";
+        for(var j=0; j<arr[i].length; j++){
+          strSched += "<td>" + arr[i][j] + "</td>";
+        }
+        strSched += "</tr>";
+      }
+      strSched += "</table>";      
+    }
+    //Set the inner HTML of the necessary components to the proper contents
+  }
+  strSched += '<div class="printingDivision"></div>';
+  schedDiv.innerHTML = strSched;
+  document.getElementById('loadingDiv').innerHTML = "";
+}
+
+//Checks a group of checkboxes for ticked values.
+function checkCheckBoxes(name, value) {
+  var inputElements = document.getElementsByName(name);
+  var oneChecked = false;
+  for(var i=0; inputElements[i]; ++i){
+      if(inputElements[i].checked){
+           oneChecked = true;
+           if (inputElements[i].value.toLowerCase().includes(value.toLowerCase())) {
+               return true;
+           }
+      }
+  }
+  if (oneChecked) {
+      return false;
+  } else {
+      return true;
+  }  
+}
+
+function handle(e){
+  if(e.keyCode === 13){
+    e.preventDefault(); // Ensure it is only this code that runs
+    
+    checkDatabase();
+    //document.getElementById('loadingDiv').innerHTML = '<br>Loading...';
+  }
+}
+ 
+ function printPage() {
+   var header = document.getElementById('nameDiv').innerHTML;
+   var schedToPrint = header + document.getElementById('schedDiv').innerHTML;
+   var printhtml = 'https://sites.google.com/site/usmlunch/jarfunklemcree/printpage?schedule=' + schedToPrint + '&tmpl=/system/app/templates/print';
+   window.open(printhtml);
+ }
+ 
+</script>
+
+<hr>
+<div id="searchForm">
+    <table class="noBorder">
+      <tr class="noBorder">
+        <td class="noBorder">Day: </td>
+        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="day" type="radio" value="A" checked="checked"/> A
+            <input name="day" type="radio" value="B" /> B
+            <input name="day" type="radio" value="C" /> C
+            <input name="day" type="radio" value="D" /> D
+            <input name="day" type="radio" value="E" /> E
+            <input name="day" type="radio" value="F" /> F
+            <input name="day" type="radio" value="G" /> G
+            <input name="day" type="radio" value="H" /> H
+        </form></td>
+      </tr>
+      <tr class="noBorder">
+        <td class="noBorder">Time: </td>
+        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="time" type="checkbox" value="Early" /> Early
+            <input name="time" type="checkbox" value="Middle" /> Middle
+            <input name="time" type="checkbox" value="Late" /> Late
+        </form></td>
+      </tr>
+      <tr class="noBorder">
+        <td class="noBorder">Printing Items: </td>
+        <td class="noBorder"><form xmlns="http://www.w3.org/1999/xhtml" action="">
+            <input name="masterList" type="radio" value="tables" checked="true" /> Only Tables
+            <input name="masterList" type="radio" value="masterlist" /> Only Master List 
+            <input name="masterList" type="radio" value="masterlisttables" /> Tables and Master List            
+        </form></td>
+      </tr>      
+    </table>
+    <input id="student" type="button" onClick="google.script.run.withSuccessHandler(checkDatabase());" value="Search" /> 
+</div>
+<hr>
+<div id="printButtonDiv"><input id="printButton" onclick="window.print()" type="button" value=" " /> </div>
+<div id="loadingDiv"></div>
+<div id="printDiv">
+  <div id="nameDiv"></div>
+  <div id="subHeadingDiv"></div>
+  <div id="schedDiv"></div>
+</div>
+</Content>
+</Module>
