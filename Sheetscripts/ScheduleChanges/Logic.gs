@@ -184,7 +184,7 @@
     var values = sheet.getDataRange().getValues();
     
     // Check if changes are able to be made; if not, display message
-    if(changes.badChanges !== null || changes.badChanges !== undefined) {
+    if(changes.badChanges !== null && changes.badChanges !== undefined) {
       //display error pop up
       Logger.log("schedule change not made");
     }   

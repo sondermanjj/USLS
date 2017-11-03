@@ -40,18 +40,19 @@
   }
   
   function showChanges(changes) {
-    console.log(changes.badChanges);
-    console.log(changes.badChanges.length);
     var html = "";
-    if(changes.badChanges.length === 7) {
+       
+    if ( changes == null || changes == undefined) {
+    
+    } 
+    else if(changes.badChanges !== undefined && changes.badChanges !== null){
+      if(changes.badChanges.length === 7) {
         var badChanges = changes.badChanges;
         html+='<div class="bad-change-message">Unable to move ' + badChanges[0] + ' ' + badChanges[1] + ' into ' + badChanges[3] + '(' +
                badChanges[6] + ' lunch) on ' + badChanges[2] + ' day. Not enough free students available to make the switch.</div>';
+      }
     }
-    else if ( changes == null || changes == undefined) {
-    
-    } else if (changes.length > 0) {
-
+    else if (changes.length > 0) {
         var headers = ["First Name", "Last Name", "Lunch Day","New Course", "Old Lunch Time", "New Lunch Time", "New Table"];
         html += '<table id="scheduleChanges">';
         html += createHeaders(html, headers);
