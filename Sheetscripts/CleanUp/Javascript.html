@@ -70,10 +70,10 @@
       * @author - sondermanjj
   *******************************************************************/
   function toggleDescriptions() {
-    if ($('#descriptionText').is(":visible")) {
-      $('#descriptionText').hide();
+    if ($('.descriptionText').is(":visible")) {
+      $('.descriptionText').hide();
     } else {
-      $('#descriptionText').show();
+      $('.descriptionText').show();
     }    
   }
   
@@ -110,12 +110,12 @@
   *******************************************************************/
   function addFacultyChoicesSheet() {
     $('#doneButton').prop("disabled", true);
-    $('#finalBackButton').prop("disbaled", true);
-    var rawSheetName = determineSheetName($('#rawFilePrompt'), $('#rawFilePrompt').children('.listOfSheets').val());
-    var studentDataSheetName = determineSheetName($('#studentDataPrompt'), $('#studentDataPrompt').children('.listOfSheets').val());
-    var facultyDataSheetName = determineSheetName($('#facultyDataPrompt'), $('#facultyDataPrompt').children('.listOfSheets').val());
-    var dodSheetName = determineSheetName($('#dodSheetPrompt'), $('#dodSheetPrompt').children('.listOfSheets').val());
-    var facultyChoicesSheetName = determineSheetName($('#facultyChoicesPrompt'), $('#facultyChoicesPrompt').children('.listOfSheets').val());
+    $('#finalBackButton').prop("disabled", true);
+    var rawSheetName = determineSheetName("sheetRawCell", $('#rawSheet').val());
+    var studentDataSheetName = determineSheetName("sheetStudentDataCell", $('#studentDataSheet').val());
+    var facultyDataSheetName = determineSheetName("sheetFacultyDataCell", $('#facultyDataSheet').val());
+    var dodSheetName = determineSheetName("sheetDODSheetCell", $('#dodSheet').val());
+    var facultyChoicesSheetName = determineSheetName("sheetFacultyChoiceCell", $('#facultyChoicesSheet').val());
     
     var sheetNames = {raw: rawSheetName, student: studentDataSheetName, faculty:facultyDataSheetName,
                       dod: dodSheetName, choices: facultyChoicesSheetName};
@@ -131,9 +131,10 @@
       *           listValue - String - Value of the select dropdown menu
       * @author - hendersonam
   *******************************************************************/
-  function determineSheetName(parentDiv, listValue) {
+  function determineSheetName(parent, listValue) {
+    var parentElement = $("#"+parent);
     if(listValue == "New Sheet..") {
-      return parentDiv.children('.newName').val();
+      return parentElement.children('.newName').val();
     } else {
       return listValue;
     }
