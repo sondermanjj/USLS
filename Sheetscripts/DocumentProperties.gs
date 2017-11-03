@@ -28,9 +28,9 @@ function testting() {
  * @author - hendersonam
  */
 function setLunchProperties() {
-  var early = [{"name": "early", "numStuPerTable": 7, "priority": 1, "font": "BLACK", "background": "YELLOW", "assignedBy": "table", "minTables": 19, "maxTables": 19}];
-  var mid = [{"name": "mid", "numStuPerTable": 7, "priority": 3, "font": "BLACK", "background": "WHITE", "assignedBy": "none", "minTables": 19, "maxTables": 19}];
-  var late = [{"name": "late", "numStuPerTable": 7, "priority": 2, "font": "BLACK", "background": "#8db4e2", "assignedBy": "house", "minTables": 19, "maxTables": 19}];
+  var early = {"name": "early", "numStuPerTable": 7, "priority": 1, "font": "BLACK", "background": "YELLOW", "assignedBy": "table", "minTables": 19, "maxTables": 19};
+  var mid = {"name": "mid", "numStuPerTable": 7, "priority": 3, "font": "BLACK", "background": "WHITE", "assignedBy": "none", "minTables": 19, "maxTables": 19};
+  var late = {"name": "late", "numStuPerTable": 7, "priority": 2, "font": "BLACK", "background": "#8db4e2", "assignedBy": "house", "minTables": 19, "maxTables": 19};
   
   var lunchDays = [{"letter": "A", "block": 3, "times": [early, mid, late]},
   {"letter": "B", "block": 7, "times": [early, mid, late]},
