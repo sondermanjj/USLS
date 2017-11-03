@@ -3,23 +3,35 @@
   <head>
     <base target="_top">
   </head>
+ 
   <body>
     
     <div id="rawFilePrompt">
-     <label>Raw Student Data Sheet:</label>
-     <br/>
-      <select class="listOfSheets">
-      </select>
-      <br/>
-      <input class="action" type="button" onClick="addRawSheet()" value="Next" />
+    <table>
+      <tr>
+        <th><label>Raw Student Data Sheet:</label></th>
+        <th><select class="listOfSheets"></select></th>
+        <th><img id="descriptionButton" onClick="toggleDescriptions()" src="https://sites.google.com/site/usmlunch/tinyQuestionMark.png?revision=1"></th>        
+      </tr>
+      </table>
+      <table>
+      <tr>
+        <th><input class="action" type="button" onClick="addRawSheet()" value="Next" /></th>
+      </tr>
+      <tr id="descriptionText" hidden="true">
+        <th><label>The raw data from the excel brought into the google sheet</label></th>
+      </tr>
+    </table>
     </div>
     
     <div id="studentDataPrompt">
+    <table>
      <label>Final Student Data Sheet:</label>
      <br/>
       <select class="listOfSheets">
       </select>
       <br/>
+      </table>
       <input type="button" onClick="showDiv('rawFilePrompt', this)" value="Back"/>
       <input class="action" type="button" onClick="addStudentDataSheet()" value="Next" />
     </div>

@@ -65,6 +65,19 @@
   }
   
   /*****************************************************************
+      * @desc - Changes the descriptionText of the prompts to appear 
+                or dissapear.
+      * @author - sondermanjj
+  *******************************************************************/
+  function toggleDescriptions() {
+    if ($('#descriptionText').is(":visible")) {
+      $('#descriptionText').hide();
+    } else {
+      $('#descriptionText').show();
+    }    
+  }
+  
+  /*****************************************************************
       * @desc - Add the student data sheet to our properties and show the prompt
       *         for the faculty data sheet
       * @author - hendersonam

@@ -5,8 +5,8 @@
   function showCleanUpPrompt() {
     var html = HtmlService.createTemplateFromFile('Sheetscripts/CleanUp/HTML')
       .evaluate()
-      .setHeight(100)
-      .setWidth(400);
+      .setHeight(200)
+      .setWidth(500);
     SpreadsheetApp.getUi().showModalDialog(html, ' ');
   }
 
