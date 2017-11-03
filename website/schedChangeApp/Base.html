@@ -39,7 +39,7 @@ function isNumeric(n) {
   function assignSchedChangeValue(newJson) {
     json = newJson;
     console.log("Spreadsheet loaded");
-    console.log(json);
+    //console.log(json);
     checkDatabase();
   }
   
@@ -56,6 +56,18 @@ function formatDate(date) {
   var year = date.getFullYear();
 
   return day + ' ' + monthNames[monthIndex] + ' ' + year;
+}
+
+/**
+*
+* Custom sort function to sort the schedule changes first by date(most recent first) then by name
+*/
+function sortByDateMostRecentFirst(a, b) {
+  if (a[6] > b[6]) return  1;
+  if (a[6] < b[6]) return -1;
+  if (a[0] > b[0]) return  1;
+  if (a[0] < b[0]) return -1;
+  return 0;
 }
 
 
@@ -118,7 +130,7 @@ function formSchedChangeSubmit() {
       }
     
       strSched = "";
-      arr = resultsArray.sort();
+      arr = resultsArray.sort(sortByDateMostRecentFirst);
       strSched += '<table class="textTable"><tr>'
         + '<th>Name</th>' 
         + '<th>Lunch Day</th>'
