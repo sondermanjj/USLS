@@ -115,8 +115,12 @@ function assignStudentLunchDays() {
     }
   }
   if(badLunches.length > 0){
-    //REPLACE BELOW WITH SOME CALL TO AN HTML THING
-    SpreadsheetApp.getUi().alert("Too many students in a lunch");
+    var error = "";
+    //REPLACE BELOW WITH SOME CALL TO AN HTML THING. THIS IS JUST TEMPORARY
+    for(i = 0; i < badLunches.length; i++){
+      error += " - " + badLunches[i].day + ":" + badLunches[i].time + " "; 
+    }
+    SpreadsheetApp.getUi().alert("Too many students in lunches " + error);
     return;
   }
   
