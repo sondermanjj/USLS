@@ -120,19 +120,62 @@ function assignStudentLunchDays() {
     return;
   }
   
-  var lengthCheck = true;
-  var numStuPerTable;
-  var minTables;
-  //Checks to see if there are too few students in each assigned lunch. If there are, assign students
-  //with the lowest zScore number in mid lunch to that lunch
+  var lengthCheck = tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunches, nonAssignedLunches, properties);
+
+  assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, primary, properties);
+}
+
+/**
+@desc Checks to see if there are enough students in each lunch, assigns the tables, and prints to the sheet
+@params lengthCheck - TRUE: the correct amount of students are in each lunch
+        assignedLunches - the list of assigned lunches
+        assignedEachDay - array containing the assigned lunches for each day and the students in them
+        fullStudentsArray - the list of all students
+        sheet - the sheet being printed to
+        properties - the list of document properties
+@funtional - updated
+@author - dicksontc
+*/
+function assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, sheet, properties){
+  var i, j;
+  if(lengthCheck){
+    for(i = 0; i < assignedEachDay.length; i++){
+      for(j = 0; j < assignedEachDay[i].length; j++){
+        doRandomAssignment(assignedLunches, assignedEachDay[i][j], properties);
+      }
+    }
+    printStudentsToSheet(fullStudentsArray, sheet, properties);
+  }else{
+    Logger.log("Too many or too few students in a lunch (shouldn't happen)");
+    SpreadsheetApp.getUi().alert("Not enough students in assigned lunches");
+  }
+}
+
+/**
+@desc Checks to see if there are too few students in each assigned lunch. If there are, it assigns
+      students with free periods to that lunch.
+@params assignedEachDay - array containing the assigned lunches for each day and the students in them
+        fullStudentsArray - the list of all students
+        assignedLunches - the list of assigned lunches
+        nonAssignedLunches - the list of non-assigned lunches
+        properties - the list of document properties
+@return - false if there are too few students any lunch after moving free students into assigned lunches
+@funtional - updated
+@author - dicksontc
+*/
+function tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunches, nonAssignedLunches, properties){
+  var timeObj;
+  var timeInfo, studentsInLunch;
+  var numStuPerTable, minTables;
+  var needed;
+  var i, j;
   for(i = 0; i < assignedEachDay.length; i++){
     for(j = 0; j < assignedEachDay[i].length; j++){
       timeObj = assignedEachDay[i][j];
-      var timeInfo = timeObj.timeInfo;
+      timeInfo = timeObj.timeInfo;
+      studentsInLunch = timeObj.studentsInLunch;
       numStuPerTable = timeInfo.numStuPerTable;
       minTables = timeInfo.minTables;
-      var studentsInLunch = timeObj.studentsInLunch;
-      var needed;
       if(studentsInLunch.length < numStuPerTable * minTables){
         needed = (numStuPerTable * minTables) - studentsInLunch.length;
         studentsInLunch = moveFromNonToAssigned(timeObj, fullStudentsArray, studentsInLunch, assignedLunches, nonAssignedLunches, needed, properties);
@@ -140,24 +183,12 @@ function assignStudentLunchDays() {
         needed = numStuPerTable - studentsInLunch.length % numStuPerTable;
         studentsInLunch = moveFromNonToAssigned(timeObj, fullStudentsArray, studentsInLunch, assignedLunches, nonAssignedLunches, needed, properties);
       }
-      if(studentsInLunch.length < numStuPerTable * minTables){
-        lengthCheck = false;
+      if(studentsInLunch.length < numStuPerTable * minTables || studentsInLunch.length % numStuPerTable !== 0){
+        return false;
       }
     }
   }
-
-  //If there all early lunches are full and none are overpopulated, randomly assign students to tables
-  if(lengthCheck){
-    for(i = 0; i < assignedEachDay.length; i++){
-      for(j = 0; j < assignedEachDay[i].length; j++){
-        doRandomAssignment(assignedLunches, assignedEachDay[i][j], properties);
-      }
-    }
-    printStudentsToSheet(fullStudentsArray, primary, properties);
-  }else{
-    Logger.log("Too many or too few students in a lunch (shouldn't happen)");
-    SpreadsheetApp.getUi().alert("Not enough students in assigned lunches");
-  }
+  return true;
 }
 
 /**
@@ -209,54 +240,6 @@ function getCourses(selected) {
   }
   
   return {"courses": courses, "selected" : selected, "titles" : titles};
-}
-
-/*            
-* @desc - creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
-* @author - clemensam notYet
-*/
-function pushCoursesToCourseSheet() {
-  var docProps = PropertiesService.getDocumentProperties();
-  var properties = docProps.getProperties();
-  var studentDataProp = properties.studentData;
-  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
-  
-  var primaryData = primarySheet.getDataRange();
-  var pValues = primaryData.getValues();
-  var pNumRows = primaryData.getNumRows();
-  
-  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
-  var courseTitleCol = parseInt(properties["Student Course Title"]);
-  var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
-  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
-  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
-  
-  var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
-  var newData = [];
-  var courses = [];
-  
-  var i; 
-  for(i = 0; i < pNumRows; i++){
-    var courseTitle = pValues[i][courseTitleCol];
-    var lunchDay = pValues[i][lunchDayCol];
-    var lunchTime = pValues[i][lunchTimeCol];
-    var facultyFirstName = pValues[i][facultyFirstNameCol];
-    var facultyLastName = pValues[i][facultyLastNameCol];
-    
-    var newRow = [courseTitle, facultyFirstName, facultyLastName, lunchDay, lunchTime];
-    
-    var courseDayTimeConcat = courseTitle + lunchDay + lunchTime;
-    
-    if(courses.indexOf(courseDayTimeConcat) < 0) {
-      courses.push(courseDayTimeConcat);
-      newData.push(newRow);
-    }
-  }
-  
-  newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
-  //newData.sort();
-  
-  createNewSheet(newData, "Courses");
 }
 
 /*
