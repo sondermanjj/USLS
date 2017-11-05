@@ -113,7 +113,7 @@ function setFacultyCourses() {
 function removeIrrelevantData(oldValues, properties) {
   
   //Get necessary properties
-  var schoolDays = JSON.parse(properties.schoolDays);
+  var lunchDays = JSON.parse(properties.lunchDays);
   
   //Create a new array for the cleaned data
   var revisedValues = [];
@@ -129,8 +129,11 @@ function removeIrrelevantData(oldValues, properties) {
   //and push them to the new data array
   for (var j = 0; j < oldValues.length; j++) {
     var row = oldValues[j][blockColumn];
-    if(schoolDays[row] != null) {
-      revisedValues.push(oldValues[j]);
+    for(var i = 0; i < lunchDays.length; i++){
+      if(lunchDays[i].block === row || (lunchDays[i].letter + "" + lunchDays[i].block) ===  row){
+        revisedValues.push(oldValues[j]);
+        i = lunchDays.length;
+      }
     }
   }
   return revisedValues;
@@ -145,7 +148,7 @@ function removeIrrelevantData(oldValues, properties) {
  */
 function populateLunchDay(values, properties) {
   
-  var schoolDays = JSON.parse(properties.schoolDays);
+  var lunchDays = JSON.parse(properties.lunchDays);
   var headers = getListOfColumns(values);
   var blockColumn = getColumnIndex(headers, "Block");
   var lunchDayColumn = getColumnIndex(headers, "Lunch Day");
@@ -155,18 +158,25 @@ function populateLunchDay(values, properties) {
   //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
   for (var j = 0; j < values.length; j++) {
     if(values[j][lunchDayColumn] != "Lunch Day") {
-      var day = schoolDays[values[j][blockColumn]];
-      if( day === null) {
-        badRows.push(j+1);
-      } else {
-        values[j][lunchDayColumn] = schoolDays[values[j][blockColumn]];
+      var block = values[j][blockColumn];
+      for(var i = 0; i < lunchDays.length; i++){
+        if(lunchDays[i].block === block || (lunchDays[i].letter + "" + lunchDays[i].block) ===  block){
+          values[j][lunchDayColumn] = lunchDays[i].letter;
+          i = lunchDays.length;
+        }
       }
+//      var day = schoolDays[values[j][blockColumn]];
+//      if( day === null) {
+//        badRows.push(j+1);
+//      } else {
+//        values[j][lunchDayColumn] = schoolDays[values[j][blockColumn]];
+//      }
     }
   }
   
-  if (badRows.length > 0) {
-    SpreadsheetApp.getUi().alert("Error setting lunch days on rows: \n" + badRows);
-  }
+//  if (badRows.length > 0) {
+//    SpreadsheetApp.getUi().alert("Error setting lunch days on rows: \n" + badRows);
+//  }
   
   return values;
 }
