@@ -63,8 +63,10 @@ function formatDate(date) {
 * Custom sort function to sort the schedule changes first by date(most recent first) then by name
 */
 function sortByDateMostRecentFirst(a, b) {
-  if (a[6] > b[6]) return  1;
-  if (a[6] < b[6]) return -1;
+  var date1 = new Date(a[6]);
+  var date2 = new Date(b[6]);
+  if (date1 > date2) return  -1;
+  if (date1 < date2) return 1;
   if (a[0] > b[0]) return  1;
   if (a[0] < b[0]) return -1;
   return 0;
@@ -130,7 +132,7 @@ function formSchedChangeSubmit() {
       }
     
       strSched = "";
-      arr = resultsArray.sort(sortByDateMostRecentFirst);
+      var arr = resultsArray.sort(sortByDateMostRecentFirst);
       strSched += '<table class="textTable"><tr>'
         + '<th>Name</th>' 
         + '<th>Lunch Day</th>'
