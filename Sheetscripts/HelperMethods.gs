@@ -119,7 +119,6 @@ function searchSheet(filter, column, sheetName){
  */
 function hideValues(filter, column, sheetName) {
 
-  Logger.log(sheetName);
   var properties = PropertiesService.getDocumentProperties()
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
 
