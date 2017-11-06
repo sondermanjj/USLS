@@ -9,6 +9,7 @@ function initialization(sheetNames) {
   PropertiesService.getDocumentProperties().deleteAllProperties();
   setLunchProperties();
 
+  setRawSheetProperty(sheetNames.raw);
   var cleanedSheet = cleanUp(sheetNames.raw, sheetNames.student);
   
   if (cleanedSheet) {
