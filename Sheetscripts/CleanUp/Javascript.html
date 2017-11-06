@@ -152,6 +152,13 @@
     for(var i = 0; i < divs.length; i++){
       divs[i].style.display = 'none';
     }
+    if(divID !="settingsPrompt") {
+      google.script.host.setWidth(300);
+      google.script.host.setHeight(200);
+    } else {
+      google.script.host.setWidth(900);
+      google.script.host.setHeight(800);
+    }
     document.getElementById(divID).style.display = 'block';
   }
 
