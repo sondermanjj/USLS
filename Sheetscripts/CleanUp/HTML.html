@@ -11,7 +11,7 @@
       <select class="listOfSheets">
       </select>
       <br/>
-      <input class="action" type="button" onClick="addRawSheet()" value="Next" />
+      <input class="action" type="button" onClick="showDiv('studentDataPrompt', this)" value="Next" />
     </div>
     
     <div id="studentDataPrompt">
@@ -21,7 +21,7 @@
       </select>
       <br/>
       <input type="button" onClick="showDiv('rawFilePrompt', this)" value="Back"/>
-      <input class="action" type="button" onClick="addStudentDataSheet()" value="Next" />
+      <input class="action" type="button" onClick="showDiv('facultyDataPrompt', this)" value="Next" />
     </div>
     
     <div id="facultyDataPrompt">
@@ -31,7 +31,7 @@
       </select>
       <br/>
       <input type="button" onClick="showDiv('studentDataPrompt', this)" value="Back"/>
-      <input class="action" type="button" onClick="addFacultyDataSheet()" value="Next" />
+      <input class="action" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Next" />
     </div>
     
     <div id="dodSheetPrompt">
@@ -41,7 +41,7 @@
       </select>
       <br/>
       <input type="button" onClick="showDiv('facultyDataPrompt', this)" value="Back"/>
-      <input class="action" type="button" onClick="addDODSheet()" value="Next" />
+      <input class="action" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="Next" />
     </div>
     
     <div id="facultyChoicesPrompt">
@@ -50,8 +50,17 @@
       <select class="listOfSheets">
       </select>
       <br/>
-      <input id="finalBackButton" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Back"/>
-      <input id="doneButton" class="action" type="button" onClick="addFacultyChoicesSheet()" value="Done" />
+      <input type="button" onClick="showDiv('dodSheetPrompt', this)" value="Back"/>
+      <input class="action" type="button" onClick="showDiv('settingsPrompt', this)" value="Next" />
+    </div>
+    
+    <div id="settingsPrompt">
+      <label>Current Settings:</label>
+      <br/>
+      <table id="currentSettings">
+      </table>
+      <input id="finalBackButton" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="Back"/>
+      <input id="doneButton" class="action" type="button" onClick="finish()" value="Done" />
     </div>
     
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
