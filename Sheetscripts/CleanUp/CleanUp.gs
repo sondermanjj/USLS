@@ -51,8 +51,8 @@ function cleanUp(sheetName, newSheetName) {
   newValues = populateLunchDay(newValues, properties);
   
   newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
-  newValues = deleteColumnNames(newSheet, ["Gender", "Date of Birth", "Section Identifier", "Course ID", "Course Length", "Course Code", "Advisor"  ]);
-  newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
+  //newValues = deleteColumnNames(newSheet, ["Gender", "Date of Birth", "Section Identifier", "Course ID", "Course Length", "Course Code", "Advisor"  ]);
+  //newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
   
   return newSheet;
   
