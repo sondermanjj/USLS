@@ -239,7 +239,7 @@ function getCourses(selected) {
     if(lunchTime !== "Lunch Time"){
       courseDayConcat = courseDayConcat.replace(/\s/g,'');
       courses[courseDayConcat] = lunchTime;
-      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay};
+      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay, "time" : lunchTime};
     }
   }
   
@@ -334,85 +334,126 @@ function pushCoursesToCourseSheet() {
   Logger.log("Course Sheet Created");
 }
 
+/*
+ * @desc - creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
+ * @author - clemensam
+ */
+ function pushCoursesToCourseSheet() {
+   var docProps = PropertiesService.getDocumentProperties();
+   var properties = docProps.getProperties();
+   var studentDataProp = properties.studentData;
+   var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
+   
+   var primaryData = primarySheet.getDataRange();
+   var pValues = primaryData.getValues();
+   var pNumRows = primaryData.getNumRows();
+ 
+   var lunchDayCol = parseInt(properties["Student Lunch Day"]);
+   var courseTitleCol = parseInt(properties["Student Course Title"]);
+   var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
+   var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
+   var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
+   
+   var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
+   var newData = [];
+   var courses = [];
+   //newData.push(headerRow);
+   var i; 
+   for(var i = 0; i < pNumRows; i++){
+     var courseTitle = pValues[i][courseTitleCol];
+     var lunchDay = pValues[i][lunchDayCol];
+     var lunchTime = pValues[i][lunchTimeCol];
+     var facultyFirstName = pValues[i][facultyFirstNameCol];
+     var facultyLastName = pValues[i][facultyLastNameCol];
+     
+     var newRow = [courseTitle, facultyFirstName, facultyLastName, lunchDay, lunchTime];
+     
+     var courseDayTimeConcat = courseTitle + lunchDay + lunchTime;
+     
+      if((courses.indexOf(courseDayTimeConcat) < 0) && (facultyFirstName !== '' && facultyLastName !== '')) {
+       courses.push(courseDayTimeConcat);
+       newData.push(newRow);
+     }
+   }
+   
+   newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
+   
+   createNewSheet(newData, "Courses");
+   Logger.log("Course Sheet Created");
+ }
+
 /**
  * @desc Updates the final student sheet with faculty information for the middle school students
  * @params - properties - the list of document properties
  * @funtional - updated
  * @author - clemensam
  */
-function updateSheetWithFaculty(properties) {
-  var studentDataProp = properties.studentData;
-  var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
+ function updateSheetWithFaculty(properties) {
+   var studentDataProp = properties.studentData;
+   var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
+   
+   var primaryData = primarySheet.getDataRange();
+   var pValues = primaryData.getValues();
+   var pNumRows = primaryData.getNumRows();
+   
+   //["First Name","Last Name","Grade Level","Advisor","Gender","Course Title","Course Code","Course Length","Course ID","Section Identifier","Faculty First Name","Faculty Last Name","Block","Date of Birth","Table Head","Lunch Day","Lunch Time","Lunch Table","House"]
+ 
+   var firstNameCol = parseInt(properties["Student First Name"]);
+   var lastNameCol = parseInt(properties["Student Last Name"]);
+   var gradeLevelCol = parseInt(properties["Student Grade Level"]);
+   var advisorCol = parseInt(properties["Student Advisor"]);
+   var genderCol = parseInt(properties["Student Gender"]);
+   var courseTitleCol = parseInt(properties["Student Course Title"]);
+   var courseCodeCol = parseInt(properties["Student Course Code"]);
+   var courseLengthCol = parseInt(properties["Student Course Length"]);
+   var courseIDCol = parseInt(properties["Student Course ID"]);
+   var sectionIdentifierCol = parseInt(properties["Student Section Identifier"]);
+   var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
+   var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
+   var blockCol = parseInt(properties["Student Block"]);
+   var dobCol = parseInt(properties["Student Date of Birth"]);
+   var tableHeadCol = parseInt(properties["Student Table Head"]);
+   var lunchDayCol = parseInt(properties["Student Lunch Day"]);
+   var lunchTimeCol = parseInt(properties["Student Lunch Time"]);  
+   var lunchTableCol = parseInt(properties["Student Lunch Table"]);
+   var houseCol = parseInt(properties["Student House"]);
   
-  var primaryData = primarySheet.getDataRange();
-  var pValues = primaryData.getValues();
-  var pNumRows = primaryData.getNumRows();
-  
-  //["First Name","Last Name","Grade Level","Advisor","Gender","Course Title","Course Code","Course Length","Course ID","Section Identifier","Faculty First Name","Faculty Last Name","Block","Date of Birth","Table Head","Lunch Day","Lunch Time","Lunch Table","House"]
-  
-  var firstNameCol = parseInt(properties["Student First Name"]);
-  var lastNameCol = parseInt(properties["Student Last Name"]);
-  var gradeLevelCol = parseInt(properties["Student Grade Level"]);
-  var advisorCol = parseInt(properties["Student Advisor"]);
-  var genderCol = parseInt(properties["Student Gender"]);
-  var courseTitleCol = parseInt(properties["Student Course Title"]);
-  var courseCodeCol = parseInt(properties["Student Course Code"]);
-  var courseLengthCol = parseInt(properties["Student Course Length"]);
-  var courseIDCol = parseInt(properties["Student Course ID"]);
-  var sectionIdentifierCol = parseInt(properties["Student Section Identifier"]);
-  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
-  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
-  var blockCol = parseInt(properties["Student Block"]);
-  var dobCol = parseInt(properties["Student Date of Birth"]);
-  var tableHeadCol = parseInt(properties["Student Table Head"]);
-  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
-  var lunchTimeCol = parseInt(properties["Student Lunch Time"]);  
-  var lunchTableCol = parseInt(properties["Student Lunch Table"]);
-  var houseCol = parseInt(properties["Student House"]);
-  
-  var updatedRow = [];
-  var i; 
-  for(i = 0; i < pNumRows; i++){
-    var firstName = pValues[i][firstNameCol];
-    var lastName = pValues[i][lastNameCol];
-    var gradeLevel = pValues[i][gradeLevelCol];
-    var advisor = pValues[i][advisorCol];
-    var gender = pValues[i][genderCol];
-    var courseTitle = pValues[i][courseTitleCol];
-    var courseCode = pValues[i][courseCodeCol];
-    var courseLength = pValues[i][courseLengthCol];
-    var courseID = pValues[i][courseIDCol];
-    var sectionIdentifier = pValues[i][sectionIdentifierCol];
-    var facultyFirstName = pValues[i][facultyFirstNameCol];
-    var facultyLastName = pValues[i][facultyLastNameCol];
-    var block = pValues[i][blockCol];
-    var dob = pValues[i][dobCol];
-    var tableHead = pValues[i][tableHeadCol];
-    var lunchDay = pValues[i][lunchDayCol];
-    var lunchTime = pValues[i][lunchTimeCol]; 
-    var lunchTable = pValues[i][lunchTableCol];
-    var house = pValues[i][houseCol];
-    
-    if((facultyFirstName === "" || facultyFirstName === undefined) && (facultyLastName === "" || facultyLastName === undefined) && (courseTitle.indexOf('z') !== 0)) {
-      var facultyName = findFacultyName(courseTitle, lunchDay, properties);
-      facultyFirstName = facultyName.firstName;
-      facultyLastName = facultyName.lastName;  
-      updatedRow = [[firstName, lastName, gradeLevel, advisor, gender, courseTitle, courseCode, courseLength, courseID, sectionIdentifier, facultyFirstName, facultyLastName, block, dob, tableHead, lunchDay, lunchTime, lunchTable, house]];
-      var sheetRange = primarySheet.getRange(i+1, 1, 1, 19);
-      sheetRange.setValues(updatedRow);
-    }
-  }
-  return true;
-}
+   var updatedRow = [];
+   var i; 
+   for(var i = 0; i < pNumRows; i++){
+     var firstName = pValues[i][firstNameCol];
+     var lastName = pValues[i][lastNameCol];
+     var gradeLevel = pValues[i][gradeLevelCol];
+     var advisor = pValues[i][advisorCol];
+     var gender = pValues[i][genderCol];
+     var courseTitle = pValues[i][courseTitleCol];
+     var courseCode = pValues[i][courseCodeCol];
+     var courseLength = pValues[i][courseLengthCol];
+     var courseID = pValues[i][courseIDCol];
+     var sectionIdentifier = pValues[i][sectionIdentifierCol];
+     var facultyFirstName = pValues[i][facultyFirstNameCol];
+     var facultyLastName = pValues[i][facultyLastNameCol];
+     var block = pValues[i][blockCol];
+     var dob = pValues[i][dobCol];
+     var tableHead = pValues[i][tableHeadCol];
+     var lunchDay = pValues[i][lunchDayCol];
+     var lunchTime = pValues[i][lunchTimeCol]; 
+     var lunchTable = pValues[i][lunchTableCol];
+     var house = pValues[i][houseCol];
+     
+     if((facultyFirstName === "" || facultyFirstName === undefined) && (facultyLastName === "" || facultyLastName === undefined) && (courseTitle.indexOf('z') !== 0)) {
+       var facultyName = findFacultyName(courseTitle, lunchDay, properties);
+       facultyFirstName = facultyName.firstName;
+       facultyLastName = facultyName.lastName; 
+       updatedRow = [[firstName, lastName, gradeLevel, advisor, gender, courseTitle, courseCode, courseLength, courseID, sectionIdentifier, facultyFirstName, facultyLastName, block, dob, tableHead, lunchDay, lunchTime, lunchTable, house]];
+       var sheetRange = primarySheet.getRange(i+1, 1, 1, 19);
+       sheetRange.setValues(updatedRow);
+     }
+   }
+   return true;
+ }
+ 
 
-function testchanges(){
-  var change = {fName: "Abigail", lName: "Ackles", oldTime: "early", oldDay: "C",
-                            oldTable: "19", newTime: "mid", oldCourseName: "Algebra I", newCourseName: "Chinese III", 
-                            facultyFName: "Haiyun", facultyLName: "Lu"};
-  var changes = [];
-  changes.push(change);
-  parseStudentChanges(changes);
-}
 /**
  * @desc Uses the students and changes arrays to change student schedules
  * @params - listOfChanges - the list of changes to be made
