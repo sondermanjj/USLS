@@ -37,14 +37,14 @@ function setLunchProperties() {
   var mid = {"name": "mid", "numStuPerTable": null, "priority": 3, "font": "BLACK", "background": "WHITE", "assignedBy": "none", "minTables": null, "maxTables": null};
   var late = {"name": "late", "numStuPerTable": null, "priority": 2, "font": "BLACK", "background": "#8db4e2", "assignedBy": "house", "minTables": null, "maxTables": null};
   
-  var lunchDays = [{"letter": "A", "block": 3, "times": [early, mid, late]},
-  {"letter": "B", "block": 7, "times": [early, mid, late]},
-  {"letter": "C", "block": 4, "times": [early, mid, late]},
-  {"letter": "D", "block": 8, "times": [early, mid, late]},
-  {"letter": "E", "block": 1, "times": [early, mid, late]},
-  {"letter": "F", "block": 5, "times": [early, mid, late]},
-  {"letter": "G", "block": 2, "times": [early, mid, late]},
-  {"letter": "H", "block": 6, "times": [early, mid, late]}];
+  var lunchDays = [{"letter": "A", "block": 3, "times": [early, mid, late ]},
+  {"letter": "B", "block": 7, "times": [early, mid, late ]},
+  {"letter": "C", "block": 4, "times": [early, mid, late ]},
+  {"letter": "D", "block": 8, "times": [early, mid, late ]},
+  {"letter": "E", "block": 1, "times": [early, mid, late ]},
+  {"letter": "F", "block": 5, "times": [early, mid, late ]},
+  {"letter": "G", "block": 2, "times": [early, mid, late ]},
+  {"letter": "H", "block": 6, "times": [early, mid, late ]}];
   
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H

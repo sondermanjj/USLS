@@ -135,7 +135,7 @@ function removeIrrelevantData(oldValues, properties) {
   //Grab any relevant rows (courses that meet during lunch times)
   //and push them to the new data array
   for (var j = 0; j < oldValues.length; j++) {
-    var block = oldValues[j][blockColumn];
+    var block = oldValues[j][blockColumn].toString().toLowerCase();
     if(lunchDays[block] != null) {
       revisedValues.push(oldValues[j]);
     }
@@ -156,6 +156,7 @@ function getLunchDaysMap(properties) {
     lunchDays[concat] = value;
     lunchDays[concat2] = value;
   }
+  Logger.log(lunchDays);
   return lunchDays;
 }
 
@@ -183,7 +184,7 @@ function populateLunchDay(values, properties) {
       if( day === null) {
         badRows.push(j+1);
       } else {
-        values[j][lunchDayColumn] = lunchDays[values[j][blockColumn]];
+        values[j][lunchDayColumn] = lunchDays[values[j][blockColumn].toString().toLowerCase()];
       }
     }
   }

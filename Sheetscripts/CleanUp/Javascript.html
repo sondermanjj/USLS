@@ -56,6 +56,21 @@
           html += "<th>" + settings[i].times[k].name + "</th>";
         }
         html += "</tr>";
+        
+        html += "<tr>";
+        html += "<td> General Settings </td>";
+        for(var t = 0; t < settings[i].times.length; t++) {
+          var priority = settings[i].times[t].priority;
+          var assignBy = settings[i].times[t].assignedBy;
+          var stuPerTable = settings[i].times[t].numStuPerTable;
+          var assignBy = settings[i].times[t].assignedBy;
+          var stuPerTable = settings[i].times[t].numStuPerTable;
+          priority = checkIfNull(priority);
+          assignBy = checkIfNull(assignBy);
+          stuPerTable = checkIfNull(stuPerTable);
+          html += "<td>Priority: "+priority+"<br/>Assigned By: "+assignBy+"<br/>Students Per Table: "+stuPerTable+"</td>";
+        }
+        html += "</tr>";
       }
       html += "<tr>";
       for(var j = 0; j < settings[i].times.length; j++) {
@@ -68,15 +83,11 @@
         }
         var max = settings[i].times[j].maxTables;
         var min = settings[i].times[j].minTables;
-        var assignBy = settings[i].times[j].assignedBy;
-        var stuPerTable = settings[i].times[j].numStuPerTable;
-        var priority = settings[i].times[j].priority;
         max = checkIfNull(max);
         min = checkIfNull(min);
-        assignBy = checkIfNull(assignBy);
-        stuPerTable = checkIfNull(stuPerTable);
-        priority = checkIfNull(priority);
-        html += "<td> Priority: "+priority+"<br/>Max Tables: "+max+"<br/>Min Tables: "+min+"<br/>Assigned By: "+assignBy+"<br/>Students Per Table: "+stuPerTable+"</td>";
+        
+        
+        html += "<td>Max Tables: "+max+"<br/>Min Tables: "+min+"</td>";
       }
       html += "</tr>";
     }
