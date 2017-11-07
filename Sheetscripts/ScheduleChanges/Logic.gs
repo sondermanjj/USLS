@@ -187,7 +187,6 @@
     //cleanTimedOutScheduleChanges(sheet);
     
     var date = Date.now();
-    Logger.log(date);
     for(var i = 0; i < changes.length; i++) {
       for(var j = 0; j < values.length; j++) {
         if( changes[i][0] == values[j][0] && changes[i][1] == values[j][1]) {
@@ -201,25 +200,6 @@
       sheet.appendRow(values);
     }
       
-  }
-  
-  /*****************************************************************
-      * @desc - Deletes any schedule changes that are a month old
-      * @param - sheet - Sheet - Sheet with schedule changes on it
-      * @author - hendersonam
-  *******************************************************************/
-  function cleanTimedOutScheduleChanges(sheet) {
-    var values = sheet.getDataRange().getValues();
-    var columnIndex = getColumnIndex(values, "Timestamp");
-    
-    var date = new Date();
-    var unixTime = date.now().getUnixTime();
-    
-    for(var i = 0; i < values.length; i++) {
-      if(howLong(date, values[i][columnIndex]) > 30) {
-        sheet.deleteRow(i);
-      }
-    }
   }
   
   /*****************************************************************
