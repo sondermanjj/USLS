@@ -31,7 +31,7 @@
     var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
     var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.DODList);
     var settings = JSON.parse(properties["lunchDays"]);
-    var letterDays = getDyas(settings);
+    var letterDays = getDays(settings);
 
     
     var teacherRow;
