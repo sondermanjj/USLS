@@ -21,7 +21,6 @@
   */
   function addTeachersToTableList() {
     
-    Logger.clear();
     var documentProperties = PropertiesService.getDocumentProperties();
     var properties = documentProperties.getProperties();
     populateTableList();
@@ -31,7 +30,8 @@
     var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
     var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
     var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.DODList);
-    var letterDays = JSON.parse(properties.letterDays);
+    var settings = JSON.parse(properties["lunchDays"]);
+    var letterDays = getDays(settings);
 
     
     var teacherRow;
@@ -204,6 +204,16 @@
     return formattedTeacherData;
   }
   
+  function getAssignedLunches(settings) {
+    var assignedLunches = [];
+    for(var j = 0; j < settings[0].times.length; j++) {
+      if(settings[0].times[j].assignedBy == "table") {
+        assignedLunches.push(settings[0].times[j]);
+      }
+    }
+    
+  }
+  
   /**
   @desc Makes (or clears) the old table list and generates it based on the number of tables.
   @author sondermanjj
@@ -216,9 +226,12 @@
     var documentProperties = PropertiesService.getDocumentProperties();
     var properties = documentProperties.getProperties();
     var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
-    var assignedLunches = JSON.parse(properties.assignedLunches);
+    
+    var settings = JSON.parse(properties["lunchDays"]);
+    var letterDays = getDays(settings);
+    
+    var assignedLunches = getAssignedLunches(settings);
     var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
-    var letterDays = JSON.parse(properties.letterDays);
     
     tableList.getRange("A1:F1").setValues(headerList);
     
@@ -227,9 +240,9 @@
     var rowInit = 2;
     for(var j = 0; j < assignedLunches.length; j++){
       if(j > 0){
-          rowInit = rowNumber + assignedLunches[j-1].numTables;
+          rowInit = rowNumber + assignedLunches[j-1].maxTables;
       }
-      var numberOfTables = assignedLunches[j].numTables;
+      var numberOfTables = assignedLunches[j].maxTables;
       for (var i = 0; i < letterDays.length; i++) {
         rowNumber = rowInit + (i * numberOfTables);
         tableList.getRange(rowNumber, 3, numberOfTables).setValue(letterDays[i]);

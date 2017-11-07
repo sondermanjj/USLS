@@ -1,5 +1,10 @@
 function testting() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperties());
+  var properties = PropertiesService.getDocumentProperties().getProperties();
+  var days = JSON.parse(properties["lunchDays"]);
+//  for(var i = 0; i < days.length; i++) {
+//    Logger.log(days[i].letter);
+    Logger.log(days[0].block.toString().toLowerCase().concat(days[0].letter.toString().toLowerCase()));
+//  }
 }
 
 /*****************************************************************************************************************
