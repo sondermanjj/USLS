@@ -152,7 +152,6 @@ function getLunchDaysMap(properties) {
     var concat = letter.concat(block);
     var concat2 = block.concat(letter);
     var value = letter.toUpperCase();
-    lunchDays[letter] = value;
     lunchDays[block] = value;
     lunchDays[concat] = value;
     lunchDays[concat2] = value;
