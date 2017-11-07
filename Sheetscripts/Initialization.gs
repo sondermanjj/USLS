@@ -28,7 +28,6 @@ function initialization(sheetNames) {
     assignStudentLunchDays();
     pushCoursesToCourseSheet();
     addFacultyTables();
-  
   } else {
     return;
   }

@@ -60,5 +60,8 @@ function callMethod(args) {
       assignStudentLunchDays();
       addFacultyTables();
       break;
+    case 'assign':
+      assignStudentLunchDays();
+      break;
   }
 }
