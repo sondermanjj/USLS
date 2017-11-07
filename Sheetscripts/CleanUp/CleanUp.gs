@@ -168,6 +168,7 @@ function getLunchDaysMap(properties) {
  */
 function populateLunchDay(values, properties) {
   
+
   var lunchDays = getLunchDaysMap(properties);
   var headers = getListOfColumns(values);
   var blockColumn = getColumnIndex(headers, "Block");
@@ -187,9 +188,9 @@ function populateLunchDay(values, properties) {
     }
   }
   
-  if (badRows.length > 0) {
-    SpreadsheetApp.getUi().alert("Error setting lunch days on rows: \n" + badRows);
-  }
+ if (badRows.length > 0) {
+   SpreadsheetApp.getUi().alert("Error setting lunch days on rows: \n" + badRows);
+ }
   
   return values;
 }
