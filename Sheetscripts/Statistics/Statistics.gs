@@ -21,6 +21,23 @@ function getStatistics() {
   return statshtml;
 }
 
+function getDays(settings) {
+  var days = [];
+  for( var i = 0; i < settings.length; i++) {
+    days.push(settings[i].letter);
+  }
+  return days;
+}
+
+function getTimes(settings) {
+  var times = [];
+  for( var i = 0; i < settings[0].times.length; i++) {
+    times.push(settings[0].times[i].name);
+  }
+  return times;
+}
+
+
 /**
  * @desc - Returns an html table with current student statistics
  * @param - Boolean - True if getting student statistics, Fals if getting teacher statistics
@@ -29,9 +46,11 @@ function getStatistics() {
  */
 function getStats(students, properties) {
 
-  var days = JSON.parse(properties.letterDays);
-  var times = JSON.parse(properties.lunchTimes);
-
+  var settings = JSON.parse(properties["lunchDays"]);
+  var days = getDays(settings);
+  var times = getTimes(settings);
+  Logger.log(days);
+  Logger.log(times);
   if (students) {
   var values = SpreadsheetApp
                   .getActiveSpreadsheet()
@@ -67,7 +86,7 @@ function getHTMLTable(columns, rows, values) {
   //var html = "<table class='statsTable'>";
   tablehtml += "<tr><th></th>";
   for(var column = 0; column < columns.length; column++){
-     tablehtml += "<th>" + columns[column].name + "</th>";
+     tablehtml += "<th>" + columns[column] + "</th>";
   }
   tablehtml += "</tr>";
   
@@ -152,11 +171,10 @@ function statistics(time, day, values, students, properties) {
       
       count = 0;
       while ( isNaN(lunchTime) ) {
-        lunchTime == time[count].name ? lunchTime = count : count++;
+        lunchTime == time[count].toString().toLowerCase() ? lunchTime = count : count++;
         if (count == time.length) {
           //If the value in the cell is not a lunch time...
           if (isNaN(lunchTime) && (lunchTime != "lunch time" && lunchTime != "lunch assignment") ) {
-            Logger.log(lunchTime);
             incorrectLunchTimes.push([k+1]);
           }
           break;

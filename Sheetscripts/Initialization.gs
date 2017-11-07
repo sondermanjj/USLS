@@ -9,6 +9,7 @@ function initialization(sheetNames) {
   PropertiesService.getDocumentProperties().deleteAllProperties();
   setLunchProperties();
 
+  setRawSheetProperty(sheetNames.raw);
   var cleanedSheet = cleanUp(sheetNames.raw, sheetNames.student);
   
   if (cleanedSheet) {
@@ -24,10 +25,10 @@ function initialization(sheetNames) {
     
     setSheetProperties(cleanedSheet, sheetNames.faculty, sheetNames.dod, sheetNames.choices);
     setFacultyCourses();
+    
     assignStudentLunchDays();
     pushCoursesToCourseSheet();
     addFacultyTables();
-  
   } else {
     return;
   }

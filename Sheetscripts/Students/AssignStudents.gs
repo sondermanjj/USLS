@@ -1,10 +1,10 @@
 //JSHint verified 9/29/2017 dicksontc
 
 /**
-@desc Main application for assigning students to their lunch tables each day.
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Main application for assigning students to their lunch tables each day.
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function assignStudentLunchDays() {
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
@@ -12,8 +12,26 @@ function assignStudentLunchDays() {
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(primarySheetName);
   var teacherSheetName = properties.teacherChoices;
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(teacherSheetName);
+  var lunchDays = JSON.parse(properties.lunchDays);
   
-  var assignedLunches= JSON.parse(properties.assignedLunches);
+  var assignedLunches = [];
+  var nonAssignedLunches = [];
+  var lunchTimes = [];
+  var lunchDaysList = [];
+  var i,j,k,p;
+  for(i = 0; i < lunchDays.length; i++){
+    lunchDaysList.push(lunchDays[i].letter);
+  }
+  
+  var times = lunchDays[0].times;
+  for(i = 0; i < times.length; i++){
+    lunchTimes.push(times[i]);
+    if(times[i].assignedBy == "table"){
+      assignedLunches.push(times[i]);
+    }else if(times[i].assignedBy == "none" || times[i].assignedBy == "house"){
+      nonAssignedLunches.push(times[i]);
+    }
+  }
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -25,8 +43,6 @@ function assignStudentLunchDays() {
   var tNumRows = teacherData.getNumRows();
   
   var stu;
-  var i,j,k,p;
-  var numStudents;
   
   var fullStudentsArray = [];
   var fullTeachersArray = [];
@@ -35,13 +51,11 @@ function assignStudentLunchDays() {
   fullTeachersArray = getTeachers(tValues, tNumRows, properties);
   hasBeenUpdated = updateSheetWithFaculty(properties);
   pValues = primaryData.getValues();
-  fullStudentsArray = getStudents(pValues, pNumRows, fullTeachersArray, properties);
+  fullStudentsArray = getStudents(pValues, pNumRows, fullTeachersArray, assignedLunches, nonAssignedLunches, properties);
   
-  var tableAssignedTimesWithStudents = [];
-  var studentsWithTooManyLunches = [];
-  var lunchDaysList = JSON.parse(properties.letterDays);
-  
-  addLunches(fullStudentsArray, lunchDaysList, tableAssignedTimesWithStudents, studentsWithTooManyLunches, properties);
+  var badStudentsAndTableAssignedTimes = addLunches(fullStudentsArray, lunchDays, lunchTimes, assignedLunches, nonAssignedLunches, properties);
+  var tableAssignedTimesWithStudents = badStudentsAndTableAssignedTimes.tableAssignedTimes;
+  var studentsWithTooManyLunches = badStudentsAndTableAssignedTimes.studentsOver;
   
   if(studentsWithTooManyLunches.length > 0){
     var message = "These Students have conflicting lunches:\n";
@@ -52,93 +66,89 @@ function assignStudentLunchDays() {
     SpreadsheetApp.getUi().alert(message);
     return;
   }
-  
-  var pAssignedEachDay = [];
-  for(i = 0; i < lunchDaysList.length; i++){
-    pAssignedEachDay[i] = [];
-    for(j = 0; j < assignedLunches.length; j++){
-      if(assignedLunches[j].by === "table"){
-        pAssignedEachDay[i].push({"day": lunchDaysList[i], "time": assignedLunches[j].time, "arr": []});
-      }   
+
+  var assignedEachDay = [];
+  var day;
+  var time;
+  for(i = 0; i < lunchDays.length; i++){
+    day = lunchDays[i];
+    assignedEachDay[i] = [];
+    for(j = 0; j < day.times.length; j++){
+      time = day.times[j];
+      if(time.assignedBy === "table"){
+        assignedEachDay[i].push({"day": day.letter, "time": time.name, "priority": time.priority,
+        "timeInfo":{"numStuPerTable": time.numStuPerTable, "minTables": time.minTables, "maxTables": time.maxTables},
+        "studentsInLunch": []});
+      }
     }
   }
+  
   for(i = 0; i < tableAssignedTimesWithStudents.length; i++){
     var studentsTables = tableAssignedTimesWithStudents[i].studentsTables;
     for(j = 0; j < studentsTables.length; j++){
       stu = studentsTables[j].stuAssigned;
-      var day = stu.lunches[studentsTables[j].lunchIndex].day;
-      for(k = 0; k < lunchDaysList.length; k++){
-        if(day === lunchDaysList[k]){
-          for(p = 0; p < pAssignedEachDay[k].length; p++){
-            if(pAssignedEachDay[k][p].time === stu.lunches[studentsTables[j].lunchIndex].time){
-              pAssignedEachDay[k][p].arr.push(studentsTables[j]);
-            }
+      day = stu.lunches[studentsTables[j].lunchIndex].day;
+      time = stu.lunches[studentsTables[j].lunchIndex].time;
+      for(k = 0; k < assignedEachDay.length; k++){
+        var numDays = assignedEachDay[k].length;
+        for(p = 0; p < numDays; p++){
+          if(assignedEachDay[k][p].day === day && assignedEachDay[k][p].time === time){
+            assignedEachDay[k][p].studentsInLunch.push(studentsTables[j]);
+            p = numDays;
+            k = assignedEachDay.length;
           }
         }
       }
     }
   }
-  
   //Checks to see if there are too many students in any lunch
   var badLunches = [];
-  var errorMessage;
-  for(i = 0; i < pAssignedEachDay.length; i++){
-    for(j = 0; j < pAssignedEachDay[i].length; j++){
-      badLunches[i] = {"time": pAssignedEachDay[i][j].time, "numLunches": 0};
-      for(k = 0; k < assignedLunches.length; k++){
-        if(pAssignedEachDay[i][j].time === assignedLunches[k].time){
-          numStudents = assignedLunches[k].numberOfStudents;
-        }
-      }
-      if(pAssignedEachDay[i][j].arr.length > numStudents){
-        errorMessage += "" + lunchDaysList[i];
-        badLunches[i].numLunches = badLunches[i].numLunches+1;
+  var timeObj, tooManyStudents;
+     
+  for(i = 0; i < assignedEachDay.length; i++){
+    for(j = 0; j < assignedEachDay[i].length; j++){
+      timeObj = assignedEachDay[i][j];
+      tooManyStudents = tooManyStudentsInLunch(timeObj.timeInfo, timeObj.studentsInLunch);
+      if(tooManyStudents){
+        badLunches.push({"day": timeObj.day, "time": timeObj.time});
       }
     }
   }
-  
-  for(i = 0; i < badLunches.length; i++){
-    if(badLunches[i] > 1){
-      errorMessage += "days have too many students. Please change 1 or more teacher lunch times.";
-      SpreadsheetApp.getUi().alert(errorMessage);
-      return;
-    }else if(badLunches[i] === 1){
-      errorMessage += "day has too many students. Please change 1 or more teacher lunch times.";
-      SpreadsheetApp.getUi().alert(errorMessage);
-      return;
+  if(badLunches.length > 0){
+    var error = "";
+    //REPLACE BELOW WITH SOME CALL TO AN HTML THING. THIS IS JUST TEMPORARY
+    for(i = 0; i < badLunches.length; i++){
+      error += " - " + badLunches[i].day + ":" + badLunches[i].time + " "; 
     }
+    SpreadsheetApp.getUi().alert("Too many students in lunches " + error);
+    return;
   }
   
-  var lengthCheck = true;
-  //Checks to see if there are too few students in each assigned lunch. If there are, assign students
-  //with the lowest zScore number in mid lunch to that lunch
-  for(i = 0; i < pAssignedEachDay.length; i++){
-    for(j = 0; j < pAssignedEachDay[i].length; j++){
-      var lunchTime;
-      for(k = 0; k < assignedLunches.length; k++){
-        if(pAssignedEachDay[i][j].time === assignedLunches[k].time){
-          numStudents = assignedLunches[k].numStudents;
-          lunchTime = assignedLunches[k];
-          k = assignedLunches.length;
-        }
-      }
-      if(pAssignedEachDay[i][j].arr.length < numStudents){
-        pAssignedEachDay[i][j].arr = moveFromNonToAssigned(pAssignedEachDay[i][j].day, fullStudentsArray, pAssignedEachDay[i][j].arr, lunchTime, properties);
-      }
-      if(pAssignedEachDay[i][j].arr.length < numStudents){
-        lengthCheck = false;
-      }
-    }
-  }
-  
-  //If there all early lunches are full and none are overpopulated, randomly assign students to tables
+  var lengthCheck = tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunches, nonAssignedLunches, properties);
+
+  assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, primary, properties);
+}
+
+/**
+ * @desc Checks to see if there are enough students in each lunch, assigns the tables, and prints to the sheet
+ * @params - lengthCheck - TRUE: the correct amount of students are in each lunch
+ *           assignedLunches - the list of assigned lunches
+ *           assignedEachDay - array containing the assigned lunches for each day and the students in them
+ *           fullStudentsArray - the list of all students
+ *           sheet - the sheet being printed to
+ *           properties - the list of document properties
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, sheet, properties){
+  var i, j;
   if(lengthCheck){
-    for(i = 0; i < pAssignedEachDay.length; i++){
-      for(j = 0; j < pAssignedEachDay[i].length; j++){
-        doRandomAssignment(pAssignedEachDay[i][j], properties);
+    for(i = 0; i < assignedEachDay.length; i++){
+      for(j = 0; j < assignedEachDay[i].length; j++){
+        doRandomAssignment(assignedLunches, assignedEachDay[i][j], properties);
       }
     }
-    printStudentsToSheet(fullStudentsArray, primary, properties);
+    printStudentsToSheet(fullStudentsArray, sheet, properties);
   }else{
     Logger.log("Too many or too few students in a lunch (shouldn't happen)");
     SpreadsheetApp.getUi().alert("Not enough students in assigned lunches");
@@ -146,20 +156,79 @@ function assignStudentLunchDays() {
 }
 
 /**
-@desc Gets all courses and their corresponding days from the courses sheet
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Checks to see if there are too few students in each assigned lunch. If there are, it assigns
+ *       students with free periods to that lunch.
+ * @params - assignedEachDay - array containing the assigned lunches for each day and the students in them
+ *           fullStudentsArray - the list of all students
+ *           assignedLunches - the list of assigned lunches
+ *           nonAssignedLunches - the list of non-assigned lunches
+ *           properties - the list of document properties
+ * @return - false if there are too few students any lunch after moving free students into assigned lunches
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunches, nonAssignedLunches, properties){
+  var timeObj;
+  var timeInfo, studentsInLunch;
+  var numStuPerTable, minTables;
+  var needed;
+  var i, j;
+  for(i = 0; i < assignedEachDay.length; i++){
+    for(j = 0; j < assignedEachDay[i].length; j++){
+      timeObj = assignedEachDay[i][j];
+      timeInfo = timeObj.timeInfo;
+      studentsInLunch = timeObj.studentsInLunch;
+      numStuPerTable = timeInfo.numStuPerTable;
+      minTables = timeInfo.minTables;
+      if(studentsInLunch.length < numStuPerTable * minTables){
+        needed = (numStuPerTable * minTables) - studentsInLunch.length;
+        studentsInLunch = moveFromNonToAssigned(timeObj, fullStudentsArray, studentsInLunch, assignedLunches, nonAssignedLunches, needed, properties);
+      }else if(studentsInLunch.length % numStuPerTable !== 0){
+        needed = numStuPerTable - studentsInLunch.length % numStuPerTable;
+        studentsInLunch = moveFromNonToAssigned(timeObj, fullStudentsArray, studentsInLunch, assignedLunches, nonAssignedLunches, needed, properties);
+      }
+      if(studentsInLunch.length < numStuPerTable * minTables || studentsInLunch.length % numStuPerTable !== 0){
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+/**
+ * @desc Checks to see if there are too many students in a lunch
+ * @params - timeInfo - contains the number of students per table and the max tables in the lunch
+ *           studentsInLunch - the list of students in the lunch
+ * @return - true if there are too many students in that lunch, false otherwise
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function tooManyStudentsInLunch(timeInfo, studentsInLunch){
+  var numStuPerTable = timeInfo.numStuPerTable;
+  var maxTables = timeInfo.maxTables;
+  if(studentsInLunch.length > numStuPerTable * maxTables){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+/**
+ * @desc Gets all courses and their corresponding days from the courses sheet
+ * @params - selected - the list of courses that are to be changed
+ * @return - the course information for rescheduling
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function getCourses(selected) {
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
-  Logger.log(properties);
   var coursesData = SpreadsheetApp
-                  .getActiveSpreadsheet()
-                  .getSheetByName(properties.courseSheet)
-                  .getDataRange()
-                  .getValues();
-
+  .getActiveSpreadsheet()
+  .getSheetByName(properties.courseSheet)
+  .getDataRange()
+  .getValues();
+  
   var courses = {};
   var titles = {};
   for(var i = 0; i < coursesData.length; i++){
@@ -170,17 +239,58 @@ function getCourses(selected) {
     if(lunchTime !== "Lunch Time"){
       courseDayConcat = courseDayConcat.replace(/\s/g,'');
       courses[courseDayConcat] = lunchTime;
-      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay};
+      titles[courseDayConcat] = {"title" : courseTitle, "day" : lunchDay, "time" : lunchTime};
     }
   }
   
   return {"courses": courses, "selected" : selected, "titles" : titles};
 }
 
-/*            
-* @desc - creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
-* @author - clemensam
-*/
+/**
+ * @desc Finds the name of the faculty member whom teaches a course on a certain day
+ * @params - course - the course in question
+ *           day - the day the faculty teaches the course
+ *           properties - the list of document properties
+ * @return - the first and last name of the faculty member
+ * @funtional - updated
+ * @author - clemensam
+ */
+function findFacultyName(course, day, properties){
+  
+  var courseSheetProp = properties.courseSheet;
+  var courseSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(courseSheetProp);
+  
+  var courseData = courseSheet.getDataRange();
+  var values = courseData.getValues();
+  var numRows = courseData.getNumRows();
+  
+  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
+  var courseTitleCol = parseInt(properties["Student Course Title"]);
+  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
+  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
+  
+  var facultyName = {};
+  var i; 
+  for(i = 0; i < numRows; i++){
+    var courseTitle = values[i][courseTitleCol];
+    var lunchDay = values[i][lunchDayCol];
+    var facultyFirstName = values[i][facultyFirstNameCol];
+    var facultyLastName = values[i][facultyLastNameCol];
+    
+    if(courseTitle === course && lunchDay === day) {
+      facultyName.firstName = facultyFirstName;
+      facultyName.lastName = facultyLastName;
+      i = numRows;
+    }
+  }
+  return facultyName;
+}
+
+/**
+ * @desc Creates new sheet and pushes data to it containing course name, day, time, and faculty teaching the course
+ * @funtional - updated
+ * @author - clemensam
+ */
 function pushCoursesToCourseSheet() {
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
@@ -190,7 +300,7 @@ function pushCoursesToCourseSheet() {
   var primaryData = primarySheet.getDataRange();
   var pValues = primaryData.getValues();
   var pNumRows = primaryData.getNumRows();
-
+  
   var lunchDayCol = parseInt(properties["Student Lunch Day"]);
   var courseTitleCol = parseInt(properties["Student Course Title"]);
   var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
@@ -200,9 +310,8 @@ function pushCoursesToCourseSheet() {
   var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
   var newData = [];
   var courses = [];
-  //newData.push(headerRow);
   var i; 
-  for(var i = 0; i < pNumRows; i++){
+  for(i = 0; i < pNumRows; i++){
     var courseTitle = pValues[i][courseTitleCol];
     var lunchDay = pValues[i][lunchDayCol];
     var lunchTime = pValues[i][lunchTimeCol];
@@ -213,52 +322,16 @@ function pushCoursesToCourseSheet() {
     
     var courseDayTimeConcat = courseTitle + lunchDay + lunchTime;
     
-    if(courses.indexOf(courseDayTimeConcat) < 0) {
+    if((courses.indexOf(courseDayTimeConcat) < 0) && (facultyFirstName !== '' && facultyLastName !== '')) {
       courses.push(courseDayTimeConcat);
       newData.push(newRow);
     }
   }
   
   newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
-  //newData.sort();
   
   createNewSheet(newData, "Courses");
-  console.log("Course Sheet Created");
-}
-
-function findFacultyName(course, day, properties){
-  
-  var courseSheetProp = properties.courseSheet;
-  var courseSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(courseSheetProp);
-  
-  var courseData = courseSheet.getDataRange();
-  var values = courseData.getValues();
-  var numRows = courseData.getNumRows();
-
-  var lunchDayCol = parseInt(properties["Student Lunch Day"]);
-  var courseTitleCol = parseInt(properties["Student Course Title"]);
-  var facultyFirstNameCol = parseInt(properties["Student Faculty First Name"]);
-  var facultyLastNameCol = parseInt(properties["Student Faculty Last Name"]);
-
-  var facultyName = {};
-  var i; 
-  for(var i = 0; i < numRows; i++){
-    var courseTitle = values[i][courseTitleCol];
-    var lunchDay = values[i][lunchDayCol];
-    var facultyFirstName = values[i][facultyFirstNameCol];
-    var facultyLastName = values[i][facultyLastNameCol];
-    
-    if(courseTitle === course && lunchDay === day) {
-      Logger.log("match");
-      Logger.log(facultyFirstName);
-      facultyName.firstName = facultyFirstName;
-      facultyName.lastName = facultyLastName;
-    }
-  }
-  
-  Logger.log(facultyName);
-  return facultyName;
-  
+  Logger.log("Course Sheet Created");
 }
 
 /*
@@ -309,9 +382,11 @@ function findFacultyName(course, day, properties){
    Logger.log("Course Sheet Created");
  }
 
- /**
- *
- *
+/**
+ * @desc Updates the final student sheet with faculty information for the middle school students
+ * @params - properties - the list of document properties
+ * @funtional - updated
+ * @author - clemensam
  */
  function updateSheetWithFaculty(properties) {
    var studentDataProp = properties.studentData;
@@ -369,7 +444,7 @@ function findFacultyName(course, day, properties){
      if((facultyFirstName === "" || facultyFirstName === undefined) && (facultyLastName === "" || facultyLastName === undefined) && (courseTitle.indexOf('z') !== 0)) {
        var facultyName = findFacultyName(courseTitle, lunchDay, properties);
        facultyFirstName = facultyName.firstName;
-       facultyLastName = facultyName.lastName;  
+       facultyLastName = facultyName.lastName; 
        updatedRow = [[firstName, lastName, gradeLevel, advisor, gender, courseTitle, courseCode, courseLength, courseID, sectionIdentifier, facultyFirstName, facultyLastName, block, dob, tableHead, lunchDay, lunchTime, lunchTable, house]];
        var sheetRange = primarySheet.getRange(i+1, 1, 1, 19);
        sheetRange.setValues(updatedRow);
@@ -377,14 +452,15 @@ function findFacultyName(course, day, properties){
    }
    return true;
  }
-
  
 
 /**
-@desc Uses the students and changes arrays to change student schedules 
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Uses the students and changes arrays to change student schedules
+ * @params - listOfChanges - the list of changes to be made
+ * @return - changesToBeReturned - the list of changes made
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function parseStudentChanges(listOfChanges){
   var docProps = PropertiesService.getDocumentProperties();
   var properties = docProps.getProperties();
@@ -392,8 +468,7 @@ function parseStudentChanges(listOfChanges){
   var teacherChoicesProp = properties.teacherChoices;
   var primarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(studentDataProp);
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(teacherChoicesProp);
-  var nonAssignedLunches = JSON.parse(properties.nonAssignedLunches);
-  var assignedLunches = JSON.parse(properties.assignedLunches);
+  var lunchDays = JSON.parse(properties.lunchDays);
   
   var primaryData = primarySheet.getDataRange();
   var teacherData = teacher.getDataRange();
@@ -413,11 +488,29 @@ function parseStudentChanges(listOfChanges){
   var newTable;
   var oldtime;
   var newtime;
+  var assignedLunches = [];
+  var nonAssignedLunches = [];
+  var lunchTimes = [];
+  var lunchDaysList = [];
+  for(i = 0; i < lunchDays.length; i++){
+    lunchDaysList.push(lunchDays[i].letter);
+  }
+  
+  var times = lunchDays[0].times;
+  for(i = 0; i < times.length; i++){
+    lunchTimes.push(times[i]);
+    if(times[i].assignedBy == "table"){
+      assignedLunches.push(times[i]);
+    }else if(times[i].assignedBy == "none" || times[i].assignedBy == "house"){
+      nonAssignedLunches.push(times[i]);
+    }
+  }
+  
   teachers = getTeachers(tValues, tNumRows, properties);
-  students = getStudents(pValues, pNumRows, teachers, properties);
+  students = getStudents(pValues, pNumRows, teachers, assignedLunches, nonAssignedLunches, properties);
   
   for(i = 0; i < students.length; i++){
-    assignZScore(students[i], properties);
+    assignZScore(students[i], properties, lunchTimes);
   }
   if(changes.length > 0){
     for(i = 0; i < changes.length; i++){
@@ -438,12 +531,12 @@ function parseStudentChanges(listOfChanges){
                 var oldTimeObj;
                 var newTimeObj;
                 for(p = 0; p < nonAssignedLunches.length; p++){
-                  if(oldtime === nonAssignedLunches[p].time){
+                  if(oldtime === nonAssignedLunches[p].name){
                     oldAssigned = false;
                     oldNum = p;
                     oldTimeObj = nonAssignedLunches[p];
                   }
-                  if(newtime === nonAssignedLunches[p].time){
+                  if(newtime === nonAssignedLunches[p].name){
                     newAssigned = false;
                     newNum = p;
                     newTimeObj = nonAssignedLunches[p];
@@ -467,12 +560,12 @@ function parseStudentChanges(listOfChanges){
                   var affectedLunch;
                   var day = change.oldDay;
                   for(x = 0; x < assignedLunches.length; x++){
-                    if(newtime === assignedLunches[x].time){
+                    if(newtime === assignedLunches[x].name){
                       newTimeObj = assignedLunches[x];
                       x = assignedLunches.length;
                     }
                   }
-                  var zScoreStudents = getzScoreStudents(students, day, newTimeObj, false);
+                  var zScoreStudents = getzScoreStudents(students, day, newTimeObj.name, false);
                   
                   if(zScoreStudents.length === 0){
                     return;
@@ -484,10 +577,10 @@ function parseStudentChanges(listOfChanges){
                   var affectedTableNew;
                   if(oldAssigned){
                     students[j].lunches[k].time = newtime;
-                    if(newTimeObj.by === "none"){
+                    if(newTimeObj.assignedBy === "none"){
                       students[j].lunches[k].table = "";
                       newTable = "";
-                    }else if(newTimeObj.by === "table"){
+                    }else if(newTimeObj.assignedBy === "table"){
                       students[j].lunches[k].table = students[j].house;
                       newTable = students[j].house;
                     }
@@ -499,13 +592,13 @@ function parseStudentChanges(listOfChanges){
                   }else if(newAssigned){
                     students[j].lunches[k].time = newtime;
                     newTable = students[affectedStu].lunches[affectedLunch].table;
-                    students[j].lunches[k].table = newTable
+                    students[j].lunches[k].table = newTable;
                     students[affectedStu].lunches[affectedLunch].time = oldtime;
                     affectedTableOld = students[affectedStu].lunches[affectedLunch].table;
-                    if(oldTimeObj.by === "none"){
+                    if(oldTimeObj.assignedBy === "none"){
                       students[affectedStu].lunches[affectedLunch].table = "";
                       affectedTableNew = "";
-                    }else if(oldTimeObj.by === "house"){
+                    }else if(oldTimeObj.assignedBy === "house"){
                       students[affectedStu].lunches[affectedLunch].table = students[affectedStu].house;
                       affectedTableNew = students[affectedStu].house;
                     }
@@ -513,11 +606,11 @@ function parseStudentChanges(listOfChanges){
                   students[j].lunches[k].teacherFName = change.facultyFName;
                   students[j].lunches[k].teacherLName = change.facultyLName;
                   students[j].lunches[k].title = change.newCourseName;
-                  assignZScore(students[affectedStu], properties);
+                  assignZScore(students[affectedStu], properties, lunchTimes);
                   changesToBeReturned.push([change.fName, change.lName, lunch.day, change.newCourseName, change.oldCourseName, oldtime, newtime, change.oldTable, newTable]);
-                  changesToBeReturned.push([students[affectedStu].fName, students[affectedStu].lName, lunch.day, change.newCourseName, change.oldCourseName, newtime, oldtime, affectedTableOld, affectedTableNew]);
+                  changesToBeReturned.push([students[affectedStu].fName, students[affectedStu].lName, lunch.day, "", "", newtime, oldtime, affectedTableOld, affectedTableNew]);
                 }
-                assignZScore(students[j], properties);
+                assignZScore(students[j], properties, lunchTimes);
               }else{
                 students[j].lunches[k].teacherFName = change.facultyFName;
                 students[j].lunches[k].teacherLName = change.facultyLName;
@@ -525,10 +618,10 @@ function parseStudentChanges(listOfChanges){
                 changesToBeReturned.push([change.fName, change.lName, lunch.day, change.newCourseName, change.oldCourseName, oldtime, newtime, change.oldTable, change.oldTable]);
               }
               if(students[j].lunches[k].isItzScore === true){
-                students[j].lunches[k].isItzScore === false;
+                students[j].lunches[k].isItzScore = false;
               }
               if(students[j].lunches[k].isItzScore === true){
-                students[j].lunches[k].isItzScore === false;
+                students[j].lunches[k].isItzScore = false;
               }
               k = stu.lunches.length;
             }
@@ -543,45 +636,45 @@ function parseStudentChanges(listOfChanges){
 }
 
 /**
-@desc Changes the students with the lowest zScores' lunch times to the assigned lunch
-  with fewer than the required amount of students for a specific day
-@params - day - the day of the assigned lunch that needs more students
-          students - the list of students at USM
-          dayStudents - the list of students in the assigned lunch for that day
-          lunchTime - the assigned lunch time that needs students
-          properties - the list of document properties
-@return - dayStudents - the list of students in the assigned lunch for that day
-@funtional - yes
-@author - dicksontc
-*/
-function moveFromNonToAssigned(day, students, dayStudents, lunchTime, properties){
-  var numberOfStudents = parseInt(lunchTime.numStudents);
-  var nonAssignedLunches = JSON.parse(properties.nonAssignedLunches);
-  var assignedLunches = JSON.parse(properties.assignedLunches);
-  var lunchTimes = JSON.parse(properties.lunchTimes);
-  var needed = numberOfStudents - dayStudents.length;
+ * @desc Changes the students with the lowest zScores' lunch times to the assigned lunch
+ *         with fewer than the required amount of students for a specific day
+ * @params - day - the day of the assigned lunch that needs more students
+ *           students - the list of all the students at USM
+ *           dayStudents - the list of students in the assigned lunch for that day
+ *           lunchTime - the assigned lunch time that needs students
+ *           properties - the list of document properties
+ * @return - dayStudents - the list of students in the assigned lunch for that day
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function moveFromNonToAssigned(lunchTime, students, dayStudents, assignedLunches, nonAssignedLunches, needed, properties){
+  var day = lunchTime.day;
+  var lunchPriority = lunchTime.priority;
   var zScoreStudents = getzScoreStudents(students, day, lunchTime, true);
   var i;
   var oldPriority;
+  
   while(needed > 0){
     if(zScoreStudents.length > 0){
       var student = zScoreStudents[0].stu;
       var lunchIndex = zScoreStudents[0].lunchIndex;
-      var stuIndex = zScoreStudents[0].stuIndex;
       var oldTime = student.lunches[lunchIndex].time;
       var lunchCheck = true;
       for(i = 0; i < assignedLunches.length; i++){
-        if(oldTime === assignedLunches[i].time){
+        if(oldTime === assignedLunches[i].name){
           lunchCheck = false;
+          i = assignedLunches.length;
         }
       }
-      if(lunchCheck && oldTime != lunchTime.time){
-        for(i = 0; i < lunchTimes.length; i++){
-          if(oldTime === lunchTimes[i].name){
-            oldPriority = lunchTimes[i].priority;
+      if(lunchCheck){
+        for(i = 0; i < nonAssignedLunches.length; i++){
+          if(oldTime === nonAssignedLunches[i].name){
+            oldPriority = nonAssignedLunches[i].priority;
+            i = nonAssignedLunches.length;
           }
         }
-        var newZScore =  student.zScore + (Math.pow(10,lunchTimes.length - lunchTime.priority)) - (Math.pow(10,lunchTimes.length - oldPriority));
+        var numTimes = assignedLunches.length + nonAssignedLunches.length;
+        var newZScore =  student.zScore + (Math.pow(10, numTimes - lunchPriority)) - (Math.pow(10, numTimes - oldPriority));
         student.lunches[lunchIndex].time = lunchTime.time;
         student.zScore = newZScore;
         dayStudents.push({"stuAssigned": student, "lunchIndex": lunchIndex});
@@ -596,23 +689,26 @@ function moveFromNonToAssigned(day, students, dayStudents, lunchTime, properties
 }
 
 /**
-@desc Randomly assigns a lunch table to the students who have assigned lunches
-@params - pAssignedLunch - the lunch and list of students that is assigned
-          properties - the list of document properties
-@funtional - yes
-@author - dicksontc
-*/
-function doRandomAssignment(pAssignedLunch, properties){  
+ * @desc Randomly assigns a lunch table to the students who have assigned lunches
+ * @params - pAssignedLunch - the lunch and list of students that is assigned
+ *           properties - the list of document properties
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function doRandomAssignment(assignedLunches, lunchTime, properties){  
+  var gLess = [];
   var gNine = [];
   var gTen = [];
   var gEleven = [];
   var gTwelve = [];
   var nums;
   var numIndex = -1;
-  var students = pAssignedLunch.arr;
+  var students = lunchTime.studentsInLunch;
+  var numStudents = students.length;
+  var stuPerTable = lunchTime.timeInfo.numStuPerTable;
   var i;
   
-  for(i = 0; i < students.length; i++){
+  for(i = 0; i < numStudents; i++){
     var student = students[i].stuAssigned;
     var grade = student.grade;
     if(grade === 9){
@@ -623,35 +719,34 @@ function doRandomAssignment(pAssignedLunch, properties){
       gEleven.push(students[i]);
     }else if(grade === 12){
       gTwelve.push(students[i]);
+    }else{
+      gLess.push(students[i]);
     }
   }
   
-  nums = populateTablesArray(properties);
-  var index;
+  nums = populateTablesArray(numStudents, stuPerTable, properties);
+
+  shuffleArray(gLess);
   shuffleArray(gNine);
   shuffleArray(gTen);
   shuffleArray(gEleven);
   shuffleArray(gTwelve);
-  for(i = 0; i < nums.length; i++){
-    if(pAssignedLunch.time === nums[i].time){
-      index = i;
-    }
-  }
-  numIndex = randomlyAssign(gNine, numIndex, nums[index].arr);
-  numIndex = randomlyAssign(gTen, numIndex, nums[index].arr);
-  numIndex = randomlyAssign(gEleven, numIndex, nums[index].arr);
-  numIndex = randomlyAssign(gTwelve, numIndex, nums[index].arr);
+  numIndex = randomlyAssign(gLess, numIndex, nums);
+  numIndex = randomlyAssign(gNine, numIndex, nums);
+  numIndex = randomlyAssign(gTen, numIndex, nums);
+  numIndex = randomlyAssign(gEleven, numIndex, nums);
+  numIndex = randomlyAssign(gTwelve, numIndex, nums);
 }
 
 /**
-@desc Randomly assigns a lunch table to the students in a particular lunch
-@params - gradeArray - the students to be assigned lunch on a particular day
-          indexNum - the current index of the numbers array
-          numberArray - the array holding the available table numbers
-@return - indexNum - the current index of the numbers array
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Randomly assigns a lunch table to the students in a particular lunch
+ * @params - gradeArray - the students to be assigned lunch on a particular day
+ *           indexNum - the current index of the numbers array
+ *           numberArray - the array holding the available table numbers
+ * @return - indexNum - the current index of the numbers array
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function randomlyAssign(gradeArray, indexNum, numberArray){
   var student;
   var lunch;
@@ -666,14 +761,14 @@ function randomlyAssign(gradeArray, indexNum, numberArray){
 }
 
 /**
-@desc Creates teacher array filled with teacher information.
-@params - tValues - the array of the teachers rows and columns
-          tNumRows - the number of rows in the faculty choices list
-          properties - the list of document properties
-@return - teachers - the list of teachers that was generated
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Creates teacher array filled with teacher information.
+ * @params - tValues - the array of the teachers rows and columns
+ *           tNumRows - the number of rows in the faculty choices list
+ *           properties - the list of document properties
+ * @return - teachers - the list of teachers that was generated
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function getTeachers(tValues, tNumRows, properties){
   var teachers = [];
   var fNameCol = parseInt(properties["Teacher First Name"]);
@@ -708,11 +803,11 @@ function getTeachers(tValues, tNumRows, properties){
 }
 
 /**
-@desc Shuffles a given array
-@params - array - the array to be shuffled
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Shuffles a given array
+ * @params - array - the array to be shuffled
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function shuffleArray(array) {
   for (var i = array.length - 1; i > 0; i--){
     var j = Math.floor(Math.random() * (i + 1));
@@ -722,35 +817,34 @@ function shuffleArray(array) {
   }
 }
 
-/**
-@desc Asks the user if they want to automatically re-assign the students whose lunches changed.
-@funtional - yes
-@author - dicksontc
-*/
-function promptForChanges(){
-  var changesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
-  var rows = changesSheet.getDataRange().getNumRows();
-  if(rows >= 3 && /\S/.test(changesSheet.getDataRange().getValues()[2][0])){
-    var response = Browser.msgBox("Auto-Reassign", "Do you want to automatically re-assign the students?", Browser.Buttons.YES_NO);
-    if (response === "yes"){
-      parseStudentChanges();
-    }
-  }
-}
+///**
+//@desc Asks the user if they want to automatically re-assign the students whose lunches changed.
+//@funtional - updated
+//@author - dicksontc
+//*/
+//function promptForChanges(){
+//  var changesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
+//  var rows = changesSheet.getDataRange().getNumRows();
+//  if(rows >= 3 && /\S/.test(changesSheet.getDataRange().getValues()[2][0])){
+//    var response = Browser.msgBox("Auto-Reassign", "Do you want to automatically re-assign the students?", Browser.Buttons.YES_NO);
+//    if (response === "yes"){
+//      parseStudentChanges();
+//    }
+//  }
+//}
 
 /**
-@desc Creates an array of all the students who have a free period
-@params - students - the array of students
-          day - the day of the lunch that has the needed students
-          lunchTime - the lunch time that the students cannot be from
-@return - zScoreStudents - the list of students who have a free period on a
-  certain day and at any time other than the listed one
-@funtional - yes
-@author - dicksontc
+ * @desc Creates an array of all the students who have a free period
+ * @params - students - the array of students
+ *           day - the day of the lunch that has the needed students
+ *           time - the lunch time that the students cannot be from
+ * @return - zScoreStudents - the list of students who have a free period on a
+ *             certain day and at any time other than the listed one
+ * @funtional - updated
+ * @author - dicksontc
 */
-function getzScoreStudents(students, day, lunchTime, bool){
+function getzScoreStudents(students, day, time, bool){
   var zScoreStudents = [];
-  var time = lunchTime.time;
   var lunchBool;
   for(var i = 0; i < students.length; i++){
     var student = students[i];
@@ -776,13 +870,13 @@ function getzScoreStudents(students, day, lunchTime, bool){
 }
 
 /**
-@desc Uses the students array to print all student information to primary sheet
-@params - students - the array of students
-          primary - the sheet the students are being printed to
-          properties - the list of document properties
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Uses the students array to print all student information to primary sheet
+ * @params - students - the array of students
+ *           primary - the sheet the students are being printed to
+ *           properties - the list of document properties
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function printStudentsToSheet(students, primary, properties){
   var pushArray;
   var finalArray = [];
@@ -846,16 +940,16 @@ function printStudentsToSheet(students, primary, properties){
         pushArray[blockCol] = "";
         pushArray[tableHeadCol] = "";
       }else{
-          pushArray[cTitleCol] =  title;
-          pushArray[cCodeCol] =  lunch.code;
-          pushArray[cLengthCol] = lunch.length;
-          pushArray[cIDCol] =  lunch.cID;
-          pushArray[sIDCol] = lunch.sID;
-          pushArray[tFNameCol] = lunch.teacherFName;
-          pushArray[tLNameCol] = lunch.teacherLName;
-          pushArray[blockCol] = lunch.block;
-          pushArray[tableHeadCol] = lunch.tableHead;
-       }
+        pushArray[cTitleCol] =  title;
+        pushArray[cCodeCol] =  lunch.code;
+        pushArray[cLengthCol] = lunch.length;
+        pushArray[cIDCol] =  lunch.cID;
+        pushArray[sIDCol] = lunch.sID;
+        pushArray[tFNameCol] = lunch.teacherFName;
+        pushArray[tLNameCol] = lunch.teacherLName;
+        pushArray[blockCol] = lunch.block;
+        pushArray[tableHeadCol] = lunch.tableHead;
+      }
       finalArray.push(pushArray);
     }
   }
@@ -868,16 +962,16 @@ function printStudentsToSheet(students, primary, properties){
 }
 
 /**
-@desc Creates student array filled with student information.
-@params - studentValues - the array of the students rows and columns
-          numRows - the number of rows in the final student data list
-          teachersList - the list of teachers
-          properties - the list of document properties
-@return - newStudentsList - the list of students that was generated
-@funtional - yes
-@author - dicksontc
-*/
-function getStudents(studentValues, numRows, teachersList, properties){
+ * @desc Creates student array filled with student information.
+ * @params - studentValues - the array of the students rows and columns
+ *           numRows - the number of rows in the final student data list
+ *           teachersList - the list of teachers
+ *           properties - the list of document properties
+ * @return - newStudentsList - the list of students that was generated
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function getStudents(studentValues, numRows, teachersList, assignedLunches, nonAssignedLunches, properties){
   var newStudentsList = [];
   
   var sFNameCol = parseInt(properties["Student First Name"]);
@@ -924,7 +1018,7 @@ function getStudents(studentValues, numRows, teachersList, properties){
     var title = studentValues[i][cTitleCol];
     var time = studentValues[i][lunchTimeCol];
     
-    var zScoreCheckAndTime = getLunchTimeAndZCheckBasedOnTeacher(teacherFName, teacherLName, time, day, teachersList, properties);
+    var zScoreCheckAndTime = getLunchTimeAndZCheckBasedOnTeacher(teacherFName, teacherLName, time, day, teachersList, assignedLunches, nonAssignedLunches, properties);
     time = zScoreCheckAndTime.time;
     var zCheck = zScoreCheckAndTime.zCheck;
     if(grad !== ""){
@@ -959,13 +1053,13 @@ function getStudents(studentValues, numRows, teachersList, properties){
 }
 
 /**
-@desc Finds the lunch time of the teacher that the student has for a specific lunch period
-@params - advisor - the name of the student's advisor,
-          teachersList - the list of teachers
-@return - house - the house of the student
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Finds the lunch time of the teacher that the student has for a specific lunch period
+ * @params - advisor - the name of the student's advisor,
+ *           teachersList - the list of teachers
+ * @return - house - the house of the student
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function getHouseForStudent(advisor, teachersList){
   var house;
   var i;
@@ -981,21 +1075,19 @@ function getHouseForStudent(advisor, teachersList){
 }
 
 /**
-@desc Finds the lunch time of the teacher that the student has for a specific lunch period
-@params - firstName - the first name of the teacher,
-          lastName - the last name of the teacher,
-          time - the time associated with the students lunch
-          day - the letter of the day the student has the specific lunch
-          teachersList - the list of teachers
-          properties - the list of document properties
-@return - zCheckAndTime - an object that contains a boolean to check whether or not the student's lunch
-  is a free period and the lunch time of the student's lunch
-@funtional - yes
-@author - dicksontc
-*/
-function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, teachersList, properties){
-  var assignedLunchTimes = JSON.parse(properties.assignedLunches);
-  var nonAssignedLunchTimes = JSON.parse(properties.nonAssignedLunches);
+ * @desc Finds the lunch time of the teacher that the student has for a specific lunch period
+ * @params - firstName - the first name of the teacher,
+ *           lastName - the last name of the teacher,
+ *           time - the time associated with the students lunch
+ *           day - the letter of the day the student has the specific lunch
+ *           teachersList - the list of teachers
+ *           properties - the list of document properties
+ * @return - zCheckAndTime - an object that contains a boolean to check whether or not the student's lunch
+ *             is a free period and the lunch time of the student's lunch
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, teachersList, assignedLunches, nonAssignedLunches, properties){
   var zCheck = false;
   var i, j;
   var zCheckAndTime;
@@ -1003,18 +1095,18 @@ function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, tea
   for(i = 0; i < teachersList.length; i++){
     var teacher = teachersList[i];
     
-    if(firstName === '' && lastName === ''){
+    if(firstName === "" && lastName === ""){
       zCheck = true;
       i = teachersList.length;
       var bool = true;
-      for(j = 0; j < assignedLunchTimes.length; j++){
-        if(time === assignedLunchTimes[0].time){
+      for(j = 0; j < assignedLunches.length; j++){
+        if(time === assignedLunches[j].name){
           bool = false;
-          j = assignedLunchTimes.length;
+          j = assignedLunches.length;
         }
       }
       if(bool){
-        time = nonAssignedLunchTimes[0].time;
+        time = nonAssignedLunches[0].name;
       }
     }else if(teacher.fName === firstName && teacher.lName === lastName){
       for(j = 0; j < teacher.lunches.length; j++){
@@ -1026,45 +1118,47 @@ function getLunchTimeAndZCheckBasedOnTeacher(firstName, lastName, time, day, tea
       }
     }
   }
-  zCheckAndTime = {"zCheck": zCheck, "time": time}
+  zCheckAndTime = {"zCheck": zCheck, "time": time};
   return zCheckAndTime;
 }
 
 /**
-@desc Assigns students with lunches assigned by house to the table of their house
-@params - student - the student whose lunch is being assigned
-          properties - the list of document properties
-@funtional - yes
-@author - dicksontc
-*/
-function doAssignmentByHouse(student, properties){
-  var lunchTimes = JSON.parse(properties.nonAssignedLunches);
-  var houseLunch;
-  var i;
-  for(i = 0; i < lunchTimes.length; i++){
-    if(lunchTimes[i].by === "house"){
-      houseLunch = lunchTimes[i].time;
-      i = lunchTimes.length;
+ * @desc Assigns students with lunches assigned by house to the table of their house
+ * @params - student - the student whose lunch is being assigned
+ *           nonAssignedLunches - the list of nonAssigned lunches
+ *           properties - the list of document properties
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function doAssignmentByHouse(student, nonAssignedLunches, properties){
+  var houseLunches = [];
+  var i, j;
+  for(i = 0; i < nonAssignedLunches.length; i++){
+    if(nonAssignedLunches[i].assignedBy === "house"){
+      houseLunches.push(nonAssignedLunches[i].name);
     }
   }
   for(i = 0; i < student.lunches.length; i++){
-    if(student.lunches[i].time === houseLunch){
-      student.lunches[i].table = student.house;
+    for(j = 0; j < houseLunches.length; j++){
+      if(student.lunches[i].time === houseLunches[j]){
+        student.lunches[i].table = student.house;
+        j = houseLunches.length;
+      }
     }
   }
 }
 
 /**
-@desc Calculates and assigns the students zScore number where zScore means
-  "z", # lunch with priority 1, # lunch with priority 2, etc.
-@params - stu - the student whose zScore is being calculated
-          properties - the list of document properties
-@funtional - yes
-@author - dicksontc
-*/
-function assignZScore(stu, properties){
+ * @desc Calculates and assigns the students zScore number where zScore means
+ *         "z", # lunch with priority 1, # lunch with priority 2, etc.
+ * @params - stu - the student whose zScore is being calculated
+ *           properties - the list of document properties
+ *           lunchTimes - the list of lunch times
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function assignZScore(stu, properties, lunchTimes){
   stu.zScore = 0;
-  var lunchTimes = JSON.parse(properties.lunchTimes);
   var i, j;
   
   for(i = 0; i < stu.lunches.length; i++){
@@ -1078,56 +1172,47 @@ function assignZScore(stu, properties){
 }
 
 /**
-@desc For each lunch assigned by table, this method populates an array
-  with numbers representing each student at each table
-@params - properties - the list of document properties
-@return - tableNumbersForEachLunch - the array with all of the necessary table numbers
-@funtional - yes
-@author - dicksontc
-*/
-function populateTablesArray(properties){
-  var assignedLunches = JSON.parse(properties.assignedLunches);
-  var i, j;
-  var tableNumbersForEachLunch = [];
+ * @desc For each lunch assigned by table, this method populates an array
+ *         with numbers representing each student at each table
+ * @params - assignedLunches - the list of assigned lunches
+ *           properties - the list of document properties
+ * @return - tableNumbersForEachLunch - the array with all of the necessary table numbers
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function populateTablesArray(numStudents, stuPerTable, properties){
+  var i;
+  var numArray = [];
+  var numTables = numStudents / stuPerTable;
   
-  for(i = 0; i < assignedLunches.length; i++){
-	if(assignedLunches[i].by === "table"){
-		var numArray = [];
-		var numTables = assignedLunches[i].numTables;
-		var numStudents = assignedLunches[i].numStudents;
-		for(j = 0; j < numStudents; j++){
-			numArray.push(j%numTables+1);
-		}
-		tableNumbersForEachLunch.push({"time": assignedLunches[i].time, "arr": numArray});
-	}
+  for(i = 0; i < numStudents; i++){
+    numArray.push(i%numTables+1);
   }
-  
-  return tableNumbersForEachLunch;
+  return numArray;
 }
 
 /**
-@desc Checks to see if each student has a lunch for each day, adds students with an assigned lunch
-  to an array, and does the table assignments for house assigned lunches
-@params studentsList - the entire list of students
-        lunchDaysList - the list of lunch days
-        tableAssignedTimesWithStudents - the array for holding early students
-        studentsOver - the array for holding the students with more than the correct number of lunches
-        properties - the list of document properties
-@funtional - yes
-@author - dicksontc
-*/
-function addLunches(studentsList,lunchDaysList, tableAssignedTimesWithStudents, studentsOver, properties){
+ * @desc Checks to see if each student has a lunch for each day, adds students with an assigned lunch
+ *         to an array, and does the table assignments for house assigned lunches
+ * @params - studentsList - the entire list of students
+ *           lunchDaysList - the list of lunch days
+ *           properties - the list of document properties
+ * @return - JSON object holding two arrays:
+ *           studentsOver - the array for holding the students with more than the correct number of lunches
+ *           tableAssignedTimes - the array for holding early students
+ * @funtional - updated
+ * @author - dicksontc
+ */
+function addLunches(studentsList, lunchDaysList, lunchTimes, assignedLunches, nonAssignedLunches, properties){
   var stuLunchCheck = [];
-  var assignedLunches = JSON.parse(properties.assignedLunches);
-  var nonAssignedLunches = JSON.parse(properties.nonAssignedLunches);
   var i, j, k;
   var student;
   var temp = [];
+  var studentsOver = [];
+  var tableAssignedTimesWithStudents = [];
   
   for(i = 0; i < assignedLunches.length; i++){
-    if(assignedLunches[i].by === "table"){
-      tableAssignedTimesWithStudents.push({"time": assignedLunches[i].time, "studentsTables": temp});
-    }
+    tableAssignedTimesWithStudents.push({"time": assignedLunches[i].name, "studentsTables": temp});
   }
   
   for(i = 0; i < studentsList.length; i++){
@@ -1138,12 +1223,11 @@ function addLunches(studentsList,lunchDaysList, tableAssignedTimesWithStudents, 
       }
       for(j = 0; j < student.lunches.length; j++){
         for(k = 0; k < lunchDaysList.length; k++){
-          if(student.lunches[j].day === lunchDaysList[k]){
+          if(student.lunches[j].day === lunchDaysList[k].letter){
             stuLunchCheck[k] = true;
-            k = lunchDaysList.length;
           }
         }
-		for(k = 0; k < tableAssignedTimesWithStudents.length; k++){
+        for(k = 0; k < tableAssignedTimesWithStudents.length; k++){
           if(student.lunches[j].time === tableAssignedTimesWithStudents[k].time){
             tableAssignedTimesWithStudents[k].studentsTables.push({"stuAssigned": student, "lunchIndex": j});
           }
@@ -1155,7 +1239,7 @@ function addLunches(studentsList,lunchDaysList, tableAssignedTimesWithStudents, 
         //If a student does not have a lunch for any day, add a lunch for that day
         for(j = 0; j < stuLunchCheck.length; j++){
           if(!stuLunchCheck[j]){
-            var lunchObj = {"day": lunchDaysList[j], "time": nonAssignedLunches[0].time, "isItzScore": true, "table": "", "code": "",
+            var lunchObj = {"day": lunchDaysList[j].letter, "time": nonAssignedLunches[0].name, "isItzScore": true, "table": "", "code": "",
                             "length": "", "cID": "", "sID": "", "block": "", "tableHead": "", "title": "",
                             "teacherFName": "", "teacherLName": ""};
             student.lunches.push(lunchObj);
@@ -1164,26 +1248,27 @@ function addLunches(studentsList,lunchDaysList, tableAssignedTimesWithStudents, 
         }
         
         if(student.lunches.length === lunchDaysList.length){
-          assignZScore(student, properties);
-          doAssignmentByHouse(student, properties);
+          assignZScore(student, properties, lunchTimes);
+          doAssignmentByHouse(student, nonAssignedLunches, properties);
         }else{
           studentsOver.push(student);
         }
       }
       else {
-        doAssignmentByHouse(student, properties);
+        doAssignmentByHouse(student, nonAssignedLunches, properties);
       }
     }
   }
+  return {"studentsOver": studentsOver, "tableAssignedTimes": tableAssignedTimesWithStudents};
 }
 
 /**
-@desc Changes the background colors and/or fonts of certain cells in a given column
-@params - column - the column in which the cells need to be colored
-          properties - the list of document properties
-@funtional - yes
-@author - dicksontc
-*/
+ * @desc Changes the background colors and/or fonts of certain cells in a given column
+ * @params - column - the column in which the cells need to be colored
+ *           properties - the list of document properties
+ * @funtional - updated
+ * @author - dicksontc
+ */
 function colorBackgrounds(column, properties){
   var stuData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
   var range = stuData.getRange(1, column + 1, stuData.getDataRange().getNumRows());
@@ -1191,13 +1276,18 @@ function colorBackgrounds(column, properties){
   var ro = range.getNumRows();
   var rowColors = [];
   var fonts = [];
-  var values;
+  var values = [];
   var i, j;
   var check;
+  var lunchDays = JSON.parse(properties.lunchDays);
+  
   
   for(i = 0; i < rangeValues.length; i++){
     if(rangeValues[i][0] === "Lunch Time"){
-      values = JSON.parse(properties.lunchTimes);
+      for(j = 0; j < lunchDays[0].times.length; j++){
+        values.push(lunchDays[0].times[j]);
+        Logger.log(lunchDays[0].times[j]);
+      }
       i = rangeValues.length;
     }else if (rangeValues[i][0] === "Lunch Table"){
       values = JSON.parse(properties.houses);

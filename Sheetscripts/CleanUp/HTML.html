@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
- 
-  <body>  
     <div id="rawFilePrompt" class="prompt">
     <table class="prompt_tables">
       <tr>
@@ -15,7 +10,7 @@
       </table>
       <table width="100%">
       <tr>
-        <td align="center"><input class="action" type="button" onClick="addRawSheet()" text-align="center" value="Next" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('studentDataPrompt', this)" text-align="center" value="Next" /></td>
       </tr>
     </table>
       <table width="100%">  
@@ -36,7 +31,7 @@
       <table width="100%">
       <tr>
         <td align="center"><input type="button" onClick="showDiv('rawFilePrompt', this)()" value="back" /></td>
-        <td align="center"><input class="action" type="button" onClick="addStudentDataSheet()" value="Next" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('facultyDataPrompt', this)" value="Next" /></td>
       </tr>
     </table>
       <table width="100%">  
@@ -57,7 +52,7 @@
       <table width="100%">
       <tr>
         <td align="center"><input type="button" onClick="showDiv('studentDataPrompt', this)()" value="back" /></td>
-        <td align="center"><input class="action" type="button" onClick="addFacultyDataSheet()" value="Next" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Next" /></td>
       </tr>
     </table>
       <table width="100%">
@@ -78,7 +73,7 @@
       <table width="100%">
       <tr>
         <td align="center"><input type="button" onClick="showDiv('facultyDataPrompt', this)()" value="back" /></td>
-        <td align="center"><input class="action" type="button" onClick="addDODSheet()" value="Next" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="Next" /></td>
       </tr>
     </table>
       <table width="100%">      
@@ -98,8 +93,8 @@
       </table>
       <table width="100%">
       <tr>
-        <td align="center"><input id="finalBackButton" type="button" onClick="showDiv('dodSheetPrompt', this)()" value="back" /></td>
-        <td align="center"><input id="doneButton" class="action" type="button" onClick="addFacultyChoicesSheet()" value="Done" /></td>
+        <td align="center"><input id="finalBackButton" type="button"  onClick="showDiv('dodSheetPrompt', this)"  value="back" /></td>
+        <td align="center"><input id="doneButton" class="action" type="button" onClick="showDiv('settingsPrompt', this)" value="Done" /></td>
       </tr>
     </table>
       <table width="100%">
@@ -107,12 +102,17 @@
         <td align="center"><label>This is the sheet that should already contain all the faculty choices. It should already exist. It will behave as the raw data for the faculty and will then list the faculty table assignments after this initialization</label></td>
       </tr>
     </table>
+      
+      <div id="settingsPrompt" class="centered">
+      <table id="currentSettings">
+      </table>
+      <input id="finalBackButton" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="Back"/>
+      <input id="doneButton" class="action" type="button" onClick="finish()" value="Done" />
     </div>
     
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <?!= include('Sheetscripts/CleanUp/Javascript'); ?>
     <?!= include('Sheetscripts/CleanUp/Stylesheet'); ?>
-  </body>
 </html>
 
 

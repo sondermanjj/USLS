@@ -5,8 +5,8 @@
   function showCleanUpPrompt() {
     var html = HtmlService.createTemplateFromFile('Sheetscripts/CleanUp/HTML')
       .evaluate()
-      .setHeight(200)
-      .setWidth(500);
+      .setHeight(600)
+      .setWidth(900);
     SpreadsheetApp.getUi().showModalDialog(html, ' ');
   }
 
@@ -22,10 +22,17 @@ function cleanUp(sheetName, newSheetName) {
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(sheetName);
-  setRawSheetProperty(sheetName);
+  
   var newSheet = ss.getSheetByName(newSheetName);
   if(sheet == null) {
     SpreadsheetApp.getUi().alert("The Raw Data Sheet cannot be a newly made sheet. It must contain student records provided by administration.");
+    return;
+  }
+  setRawSheetProperty(sheetName);
+  
+  var neededHeaders = ["First Name", "Last Name", "Grade Level", "Advisor", "Course Title", "Faculty First Name", "Faculty Last Name", "Block"];
+  var valid = validateSheetHeaders(sheetName, neededHeaders);
+  if(!valid) {
     return;
   }
   
@@ -45,14 +52,48 @@ function cleanUp(sheetName, newSheetName) {
   var newValues = removeIrrelevantData(oldValues, properties);
   
   newValues = addColumnNames(newValues, ["Table Head", "Lunch Day", "Lunch Time", "Lunch Table", "House"]);
+  
 
   //Populate the Lunch Day Table
   newValues = populateLunchDay(newValues, properties);
   
   newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
+  //newValues = deleteColumnNames(newSheet, ["Gender", "Date of Birth", "Section Identifier", "Course ID", "Course Length", "Course Code", "Advisor"  ]);
+  //newSheet.getRange(1, 1, newValues.length, newValues[0].length).setValues(newValues);
   
   return newSheet;
   
+}
+
+function validateSheetHeaders(sheetName, neededHeaders) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var valid = true;
+  var values = sheet.getDataRange().getValues();
+  var headers = getListOfColumns(values);
+  var count = 0;
+  for(var i = 0; i < neededHeaders.length; i++) {
+    for(var j = 0; j < headers.length; j++) {
+      if(headers[j] == neededHeaders[i]) {
+        neededHeaders.splice(i, 1);
+        i--;
+      }
+    }
+  }
+  if(neededHeaders.length > 0) {
+    valid = false;
+    var html = "";
+    for(var k = 0; k < neededHeaders.length;k++) {
+      html += neededHeaders[k] + "\n";
+    }
+    SpreadsheetApp.getUi().alert("The "+ sheetName + " sheet is missing critical headers.\nPlease make sure the following are present in the raw file and spelt exacly as shown:\n\n" + html);
+  }
+  return valid;
+}
+
+function getSettings() {
+  var properties = PropertiesService.getDocumentProperties().getProperties();
+  var days = JSON.parse(properties["lunchDays"]);
+  return days;
 }
 
 /*
@@ -88,7 +129,7 @@ function setFacultyCourses() {
     
     var courseDayConcat = courseTitle + lunchDay;
     
-    if(courses.indexOf(courseDayConcat) < 0) {
+    if((courses.indexOf(courseDayConcat) < 0) && (facultyFirstName !== '' && facultyLastName !== '')) {
       courses.push(courseDayConcat);
       newData.push(newRow);
     }
@@ -97,7 +138,6 @@ function setFacultyCourses() {
   newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
   
   createNewSheet(newData, "Courses");
-  console.log("Course Sheet Created");
   setCoursesSheet("Courses");
   
 }
@@ -112,8 +152,7 @@ function setFacultyCourses() {
  */
 function removeIrrelevantData(oldValues, properties) {
   
-  //Get necessary properties
-  var schoolDays = JSON.parse(properties.schoolDays);
+  var lunchDays = getLunchDaysMap(properties);
   
   //Create a new array for the cleaned data
   var revisedValues = [];
@@ -128,12 +167,29 @@ function removeIrrelevantData(oldValues, properties) {
   //Grab any relevant rows (courses that meet during lunch times)
   //and push them to the new data array
   for (var j = 0; j < oldValues.length; j++) {
-    var row = oldValues[j][blockColumn];
-    if(schoolDays[row] != null) {
+    var block = oldValues[j][blockColumn].toString().toLowerCase();
+    if(lunchDays[block] != null) {
       revisedValues.push(oldValues[j]);
     }
   }
   return revisedValues;
+}
+
+function getLunchDaysMap(properties) {
+  var settings = JSON.parse(properties["lunchDays"]);
+  var lunchDays = {};
+  for(var i = 0; i < settings.length; i++) {
+    var letter = settings[i].letter.toString().toLowerCase();
+    var block = settings[i].block.toString().toLowerCase();
+    var concat = letter.concat(block);
+    var concat2 = block.concat(letter);
+    var value = letter.toUpperCase();
+    lunchDays[block] = value;
+    lunchDays[concat] = value;
+    lunchDays[concat2] = value;
+  }
+  Logger.log(lunchDays);
+  return lunchDays;
 }
 
 
@@ -145,7 +201,8 @@ function removeIrrelevantData(oldValues, properties) {
  */
 function populateLunchDay(values, properties) {
   
-  var schoolDays = JSON.parse(properties.schoolDays);
+
+  var lunchDays = getLunchDaysMap(properties);
   var headers = getListOfColumns(values);
   var blockColumn = getColumnIndex(headers, "Block");
   var lunchDayColumn = getColumnIndex(headers, "Lunch Day");
@@ -155,18 +212,18 @@ function populateLunchDay(values, properties) {
   //Fill in the 'Lunch Day' column according to the corresponding 'Block' data
   for (var j = 0; j < values.length; j++) {
     if(values[j][lunchDayColumn] != "Lunch Day") {
-      var day = schoolDays[values[j][blockColumn]];
+      var day = lunchDays[values[j][blockColumn]];
       if( day === null) {
         badRows.push(j+1);
       } else {
-        values[j][lunchDayColumn] = schoolDays[values[j][blockColumn]];
+        values[j][lunchDayColumn] = lunchDays[values[j][blockColumn].toString().toLowerCase()];
       }
     }
   }
   
-  if (badRows.length > 0) {
-    SpreadsheetApp.getUi().alert("Error setting lunch days on rows: \n" + badRows);
-  }
+ if (badRows.length > 0) {
+   SpreadsheetApp.getUi().alert("Error setting lunch days on rows: \n" + badRows);
+ }
   
   return values;
 }
@@ -213,7 +270,6 @@ function populateLunchDay(values, properties) {
    newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
    
    createNewSheet(newData, "Courses");
-   console.log("Course Sheet Created");
    setCoursesSheet("Courses");
    
  }

@@ -38,7 +38,70 @@
   $(window).on('load', function() {
     showDiv("rawFilePrompt");
     google.script.run.withSuccessHandler(loadSheetNames).getListOfSheetNames();
+    google.script.run.withSuccessHandler(loadSettings).getSettings();
   });
+  
+  /*****************************************************************
+      * @desc - Load settings into the html table
+      * @param - Settings - Object - { name : value }
+      * @author - hendersonam
+  *******************************************************************/
+  function loadSettings(settings) {
+    var html = "";
+    for (var i = 0; i < settings.length; i++) {
+      if(i == 0) {
+        html += "<tr>";
+        html += "<th> Day/Block </th>";
+        for(var k = 0; k <  settings[i].times.length; k++) {
+          html += "<th>" + settings[i].times[k].name + "</th>";
+        }
+        html += "</tr>";
+        
+        html += "<tr>";
+        html += "<td> General Settings </td>";
+        for(var t = 0; t < settings[i].times.length; t++) {
+          var priority = settings[i].times[t].priority;
+          var assignBy = settings[i].times[t].assignedBy;
+          var stuPerTable = settings[i].times[t].numStuPerTable;
+          var assignBy = settings[i].times[t].assignedBy;
+          var stuPerTable = settings[i].times[t].numStuPerTable;
+          priority = checkIfNull(priority);
+          assignBy = checkIfNull(assignBy);
+          stuPerTable = checkIfNull(stuPerTable);
+          html += "<td>Priority: "+priority+"<br/>Assigned By: "+assignBy+"<br/>Students Per Table: "+stuPerTable+"</td>";
+        }
+        html += "</tr>";
+      }
+      html += "<tr>";
+      for(var j = 0; j < settings[i].times.length; j++) {
+        if( j == 0) {
+          var letter = settings[i].letter;
+          var block = settings [i].block;
+          letter = checkIfNull(letter);
+          block = checkIfNull(block);
+          html += "<td>" + letter + block + "</td>";
+        }
+        var max = settings[i].times[j].maxTables;
+        var min = settings[i].times[j].minTables;
+        max = checkIfNull(max);
+        min = checkIfNull(min);
+        
+        
+        html += "<td>Max Tables: "+max+"<br/>Min Tables: "+min+"</td>";
+      }
+      html += "</tr>";
+    }
+    $('#currentSettings').html(html);
+  }
+  
+  function checkIfNull(x) {
+    if(x == null) {
+      return "Not Set";
+    } else {
+      return x;
+    }
+  }
+
   
   /*****************************************************************
       * @desc - Load sheet names into the class for the dropdown menus
@@ -56,15 +119,6 @@
   }
   
   /*****************************************************************
-      * @desc - Add the raw sheet to our properties and show the prompt
-      *         for the student data sheet
-      * @author - hendersonam
-  *******************************************************************/
-  function addRawSheet() {
-    showDiv("studentDataPrompt");
-  }
-  
-  /*****************************************************************
       * @desc - Changes the descriptionText of the prompts to appear 
                 or dissapear.
       * @author - sondermanjj
@@ -78,37 +132,10 @@
   }
   
   /*****************************************************************
-      * @desc - Add the student data sheet to our properties and show the prompt
-      *         for the faculty data sheet
-      * @author - hendersonam
-  *******************************************************************/
-  function addStudentDataSheet() {
-    showDiv("facultyDataPrompt");
-  }
-  
-  /*****************************************************************
-      * @desc - Add the faculty data sheet to our properties and show the prompt
-      *         for the dod list sheet
-      * @author - hendersonam
-  *******************************************************************/
-  function addFacultyDataSheet() {
-    showDiv("dodSheetPrompt");
-  }
-  
-  /*****************************************************************
-      * @desc - Add the dod list sheet to our properties and show the prompt
-      *         for the faculty choices sheet
-      * @author - hendersonam
-  *******************************************************************/
-  function addDODSheet() {
-    showDiv("facultyChoicesPrompt");
-  }
-  
-  /*****************************************************************
       * @desc - Add the faculty choices sheet to our properties and close the prompt
       * @author - hendersonam
   *******************************************************************/
-  function addFacultyChoicesSheet() {
+  function finish() {
     $('#doneButton').prop("disabled", true);
     $('#finalBackButton').prop("disabled", true);
     var rawSheetName = determineSheetName("sheetRawCell", $('#rawSheet').val());
@@ -116,7 +143,6 @@
     var facultyDataSheetName = determineSheetName("sheetFacultyDataCell", $('#facultyDataSheet').val());
     var dodSheetName = determineSheetName("sheetDODSheetCell", $('#dodSheet').val());
     var facultyChoicesSheetName = determineSheetName("sheetFacultyChoiceCell", $('#facultyChoicesSheet').val());
-    
     var sheetNames = {raw: rawSheetName, student: studentDataSheetName, faculty:facultyDataSheetName,
                       dod: dodSheetName, choices: facultyChoicesSheetName};
                       
@@ -150,6 +176,13 @@
     for(var i = 0; i < divs.length; i++){
       divs[i].style.display = 'none';
     }
+//    if(divID !="settingsPrompt") {
+//      google.script.host.setWidth(300);
+//      google.script.host.setHeight(200);
+//    } else {
+//      google.script.host.setWidth(900);
+//      google.script.host.setHeight(800);
+//    }
     document.getElementById(divID).style.display = 'block';
   }
 
