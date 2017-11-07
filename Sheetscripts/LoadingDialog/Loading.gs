@@ -61,7 +61,7 @@ function callMethod(args) {
       addFacultyTables();
       break;
     case 'assign':
-      assignStudents();
+      assignStudentLunchDays();
       break;
   }
 }
