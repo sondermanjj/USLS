@@ -119,7 +119,6 @@ function searchSheet(filter, column, sheetName){
  */
 function hideValues(filter, column, sheetName) {
 
-  Logger.log(sheetName);
   var properties = PropertiesService.getDocumentProperties()
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
 
@@ -301,6 +300,42 @@ function addColumnNames(values, names) {
       numColumns += 1;
     }
   }
+  return values;
+}
+
+function deleteColumnNames(sheet, names) {
+  var values = sheet.getDataRange().getValues();
+  var numColumns = values[0].length;
+  var headerRow;
+  
+  
+  for (var i = 0; i < values.length; i++) {
+    for ( var j = 0; j < values[0].length; i++) {
+      if (values[i][j] == "First Name") {
+        headerRow = i;
+        i = values.length;
+        j = values[0].length;
+      }
+    }
+  }
+  
+  if (isNaN(headerRow)) {
+    SpreadsheetApp.getUi().alert("Could not delete column because there is no 'First Name' column. Please make sure it is spelt exactly as shown.");
+    return null;
+  }
+  for ( var j = 0; j < names.length; j++) {
+    for (var i = 0; i < numColumns; i++) {
+      var column = values[headerRow][i];
+      if (column == names[j]) {
+        Logger.log("Deleting "+ names[j] + "Column: " + (i+1));
+        sheet.deleteColumn(i+1);
+        numColumns -= 1;
+        var values = sheet.getDataRange().getValues();
+      }
+    }
+
+  }
+  var values = sheet.getDataRange().getValues();
   return values;
 }
 
