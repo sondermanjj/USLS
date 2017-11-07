@@ -1,11 +1,6 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-    
-    <div id="rawFilePrompt">
+<html> 
+    <div class="block form-group" id="rawFilePrompt">
      <label>Raw Student Data Sheet:</label>
      <br/>
       <select class="listOfSheets">
@@ -14,7 +9,7 @@
       <input class="action" type="button" onClick="showDiv('studentDataPrompt', this)" value="Next" />
     </div>
     
-    <div id="studentDataPrompt">
+    <div class="block form-group" id="studentDataPrompt">
      <label>Final Student Data Sheet:</label>
      <br/>
       <select class="listOfSheets">
@@ -24,7 +19,7 @@
       <input class="action" type="button" onClick="showDiv('facultyDataPrompt', this)" value="Next" />
     </div>
     
-    <div id="facultyDataPrompt">
+    <div class="block form-group" id="facultyDataPrompt">
      <label>Faculty Table Sheet:</label>
      <br/>
       <select class="listOfSheets">
@@ -34,7 +29,7 @@
       <input class="action" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Next" />
     </div>
     
-    <div id="dodSheetPrompt">
+    <div class="block form-group" id="dodSheetPrompt">
      <label>DOD List Sheet:</label>
      <br/>
       <select class="listOfSheets">
@@ -44,7 +39,7 @@
       <input class="action" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="Next" />
     </div>
     
-    <div id="facultyChoicesPrompt">
+    <div class="block form-group" id="facultyChoicesPrompt">
      <label>Faculty Preferences Sheet:</label>
      <br/>
       <select class="listOfSheets">
@@ -55,8 +50,6 @@
     </div>
     
     <div id="settingsPrompt" class="centered">
-      <label>Current Settings:</label>
-      <br/>
       <table id="currentSettings">
       </table>
       <input id="finalBackButton" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="Back"/>
@@ -66,7 +59,6 @@
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <?!= include('Sheetscripts/CleanUp/Javascript'); ?>
     <?!= include('Sheetscripts/CleanUp/Stylesheet'); ?>
-  </body>
 </html>
 
 
