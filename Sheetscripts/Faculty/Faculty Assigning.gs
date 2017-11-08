@@ -1,253 +1,195 @@
 //JSHint verified 4/3/2017 sondermanjj
 
-  /**
-  @desc 
-  @author sondermanjj
-  @return
-  @param
-  */
-  function addFacultyTables() {
-    addTeachersToTableList();
-  }
- 
-  var earlyCount = 0; //Number of teachers for early lunch
-  
-  /**
-  @desc Assigns the teachers randomly to the lunch tables, filling as many as possible
-  before reporting how many tables aren't used
-  @author sondermanjj
-  @return NULL
-  @param id: The sheet ID to be edited
-  */
-  function addTeachersToTableList() {
-    
-    var documentProperties = PropertiesService.getDocumentProperties();
-    var properties = documentProperties.getProperties();
-    populateTableList();
-    
-    Logger.log("Adding teachers begun");
+/**
+@desc 
+@author sondermanjj
+@return
+@param
+*/
+function addFacultyTables() {
+  addTeachersToTableList();
+}
 
-    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
-    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
-    var dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.DODList);
-    var settings = JSON.parse(properties["lunchDays"]);
-    var letterDays = getDays(settings);
+var tableList;
+var teacherList;
+var dodListsheet;
+var letterDays;
+var properties
+var offset;
+
+/**
+@desc Assigns the teachers randomly to the lunch tables, filling as many as possible
+before reporting to a sheet how many tables are used.
+@author sondermanjj
+@return NULL
+*/
+function addTeachersToTableList() {
+  
+  var documentProperties = PropertiesService.getDocumentProperties();
+  properties = documentProperties.getProperties();
+  var lunchDays = JSON.parse(properties.lunchDays);
+  var lunchList = [];
+  var emptySlots;
+  
+  
+  //Finds which lunches are assigned by table, as those are the ones we care about.
+  for (var i = 0; i < lunchDays[0].times.length; i++) {
+    if (lunchDays[0].times[i].assignedBy == "table")
+      lunchList.push(lunchDays[0].times[i]);
+    if (lunchDays[0].times[i].maxTables == null) {
+      SpreadsheetApp.getUi().alert("The assignable lunch has no values for Max, unable to assign faculty");
+      return;
+    }
+  }
     
-    var teacherRow;
-    
-    tableList.getRange(1, 1, 700).setBackground("white");
-    
-    Logger.log("Spreadsheets retrieved");
-    
-    teacherList.sort(5);
-    
-    var offset = 0; //Variable to handle whether the first row is frozen or not.
-    var firstRow = teacherList.getRange(1, 1, 1, 15).getValues();
-    for (var i = 0; i < 15; i++) {
-      if (firstRow[0][i] == "First Name") { //if first row is frozen, then it will set the offset
-        offset = 1;
+  tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
+  
+  populateTableList(lunchList);
+  
+  Logger.log("Adding teachers begun");
+  
+  teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
+  dodListsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.DODList);
+  
+  var settings = JSON.parse(properties["lunchDays"]);
+  letterDays = getDays(settings);
+  
+  tableList.getRange(1, 1, 700).setBackground("white");
+  var missingLunchTables = [];
+  //Go through each lunch and assign them
+  for (var i = 0 ; i < lunchList.length; i++) {
+    missingLunchTables.push(alternateSort(lunchList[i]));
+  }
+  
+  var missingRows = [["Table", "Letter Day", "Lunch"]];
+  for (var i = 0; i < missingLunchTables.length; i++) {
+    for (var k = 0; k < missingLunchTables[i].length; k++) {
+      missingRows.push(missingLunchTables[i][k]);
+    }
+  }
+  
+  createNewSheet(missingRows, "Missing Faculty Tables");
+  
+}
+
+
+
+
+/**
+@desc Assigns the teachers randomly to the lunch tables, filling as many as possible
+before reporting how many tables aren't used
+@author sondermanjj
+@return An array of the tables that were not assigned
+@param lunchTime: The lunch time information property
+*/    
+function alternateSort(lunchTime) {
+  
+  Logger.log("Starting Faculty Sort for " + lunchTime.name);
+  var tLAssignmentColumn = parseInt(properties["Teacher Lunch Assignment"]);
+  var tTableColumn = parseInt(properties["Teacher Table"]);
+  var tLastNameColumn = parseInt(properties["Teacher Last Name"]);
+  var tDayColumn = parseInt(properties["Teacher Lunch Day"]);
+
+  
+  var lunchCount = 0;
+  var allTeachersLunch = teacherList.getRange(1, 1, teacherList.getLastRow(), teacherList.getLastColumn()).getValues();
+  var adjustedTeachersLunch = allTeachersLunch;
+  
+  //Clear choices from current lunch being sorted
+  for (var i = 0; i < adjustedTeachersLunch.length; i++) {
+    if (adjustedTeachersLunch[i][tLastNameColumn] != "Last Name" && adjustedTeachersLunch[i][tLAssignmentColumn] == lunchTime.name) {
+      adjustedTeachersLunch[i][tTableColumn] = "";
+    }
+  }
+  
+  //Add in the DOD's if they are relevant to this lunch
+  var startAtZero = false;
+  var dodList = dodListsheet.getRange(1,1, 16, 6).getValues();
+  var relevantDOD = [];
+  for (var i = 0; i < dodList.length ; i++) {
+      if (dodList[i][5] == lunchTime.name) {
+        relevantDOD.push(dodList[i]);
+      }
+  }
+  if (relevantDOD.length == 0) {
+      Logger.log("The assigned lunch " + lunchTime.name + " has no DOD's assigned to it, random teachers are being assigned instead");
+      //SpreadsheetApp.getUi().alert("The assignable lunch " + lunchTime.name + " has no DOD's assigned to it, random teachers are being assigned instead");
+      startAtZero = true;
+  } else {
+  
+  //Puts each DOD in the 1st table of the lunch
+  for (var i = 0; i < adjustedTeachersLunch.length; i++) {
+      for (var j = 0; j < relevantDOD.length; j++) {
+        if (adjustedTeachersLunch[i][tLastNameColumn] == relevantDOD[j][2] &&
+            adjustedTeachersLunch[i][tDayColumn] == relevantDOD[j][4] &&
+            adjustedTeachersLunch[i][tLAssignmentColumn] == relevantDOD[j][5]) {
+            adjustedTeachersLunch[i][tTableColumn] = 1;
+        }
       }
     }
-    
-    if (offset) {
-       Logger.log("Header is frozen");
+  }
+  
+  var startingTable = 1;
+  if (startAtZero) {startingTable = 0;}
+  
+  shuffle(adjustedTeachersLunch);
+  // Sort the array by lunch assignment, then day, then by random number
+  adjustedTeachersLunch.sort(function(a, b){
+    var number = (a[tLAssignmentColumn]<b[tLAssignmentColumn]?-1:(a[tLAssignmentColumn]>b[tLAssignmentColumn]?1:0));  
+    if (number == 0) {
+     return (a[tDayColumn]<b[tDayColumn]?-1:(a[tDayColumn]>b[tDayColumn]?1:0));  
     } else {
-      Logger.log("Header unfrozen");
-     }
-     
-    //Reset tables assigned to 0
-    teacherList.getRange(1+offset, 8, teacherList.getLastRow()-1, 1).setValue(0);
-    teacherList.getRange(1+offset, 9, teacherList.getLastRow()-1, 1).setValue(null);
+      return number;
+    }
+    });
     
-    Logger.log("Spreadsheet 0 values assigned");
-    
-    var allTeachersLunch = teacherList.getRange(1+offset, 5, teacherList.getLastRow(), 1).getValues();
-    var earlyTeachersRows = [];
-    //Assign random numbers to all the early teachers
-    var lastRow = teacherList.getLastRow();
+    letterDays.sort();
   
-    for (var i = 0; i < lastRow; i++) {
-      if (allTeachersLunch[i].toString().toLowerCase() == "early") {
+  var currentRow = 0;
+  
+  //find where where our lunch time starts
+  while (adjustedTeachersLunch[currentRow][tLAssignmentColumn] != lunchTime.name) {
+    currentRow++;
+  }
+  
+  var startOfLunch = currentRow;
+  var numberOfTables = lunchTime.maxTables;
+  var missingRows = [];
 
-        earlyTeachersRows.push(i+1);
-        earlyCount++;
+  //Assigns each of the remaining tables to a lunch, if there are empty lunches then it will put those into a array that will be returned.
+  for (var k = 0; k < letterDays.length; k++) {
+    var tablesAssigned = startingTable;
+    while (currentRow < adjustedTeachersLunch.length && 
+        adjustedTeachersLunch[currentRow][tDayColumn] == letterDays[k] &&
+        tablesAssigned < numberOfTables) {
+      if (adjustedTeachersLunch[currentRow][tTableColumn] == "") {
+        tablesAssigned++;
+        adjustedTeachersLunch[currentRow][tTableColumn] = tablesAssigned;
+      }
+      currentRow++;
+    }
+    
+    //If there are still tables that are unassigned, put them into a array for later.
+    if (tablesAssigned != numberOfTables) {
+      for (tablesAssigned; tablesAssigned < numberOfTables; tablesAssigned++) {
+        missingRows.push([tablesAssigned, letterDays[k], lunchTime.name]);
       }
     }
     
-    Logger.log("All early teachers row numbers collected");
-  
-    var length = earlyTeachersRows.length;
-    for (i = 0; i < length;i++) {
-      teacherList.getRange(earlyTeachersRows[i]+offset, 9).setValue(Math.random()*100);
-    }  
-    
-    Logger.log("Random numbers set and put in");
-    
-    //First go through and get the DOD's and assign them to the first tables
-    teacherList.sort(9); //Sort by the random numbers  
-    teacherRow = teacherList.getRange(1+offset, 1, earlyCount, 8).getValues();
-    
-    Logger.log("Early teachers values retrieved");
-    var tablesAssigned = []; 
-    var dodList = dodListsheet.getRange(1,1, 8, 8).getValues();
-    var teacherValues;
-    for (var t = 0; t < 8; t++) {
-      for (i = 0; i < earlyCount; i++) {
-        if (teacherRow[i][2]==dodList[t][4] && teacherRow[i][1]==dodList[t][2]) {  
-          teacherRow[i][5] = 1;
-          teacherRow[i][7]++;
-          teacherValues = [teacherRow[i]];
-          tableList.getRange(((t * 19)+2), 1, 1, 8).setValues(teacherValues);
-          teacherList.getRange((i+1+offset), 1, 1, 8).setValues(teacherValues);
-          tablesAssigned[(t * 19)+2] = 1;
-        }
-      }
+    //Iterate through remaining teachers not assigned.
+    while (currentRow < adjustedTeachersLunch.length && 
+        adjustedTeachersLunch[currentRow][tDayColumn] == letterDays[k]) {
+      currentRow++;
     }
-    
-    Logger.log("DOD's inserted");
-    //reset values as we've changed some values
-    
-    var startingRow = 0;
-    
-    for (t = 0; t < earlyCount; t++) {
-      startingRow = -5;
-      if (teacherRow[t][7]=="0") {
-        for (i = 0; i< 8; i++) {
-          if (teacherRow[t][2] == letterDays[i]) {
-            startingRow = (i*19)+2;
-          }
-        }
-        for (var z = 0; z < 19; z++) {
-          if (tablesAssigned[z+startingRow] != "1") {
-            teacherRow[t][5] = z+1;
-            teacherRow[t][7]++;
-            var teacherValues = [teacherRow[t]];
-            tableList.getRange((z+startingRow), 1, 1, 8).setValues(teacherValues);
-            teacherList.getRange((t+1+offset), 1, 1, 8).setValues(teacherValues);
-            tablesAssigned[startingRow+z] = 1;
-            z = 25;
-          }
-        }
-      }
-    }
-    
-    Logger.log("Other teachers sorted into place");
-  
-    //Now clear up the useless rows in tablelist and teacherlist
-    teacherList.getRange(1+offset, 8, teacherList.getLastRow(), 2).clear();
-    tableList.getRange(1+offset, 8, teacherList.getLastRow(), 2).clear();
-    
-    //Then highlight any empty spaces and count em up.
-    var tableLastRow = tableList.getLastRow();
-    Logger.log("TableRows: "+ tableLastRow);
-    var emptyCount = 0;
-    var tableRows = tableList.getRange(2, 2, tableLastRow).getValues();
-    for (var r = 0; r < tableLastRow-1; r++) {
-      if (tableRows[r][0] === "") {
-        emptyCount++;
-        tableList.getRange(r+2, 1, 1, 6).setBackground("red");
-      }
-    }
-    
-    tableList.getRange(1, 8).setValue("Empty Slots");
-    tableList.getRange(2, 8).setValue(emptyCount);
-    
-    
-    Logger.log("Empty Spots marked");
   }
   
-  /**
-  @desc Takes all the teacher information (After sorting) and puts it into a 2d array object to be used
-  in the primary student list, guarenteeing that the teachers have lunches too.
-  @author sondermanjj
-  @return returns the formatted teacher data, with all tables assigned
-  @functional YES
-  */
-  function copyTeacherDataToPrimary() {
-    var documentProperties = PropertiesService.getDocumentProperties();
-    var properties = documentProperties.getProperties();
-    var teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
-    teacherList.sort(1);
-    teacherList.getRange(2, 11, teacherList.getLastRow(), 15).clear();
-    var teacherData = teacherList.getRange(2, 1, teacherList.getLastRow(), 6).getValues();
-    var formattedTeacherData = [[],[]];
-    
-    var lastRow = teacherList.getLastRow();
-    for (var i = 0; i < lastRow; i++) {
-      formattedTeacherData[i] = [];
-      formattedTeacherData[i][1] = teacherData[i][0]; 
-      formattedTeacherData[i][10] = teacherData[i][0];
-      if (teacherData[i][4] == "early") {
-        formattedTeacherData[i][12] = teacherData[i][0];
-      } else {
-        formattedTeacherData[i][12] = ""; 
-      }
-      formattedTeacherData[i][11] = teacherData[i][1];
-      formattedTeacherData[i][4] = teacherData[i][5];
-      formattedTeacherData[i][13] = teacherData[i][2];
-      formattedTeacherData[i][14] = teacherData[i][4];
-      
-      formattedTeacherData[i][0] = "";
-      formattedTeacherData[i][2] = "";
-      formattedTeacherData[i][3] = "";
-      formattedTeacherData[i][5] = "";
-      formattedTeacherData[i][6] = "";
-      formattedTeacherData[i][7] = "";
-      formattedTeacherData[i][8] = "";
-      formattedTeacherData[i][9] = "";
-    }
-    
-    teacherList.getRange(2, 11, teacherList.getLastRow(), 15).setValues(formattedTeacherData);
-    return formattedTeacherData;
-  }
+  // Now actually assign them to the lunches
   
-  function getAssignedLunches(settings) {
-    var assignedLunches = [];
-    for(var j = 0; j < settings[0].times.length; j++) {
-      if(settings[0].times[j].assignedBy == "table") {
-        assignedLunches.push(settings[0].times[j]);
-      }
-    }
-    return assignedLunches;
-  }
+  teacherList.clear();
+  teacherList.getRange(1, 1, adjustedTeachersLunch.length,  adjustedTeachersLunch[0].length).setValues(adjustedTeachersLunch);
   
-  /**
-  @desc Makes (or clears) the old table list and generates it based on the number of tables.
-  @author sondermanjj
-  @param id: id of the sheet to be edited
-  @returns True if process was succesful
-  @functional YES
-  */
-  function populateTableList() {
+  //Return any tables that were missing teachers
+  return missingRows;
   
-    var documentProperties = PropertiesService.getDocumentProperties();
-    var properties = documentProperties.getProperties();
-    var tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
-    
-    var settings = JSON.parse(properties["lunchDays"]);
-    var letterDays = getDays(settings);
-    
-    var assignedLunches = getAssignedLunches(settings);
-    var headerList = [["First Name", "Last Name", "Letter Day", "Lunch Preference", "Lunch", "Table"]];
-    
-    tableList.getRange("A1:F1").setValues(headerList);
-    
-    //Then populate the tableList with the letter day and table #'s, 19 tables to each day.
-    var rowNumber;
-    var rowInit = 2;
-    for(var j = 0; j < assignedLunches.length; j++){
-      if(j > 0){
-          rowInit = rowNumber + assignedLunches[j-1].maxTables;
-      }
-      var numberOfTables = assignedLunches[j].maxTables;
-      for (var i = 0; i < letterDays.length; i++) {
-        rowNumber = rowInit + (i * numberOfTables);
-        tableList.getRange(rowNumber, 3, numberOfTables).setValue(letterDays[i]);
-      }
-      
-      for (i = rowInit; i <= ((numberOfTables * letterDays.length)+rowInit-1); i++) {
-        tableList.getRange(i, 6).setValue(((i-2)%numberOfTables)+1);
-      }
-    }
-    return true;
-  }
+}
+
