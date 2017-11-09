@@ -103,24 +103,24 @@ function assignStudentLunchDays() {
   }
   //Checks to see if there are too many students in any lunch
   var badLunches = [];
-  var timeObj, tooManyStudents;
+  var timeObj, tooManyStudents, studentsOver;
      
   for(i = 0; i < assignedEachDay.length; i++){
     for(j = 0; j < assignedEachDay[i].length; j++){
       timeObj = assignedEachDay[i][j];
       tooManyStudents = tooManyStudentsInLunch(timeObj.timeInfo, timeObj.studentsInLunch);
       if(tooManyStudents){
-        badLunches.push({"day": timeObj.day, "time": timeObj.time});
+        studentsOver = timeObj.studentsInLunch.length - timeObj.timeInfo.numStuPerTable * timeObj.timeInfo.maxTables;
+        badLunches.push({"day": timeObj.day, "time": timeObj.time, "studentsOver": studentsOver});
       }
     }
   }
   if(badLunches.length > 0){
     var error = "";
-    //REPLACE BELOW WITH SOME CALL TO AN HTML THING. THIS IS JUST TEMPORARY
     for(i = 0; i < badLunches.length; i++){
-      error += " - " + badLunches[i].day + ":" + badLunches[i].time + " "; 
+      error += " - " + badLunches[i].day + ":" + badLunches[i].time + " ( " + badLunches[i].studentsOver + " ), "; 
     }
-    SpreadsheetApp.getUi().alert("Too many students in lunches " + error);
+    SpreadsheetApp.getUi().alert("Too many students in lunches " + error + ", need to switch more classes(faculty) from that lunch");
     return;
   }
   
