@@ -96,6 +96,7 @@ function alternateSort(lunchTime) {
   var tLastNameColumn = parseInt(properties["Teacher Last Name"]);
   var tDayColumn = parseInt(properties["Teacher Lunch Day"]);
   
+  var realTableNumbers = getRealTableNumberForLunches();
   
   var lunchCount = 0;
   var allTeachersLunch = teacherList.getRange(1, 1, teacherList.getLastRow(), teacherList.getLastColumn()).getValues();
@@ -164,6 +165,7 @@ function alternateSort(lunchTime) {
   
   //Assigns each of the remaining tables to a lunch, if there are empty lunches then it will put those into a array that will be returned.
   for (var k = 0; k < letterDays.length; k++) {
+    numberOfTables = realTableNumbers[k];
     var tablesAssigned = startingTable;
     while (currentRow < adjustedTeachersLunch.length && 
            adjustedTeachersLunch[currentRow][tDayColumn] == letterDays[k] &&
@@ -197,4 +199,43 @@ function alternateSort(lunchTime) {
   //Return any tables that were missing teachers
   return missingRows;
   
+}
+
+function getRealTableNumberForLunches() {
+  var documentProperties = PropertiesService.getDocumentProperties();
+  properties = documentProperties.getProperties();
+  
+  var primarySheetName = properties.studentData;
+  var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(primarySheetName).getDataRange().getValues();
+  
+  var sLTimeColumn = parseInt(properties["Student Lunch Time"]);
+  var sTableColumn = parseInt(properties["Student Lunch Table"]);
+  var sDayColumn = parseInt(properties["Student Lunch Day"]);
+
+
+  var lunchDays = JSON.parse(properties.lunchDays);
+  var realTableLengths = [];
+  
+  for (var i = 0; i < lunchDays.length; i++) {
+      realTableLengths.push(0);
+  }
+  
+  for (var i = 0; i < primary.length; i++) {
+      var day = primary[i][sDayColumn];
+      var time = primary[i][sLTimeColumn];
+      var table = primary[i][sTableColumn];
+      
+      for (var k = 0; k < lunchDays.length; k++) {
+        if (day == lunchDays[k]) {
+          if (realTableLengths[k] < table) {
+            realTableLengths[k] = table;
+          }
+        }
+      }
+      
+  return realTableLengths;   
+      
+  }
+  
+
 }
