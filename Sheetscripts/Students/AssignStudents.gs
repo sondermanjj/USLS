@@ -130,7 +130,7 @@ function assignStudentLunchDays() {
     var result = ui.alert("Number of students moved from non-assigned lunches to assigned lunches: " + lengthCheck.numStu + "\nDo you want to assign students?", ui.ButtonSet.YES_NO);
     if(result == ui.Button.YES) {
       Logger.log("Assigning");
-      assignAndPrint(lengthCheck.valid, assignedLunches, assignedEachDay, fullStudentsArray, primary, properties);
+      assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, primary, properties);
     } 
   }
 }
@@ -148,7 +148,7 @@ function assignStudentLunchDays() {
  */
 function assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, sheet, properties){
   var i, j;
-  if(lengthCheck){
+  if(lengthCheck.valid){
     for(i = 0; i < assignedEachDay.length; i++){
       for(j = 0; j < assignedEachDay[i].length; j++){
         doRandomAssignment(assignedLunches, assignedEachDay[i][j], properties);
@@ -156,8 +156,12 @@ function assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStude
     }
     printStudentsToSheet(fullStudentsArray, sheet, properties);
   }else{
-    Logger.log("Too many or too few students in a lunch (shouldn't happen)");
-    SpreadsheetApp.getUi().alert("Not enough students in assigned lunches");
+    var errorMessage = "Not enough students in these lunches:\n";
+    var badStudents = lengthCheck.badStudents;
+    for(i = 0; i < badStudents.length; i++){
+      errorMessage += "Day:" + badStudents[i].day + ", Time:" + badStudents[i].time + ", Number of Students needed:" + badStudents[i].numStu + "\n";
+    }
+    SpreadsheetApp.getUi().alert(errorMessage);
   }
 }
 
@@ -177,6 +181,8 @@ function tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunch
   var timeObj;
   var timeInfo, studentsInLunch;
   var numStuPerTable, minTables;
+  var badLunches = [];
+  var valid = true;
   var needed;
   var i, j;
   var numStu = 0;
@@ -197,11 +203,13 @@ function tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunch
         studentsInLunch = moveFromNonToAssigned(timeObj, fullStudentsArray, studentsInLunch, assignedLunches, nonAssignedLunches, needed, properties);
       }
       if(studentsInLunch.length < numStuPerTable * minTables || studentsInLunch.length % numStuPerTable !== 0){
-        return {valid:false, numStu: 0};
+        valid = false;
+        numStu = 0;
+        badLunches.push({"numStu": numStuPerTable*minTables - studentsInLunch.length, "day": timeObj.day, "time": timeObj.time});
       }
     }
   }
-  return {valid:true, numStu: numStu};
+  return {"valid":valid, "numStu": numStu, "badLunches": badLunches};
 }
 
 /**
