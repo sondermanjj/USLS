@@ -30,18 +30,18 @@ function testting() {
  * @author - hendersonam
  */
 function setLunchProperties() {
-  var early = {"name": "early", "numStuPerTable": 7, "priority": 76, "font": "NO", "background": "Lemon", "assignedBy": "table", "minTables": 40, "maxTables": 40};
-  var mid = {"name": "mid", "numStuPerTable": null, "priority": 89, "font": "YES", "background": "bag", "assignedBy": "none", "minTables": 2, "maxTables": 2};
-  var late = {"name": "late", "numStuPerTable": null, "priority": 444, "font": "WHY", "background": "#WATER", "assignedBy": "house", "minTables": 15, "maxTables": 18};
+  var early = {"name": "early", "numStuPerTable": 7, "priority": 1, "font": "BLACK", "background": "YELLOW", "assignedBy": "table", "minTables": 19, "maxTables": 19};
+  var mid = {"name": "mid", "numStuPerTable": null, "priority": 3, "font": "BLACK", "background": "WHITE", "assignedBy": "none", "minTables": null, "maxTables": null};
+  var late = {"name": "late", "numStuPerTable": null, "priority": 2, "font": "BLACK", "background": "#8db4e2", "assignedBy": "house", "minTables": null, "maxTables": null};
   
-  var lunchDays = [{"letter": "Z", "block": 3, "times": [early, mid, late]},
-  {"letter": "Y", "block": 7, "times": [early, mid, late]},
-  {"letter": "X", "block": 4, "times": [early, mid, late]},
-  {"letter": "X", "block": 8, "times": [early, mid, late]},
-  {"letter": "V", "block": 1, "times": [early, mid, late]},
-  {"letter": "R", "block": 5, "times": [early, mid, late]},
-  {"letter": "P", "block": 2, "times": [early, mid, late]},
-  {"letter": "M", "block": 6, "times": [early, mid, late]}];
+  var lunchDays = [{"letter": "A", "block": 3, "times": [early, mid, late ]},
+  {"letter": "B", "block": 7, "times": [early, mid, late ]},
+  {"letter": "C", "block": 4, "times": [early, mid, late ]},
+  {"letter": "D", "block": 8, "times": [early, mid, late ]},
+  {"letter": "E", "block": 1, "times": [early, mid, late ]},
+  {"letter": "F", "block": 5, "times": [early, mid, late ]},
+  {"letter": "G", "block": 2, "times": [early, mid, late ]},
+  {"letter": "H", "block": 6, "times": [early, mid, late ]}];
   
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
