@@ -162,7 +162,9 @@ function statistics(time, day, values, students, properties) {
         if (count == day.length) {
           //If the value in the cell is not a lunch day...
           if (isNaN(lunchDay) && lunchDay != "lunch day" ) {
-            incorrectLunchDays.push([k+1]);
+            if(lunchDay != "i" ) {
+              incorrectLunchDays.push([k+1]);
+            }
           }
           break; 
         }
