@@ -51,7 +51,7 @@ function addTeachersToTableList() {
   }
   
   tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
-    
+  
   Logger.log("Adding teachers begun");
   
   teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
@@ -95,7 +95,7 @@ function alternateSort(lunchTime) {
   var tTableColumn = parseInt(properties["Teacher Table"]);
   var tLastNameColumn = parseInt(properties["Teacher Last Name"]);
   var tDayColumn = parseInt(properties["Teacher Lunch Day"]);
-
+  
   
   var lunchCount = 0;
   var allTeachersLunch = teacherList.getRange(1, 1, teacherList.getLastRow(), teacherList.getLastColumn()).getValues();
@@ -113,23 +113,23 @@ function alternateSort(lunchTime) {
   var dodList = dodListsheet.getRange(1,1, 16, 6).getValues();
   var relevantDOD = [];
   for (var i = 0; i < dodList.length ; i++) {
-      if (dodList[i][5] == lunchTime.name) {
-        relevantDOD.push(dodList[i]);
-      }
+    if (dodList[i][5] == lunchTime.name) {
+      relevantDOD.push(dodList[i]);
+    }
   }
   if (relevantDOD.length == 0) {
-      Logger.log("The assigned lunch " + lunchTime.name + " has no DOD's assigned to it, random teachers are being assigned instead");
-      //SpreadsheetApp.getUi().alert("The assignable lunch " + lunchTime.name + " has no DOD's assigned to it, random teachers are being assigned instead");
-      startAtZero = true;
+    Logger.log("The assigned lunch " + lunchTime.name + " has no DOD's assigned to it, random teachers are being assigned instead");
+    //SpreadsheetApp.getUi().alert("The assignable lunch " + lunchTime.name + " has no DOD's assigned to it, random teachers are being assigned instead");
+    startAtZero = true;
   } else {
-  
-  //Puts each DOD in the 1st table of the lunch
-  for (var i = 0; i < adjustedTeachersLunch.length; i++) {
+    
+    //Puts each DOD in the 1st table of the lunch
+    for (var i = 0; i < adjustedTeachersLunch.length; i++) {
       for (var j = 0; j < relevantDOD.length; j++) {
         if (adjustedTeachersLunch[i][tLastNameColumn] == relevantDOD[j][2] &&
-            adjustedTeachersLunch[i][tDayColumn] == relevantDOD[j][4] &&
-            adjustedTeachersLunch[i][tLAssignmentColumn] == relevantDOD[j][5]) {
-            adjustedTeachersLunch[i][tTableColumn] = 1;
+          adjustedTeachersLunch[i][tDayColumn] == relevantDOD[j][4] &&
+          adjustedTeachersLunch[i][tLAssignmentColumn] == relevantDOD[j][5]) {
+          adjustedTeachersLunch[i][tTableColumn] = 1;
         }
       }
     }
@@ -137,19 +137,19 @@ function alternateSort(lunchTime) {
   
   var startingTable = 1;
   if (startAtZero) {startingTable = 0;}
-  
+  Logger.log("Starting at zero: " + startAtZero);
   shuffleArray(adjustedTeachersLunch);
   // Sort the array by lunch assignment, then day, then by random number
   adjustedTeachersLunch.sort(function(a, b){
     var number = (a[tLAssignmentColumn]<b[tLAssignmentColumn]?-1:(a[tLAssignmentColumn]>b[tLAssignmentColumn]?1:0));  
     if (number == 0) {
-     return (a[tDayColumn]<b[tDayColumn]?-1:(a[tDayColumn]>b[tDayColumn]?1:0));  
+      return (a[tDayColumn]<b[tDayColumn]?-1:(a[tDayColumn]>b[tDayColumn]?1:0));  
     } else {
       return number;
     }
-    });
-    
-    letterDays.sort();
+  });
+  
+  letterDays.sort();
   
   var currentRow = 0;
   
@@ -161,13 +161,13 @@ function alternateSort(lunchTime) {
   var startOfLunch = currentRow;
   var numberOfTables = lunchTime.maxTables;
   var missingRows = [];
-
+  
   //Assigns each of the remaining tables to a lunch, if there are empty lunches then it will put those into a array that will be returned.
   for (var k = 0; k < letterDays.length; k++) {
     var tablesAssigned = startingTable;
     while (currentRow < adjustedTeachersLunch.length && 
-        adjustedTeachersLunch[currentRow][tDayColumn] == letterDays[k] &&
-        tablesAssigned < numberOfTables) {
+           adjustedTeachersLunch[currentRow][tDayColumn] == letterDays[k] &&
+           tablesAssigned < numberOfTables) {
       if (adjustedTeachersLunch[currentRow][tTableColumn] == "") {
         tablesAssigned++;
         adjustedTeachersLunch[currentRow][tTableColumn] = tablesAssigned;
@@ -178,13 +178,13 @@ function alternateSort(lunchTime) {
     //If there are still tables that are unassigned, put them into a array for later.
     if (tablesAssigned != numberOfTables) {
       for (tablesAssigned; tablesAssigned < numberOfTables; tablesAssigned++) {
-        missingRows.push([tablesAssigned, letterDays[k], lunchTime.name]);
+        missingRows.push([(tablesAssigned+1), letterDays[k], lunchTime.name]);
       }
     }
     
     //Iterate through remaining teachers not assigned.
     while (currentRow < adjustedTeachersLunch.length && 
-        adjustedTeachersLunch[currentRow][tDayColumn] == letterDays[k]) {
+      adjustedTeachersLunch[currentRow][tDayColumn] == letterDays[k]) {
       currentRow++;
     }
   }
