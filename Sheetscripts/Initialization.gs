@@ -6,8 +6,8 @@
 function initialization(sheetNames) {
 
   Logger.log(sheetNames);
-  PropertiesService.getDocumentProperties().deleteAllProperties();
-  setLunchProperties();
+  //PropertiesService.getDocumentProperties().deleteAllProperties();
+  //setLunchProperties();
 
   setRawSheetProperty(sheetNames.raw);
   var cleanedSheet = cleanUp(sheetNames.raw, sheetNames.student);
