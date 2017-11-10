@@ -99,6 +99,12 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
     teacherTableSheet = ss.getSheetByName(teacherSheetName);
   }
   
+  var neededHeaders = ["First Name", "Last Name", "Lunch Day", "Lunch Assignment", "Table", "House"];
+  var valid = validateSheetHeaders(choicesSheetName, neededHeaders);
+  if(!valid) {
+    return;
+  }
+  
   setStudentSheet(studentSheet);
   setTeacherChoicesSheet(teacherChoicesSheet);
   setTeacherTableSheet(teacherTableSheet);
