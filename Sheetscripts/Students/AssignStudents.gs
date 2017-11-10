@@ -1,5 +1,4 @@
 //JSHint verified 9/29/2017 dicksontc
-
 /**
  * @desc Main application for assigning students to their lunch tables each day.
  * @funtional - updated
@@ -126,7 +125,14 @@ function assignStudentLunchDays() {
   
   var lengthCheck = tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunches, nonAssignedLunches, properties);
 
-  assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, primary, properties);
+  if(lengthCheck.valid) {
+    var ui = SpreadsheetApp.getUi();
+    var result = ui.alert("Number of students moved from non-assigned lunches to assigned lunches: " + lengthCheck.numStu + "\nDo you want to assign students?", ui.ButtonSet.YES_NO);
+    if(result == ui.Button.YES) {
+      Logger.log("Assigning");
+      assignAndPrint(lengthCheck.valid, assignedLunches, assignedEachDay, fullStudentsArray, primary, properties);
+    } 
+  }
 }
 
 /**
@@ -173,6 +179,7 @@ function tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunch
   var numStuPerTable, minTables;
   var needed;
   var i, j;
+  var numStu = 0;
   for(i = 0; i < assignedEachDay.length; i++){
     for(j = 0; j < assignedEachDay[i].length; j++){
       timeObj = assignedEachDay[i][j];
@@ -182,17 +189,19 @@ function tooFewStudentsInLunch(assignedEachDay, fullStudentsArray, assignedLunch
       minTables = timeInfo.minTables;
       if(studentsInLunch.length < numStuPerTable * minTables){
         needed = (numStuPerTable * minTables) - studentsInLunch.length;
+        numStu += needed;
         studentsInLunch = moveFromNonToAssigned(timeObj, fullStudentsArray, studentsInLunch, assignedLunches, nonAssignedLunches, needed, properties);
       }else if(studentsInLunch.length % numStuPerTable !== 0){
         needed = numStuPerTable - studentsInLunch.length % numStuPerTable;
+        numStu += needed;
         studentsInLunch = moveFromNonToAssigned(timeObj, fullStudentsArray, studentsInLunch, assignedLunches, nonAssignedLunches, needed, properties);
       }
       if(studentsInLunch.length < numStuPerTable * minTables || studentsInLunch.length % numStuPerTable !== 0){
-        return false;
+        return {valid:false, numStu: 0};
       }
     }
   }
-  return true;
+  return {valid:true, numStu: numStu};
 }
 
 /**
