@@ -4,7 +4,7 @@
     <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <script src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-    <?!= include('Stylesheet'); ?>
+    <?!= include('Stylesheet.html'); ?>
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
     
     <!-- Latest compiled and minified CSS -->
@@ -16,379 +16,12 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <?!= include('Stylesheet.html'); ?>
+    <?!= include('Javascript.html'); ?>
     
     <script>
     //JSHint Verified 5/14/17
     
-    
-    /**
-    * @desc - displays current day settings to the sidebar
-    * @author - clemensam
-    */
-    function displayLetterDays(){
-      var days = google.script.run.getLetterDays();
-      document.getElementById('currentDays').innerHTML = days;  
-    }
-    
-    /**
-    * @desc - pulls letter day information from the text boxes in the settings page and saves them to the document properties
-    * @author - clemensam
-    * //TODO
-    */
-    function saveLetterDays(){
-      var dayBoxes = document.getElementsByClassName('daySettingsBox');
-      var numBoxes = document.getElementsByClassName('dayNumberBox');
-      var daysList = [];
-      var schoolDays = {};
-      for (var i = 0; i < dayBoxes.length; i++) {
-        if(dayBoxes[i].value.trim() !== "" && numBoxes[i].value.trim() !== ""){
-          daysList.push(dayBoxes[i].value);
-          schoolDays[parseInt(numBoxes[i].value)] = dayBoxes[i].value;
-          schoolDays[dayBoxes[i].value + numBoxes[i].value] = dayBoxes[i].value;
-        }
-      }
-      google.script.run.setLunchDays(daysList); 
-    }
-    
-    function consoleDisplay(toPrint){
-      var printDiv = document.getElementById('testingDiv');
-      printDiv.innerHTML = toPrint;
-    }
-    
-    /*
-    * @desc - pulls lunch time information from the text boxes in the settings page and saves them to the document properties
-    * @author - clemensam
-    * //TODO
-    */
-    function saveLunchTimes(){
-      var lunchTimeBoxes = document.getElementsByName("timeBox");
-      var numTableBoxes = document.getElementsByName('tableBox');
-      var numStudentsBoxes = document.getElementsByName('studentsBox');
-      var priorityBoxes = document.getElementsByName('priorityBox');
-      var fontBoxes = document.getElementsByName('fontBox');
-      var backgroundBoxes = document.getElementsByName('backgroundBox');
-      var assignedLunchList = [];
-      var nonAssignedLunchList = [];
-      var lunchtimes = [];
-      var timeObj;
-      
-      for(var j = 1; j < lunchTimeBoxes.length+1; j++) {
-        var elem = document.getElementById('time' + j.toString());
-        console.log("elem: " + elem.id);
-        if(elem.style.display !== 'none'){
-          console.log(elem.style.display);
-          var dropdown = document.getElementsByName('lunch' + j.toString() + 'Assigning')[0];
-          var priority = parseInt(priorityBoxes[j-1].value);
-          var font = fontBoxes[j-1].value;
-          var background = backgroundBoxes[j-1].value;
-          var time = lunchTimeBoxes[j-1].value;
-          if(dropdown.options[dropdown.selectedIndex].value === 'table'){
-            timeObj = {"numTables": parseInt(numTableBoxes[j-1].value), "numStudents": parseInt(numStudentsBoxes[j-1].value), "by": "table",
-                        "priority": priority, "time": time};
-            assignedLunchList.push(timeObj);
-          }
-          else if(dropdown.options[dropdown.selectedIndex].value === 'house'){
-            timeObj = {"numTables": parseInt(numTableBoxes[j-1].value), "numStudents": parseInt(numStudentsBoxes[j-1].value), "by": "house",
-                        "priority": priority, "time": time};
-            nonAssignedLunchList.push(timeObj);
-          }
-          else if(dropdown.options[dropdown.selectedIndex].value === 'not'){
-            timeObj = {"numTables": parseInt(numTableBoxes[j-1].value), "numStudents": parseInt(numStudentsBoxes[j-1].value), "by": "none",
-                        "priority": priority, "time": time};
-            nonAssignedLunchList.push(timeObj);
-          }
-          lunchtimes.push({"name": time, "priority": priority, "font": font, "background": background}); 
-        }
-      }
-      setLunchProperties(lunchtimes);
-    }
-    
-    /**
-    * @desc - sets the lunch time properties to the correct values
-    * @param - all - array of all lunch times
-    * //TODO maybe
-    */
-    function setLunchProperties(all){
-    }
-    
-    /**
-    * @desc - saves faculty choices and final student data sheet names from settings tab into properties
-    * @author - clemensam
-    */
-    function saveSheetNames(){
-      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
-      var studentDataSheet = document.getElementById('studentDataSheetName').value;
-      var dodSheet = document.getElementById('dodSheetName').value;
-      google.script.run.withSuccessHandler(saveTeacherSheet).sheetExists(teacherChoicesSheet);
-      google.script.run.withSuccessHandler(saveStudentSheet).sheetExists(studentDataSheet);
-      google.script.run.withSuccessHandler(saveDODSheet).sheetExists(dodSheet);
-    }
-    
-    /**
-    * @desc - saves faculty choices sheet name property
-    * @author - clemensam
-    */
-    function saveTeacherSheet(valid){
-      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
-      if(valid){
-        google.script.run.setTeacherChoicesSheet(teacherChoicesSheet);
-      }
-      else {
-        google.script.run.showMessage("Whoops! The Faculty Choices Sheet name that you entered does not exist. This setting could not be saved.");
-      }
-    }
-    
-    /**
-    * @desc - saves final student data sheet name property
-    * @author - clemensam
-    */
-    function saveStudentSheet(valid){
-      var studentDataSheet = document.getElementById('studentDataSheetName').value;
-      if(valid){
-        google.script.run.setStudentSheet(studentDataSheet);
-      }
-      else {
-        google.script.run.showMessage("Whoops! The Final Student Data Sheet name that you entered does not exist. This setting could not be saved.");
-      } 
-    }
-    
-    /**
-    * @desc - saves dod sheet name property
-    * @author - dicksontc
-    */
-    function saveDODSheet(valid){
-      var dodDataSheet = document.getElementById('dodSheetName').value;
-      if(valid){
-        google.script.run.setDODSheet(dodDataSheet);
-      }
-      else {
-        google.script.run.showMessage("Whoops! The DOD Sheet name that you entered does not exist. This setting could not be saved.");
-      } 
-    }
-    
-    function saveHouses(){
-      var houseNames = document.getElementsByClassName("houseNameSettingsBox");
-      var houseFonts = document.getElementsByClassName("houseFontSettingsBox");
-      var houseBGs = document.getElementsByClassName("houseBGSettingsBox");
-      
-      var housesList = [];
-      
-      for(var j = 1; j < houseNames.length+1; j++) {
-        var name = document.getElementById('house' + j.toString() + "name").value;
-        var font = document.getElementById('house' + j.toString() + "font").value;
-        var bg = document.getElementById('house' + j.toString() + "bg").value;
-        housesList.push({"name": name, "font": font, "background": bg})
-      }
-      setHouses(housesList);
-    }
-    
-    
-    function showMenus(){
-      scanBoth();
-      google.script.run.withSuccessHandler(displayDropdown).getDropdownHTML();
-    }
-    /**
-      * @desc - Scans the data for statistics
-      * @author - hendersonam
-      */
-    function scanData() {
-      google.script.run.withSuccessHandler(scanBoth).showDialog('sc');
-    }
-    
-    /**
-      * @desc - Assign students
-      * @author - hendersonam
-      */
-    function doAssigning() {
-      google.script.run.withSuccessHandler(scanBoth).showDialog('assign');
-    }
-    
-    /**
-    * @desc - Puts the scanStats and scanChanges method into one method so that it can be called when opening the loading dialog
-    */
-    function scanBoth() {
-      scanStats();
-    }
-    
-    /**
-      * @desc - Scans the statistics
-      * @author - hendersonam
-      */
-    function scanStats() {
-      google.script.run.withSuccessHandler(displayStats).getStatistics();
-    }
-    
-    /**
-      * @desc - Scans the schedule changes
-      * @author - hendersonam
-      */
-    function scanChanges() {
-      google.script.run.withSuccessHandler(displayScheduleChanges).getScheduleChanges();
-    }
-    
-    /**
-      * @desc - Displays Lunch Statistics
-      * @author - hendersonam
-      */
-    function displayStats(statistics) {
-      var html = document.getElementById('stats');
-      html.innerHTML = statistics;
-      
-    } 
-    
-    /**
-     * @desc - If the enter key or search button is pressed, hideValues that do not contain the string in the text box
-     * @param - event - the button that is pressed
-     * @author - hendersonam
-     */
-    function mySearch(e) {
-      var key= e.keyCode || e.which;
-      if (key==13){
-        var filter = document.getElementById('filter').value.toLowerCase();
-        var column = document.getElementById('dropdownfilter').value;
-        google.script.run.showDialog('search, ' + filter + ', ' + column);
-      }
-    }
-    
-    /*
-    * @desc - gets sort information from text box and calls method to create custom sort
-    * @author - clemensam
-    */
-    function customSort(){
-      var sortFilters = document.getElementById('customSearch').value;
-      google.script.run.showDialog('sort, ' + sortFilters);
-    }
-    /**
-    * @desc - Shows the contents relating to sheet clean up
-    * @author - clemensam
-    */
-    function showCleanupPage(){
-      var x = document.getElementById('cleanPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Shows the contents relating to the sheet's statistics
-    * @author - clemensam
-    */
-    function showStatisticsPage(){
-      var x = document.getElementById('statsPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Shows the contents relating to the search function for the sheet
-    * @author - clemensam
-    */
-    function showSearchPage(){
-      var x = document.getElementById('searchPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Shows the contents of the settings page
-    * @author - clemensam
-    */
-    function showSettingsPage(){
-      var x = document.getElementById('settingsPage');
-      x.style.display = 'block';
-    }
-    
-    /**
-    * @desc - Hides the clean page contents
-    * @author - clemensam
-    */
-    function hideCleanupPage(){
-      var x = document.getElementById('cleanPage');
-      x.style.display = 'none';
-    }
-    
-    /**
-    * @desc - Hides the statistics page contents
-    * @author - clemensam
-    */
-    function hideStatisticsPage(){
-      var x = document.getElementById('statsPage');
-      x.style.display = 'none';
-    }
-    
-    /**
-    * @desc - Hides the search page contents
-    * @author - clemensam
-    */
-    function hideSearchPage(){
-      var x = document.getElementById('searchPage');
-      x.style.display = 'none';
-    }
-    
-    /**
-    * @desc - Hides the settings page contents
-    * @author - clemensam
-    */
-    function hideSettingsPage(){
-      var x = document.getElementById('settingsPage');
-      x.style.display = 'none';
-    }
-    
-    function hideTimeEntry(id){
-      var x = document.getElementById(id);
-      x.style.display = 'none';
-    }
-    
-    function addTimeEntry(){
-      var time1 = document.getElementById('time1');
-      var time2 = document.getElementById('time2');
-      var time3 = document.getElementById('time3');
-      if(time1.style.display === 'none'){
-        time1.style.display = 'block';
-      }
-      else if(time2.style.display === 'none'){
-        time2.style.display = 'block';
-      }
-      else{
-        time3.style.display = 'block';
-      }
-    }
-    
-    /**
-    * @desc - Changes tab class names in order to highlight the active tab
-    * @author - clemensam
-    */
-    function changeID(button){
-      switch (button){
-        case 'clean':
-          document.getElementById('cleanTab').className = 'active';
-          document.getElementById('statsTab').className = 'inactive';
-          document.getElementById('searchTab').className = 'inactive';
-          break;
-        case 'stats':
-          document.getElementById('cleanTab').className = 'inactive';
-          document.getElementById('statsTab').className = 'active';
-          document.getElementById('searchTab').className = 'inactive';
-          break;
-        case 'search':
-          document.getElementById('cleanTab').className = 'inactive';
-          document.getElementById('statsTab').className = 'inactive';
-          document.getElementById('searchTab').className = 'active';
-          break;
-        case 'settings':
-          document.getElementById('cleanTab').className = 'inactive';
-          document.getElementById('statsTab').className = 'inactive';
-          document.getElementById('searchTab').className = 'inactive';
-      }
-}
- /**
-    * @desc - saves all properties entered into the settings page
-    * @author - clemensam
-    */
-    function saveAll(){
-       saveLetterDays();
-       saveLunchTimes();
-       saveSheetNames();
-    }
-    
-    
+ 
     </script>
   </head>
     <body>
@@ -398,7 +31,7 @@
       <span>
       <ul>
         <li class="active" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Data Tools</li>      
-        <li class="inactive" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Scheduling</li>
+        <li class="inactive" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Assign/Reschedule</li>
         <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideSettingsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
      </ul>
      </span>
@@ -412,7 +45,6 @@
        <p>Use the options below for initial student assigning or making schedule changes.</p>
 
        <div class="button-div"><button id="cleanButton" class="action" onclick="google.script.run.showCleanUpPrompt();">Clean and Assign</button></div>
-       <div class="button-div"><button id="assignButton" class="action" onclick="doAssigning();">Reassign students</button></div>
        <div class="button-div"><button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button></div>
        
        <h3>Export to Website</h3>
@@ -429,33 +61,6 @@
      </div>
      
      <div id="searchPage">
-       <h2>Search</h2>
-       <div class="search-info">Must do an initial scan on data before searching. Use the search to hide values not matching you search.</div>
-       <br>
-       <div class="search-info">Searches can be stacked on top of one another. "Show All" will show all rows again.</div>
-       <select onload="listHeaders" id="dropdownfilter">
-        
-         <script>
-            google.script.run.withSuccessHandler(listHeaders).getHeaderColumnNames();
-           function listHeaders(list) {  
-             var html = document.getElementById('dropdownfilter');
-             var headers = JSON.parse(list);
-             var newhtml = "<option value=\"All\">All</option>";
-             for(var i = 0; i < headers.length; i++) {
-               newhtml += "<option value=\"" + headers[i] + "\">" + headers[i] + "</option>";
-             }
-             html.innerHTML = newhtml;
-           }
-           </script>
-         
-       </select>
-       <input type="text" id="filter" onkeypress="mySearch(event)" placeholder="Search for names..">
-       <table id="searchButtons">
-         <tr>
-           <td><button id="searchButton" class="action" onclick="search()">Search</button></td>
-           <td><button class="action" onclick="google.script.run.showDialog('show');">Show All</button></td>
-         </tr>
-       </table>
        <h2>Sort</h2>
        <table id="sortButtons">
          <tr>
@@ -504,9 +109,11 @@
 
     <h2> Settings</h2>
     
-    <div id='testingDiv'></div>
-    
     <div id="currentDays"></div>
+    
+    <section id="lunchSettings">
+    <div></div>
+    </section>
 
     <table id="settingsTable">
         <tr>
@@ -689,39 +296,85 @@
                             <div class="daySettingsTable" id="time1">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="early" type="text" onkeypress="" name="timeBox" value="early"/></span>
+                                    <span class="inputSpan"><input class="settingsBox timeBox" id="time1time" type="text" onkeypress="" name="timeBox" value="early"/></span>
                                 </div>
                                 <div class="row">
-                                    <span class="rowLabel">Number of Tables: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="earlytables" type="text" onkeypress="" name="tableBox" value="19"/></span>
-                                </div>
-                                <div class="row">
-                                    <span class="rowLabel">Number of Students: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="earlystudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
+                                    <span class="rowLabel">Students Per Table: </span>
+                                    <span class="inputSpan"><input class="settingsBox studentsBox" id="time1students" type="text" onkeypress="" name="studentsBox" value="7"/></span>
                                 </div>
                                 <div class="row assigning">
                                     <span class="rowLabel">Assigning Rule </span>
                                     <span>
                                       <form>
-                                        <select class ="assigning" name="lunch1Assigning">
-                                          <option value="not">Not Assigned</option>
+                                        <select class ="assigning" id="time1assigning" onchange="showAssigningRuleSettings(this)">
+                                          <option value="none">Not Assigned</option>
                                           <option value="table" selected>By Table</option>
                                           <option value="house">By House</option>
                                         </select>
                                     </form>
                                   </span>
                                 </div>
+                                
+                                <section id="day1tablerules">
+                                  <div class="row">
+                                    <span class="days-col1"><b>Day</b></span>
+                                    <span class="days-col2"><b>Min Tables</b></span>
+                                    <span class="days-col3"><b>Max Tables</b></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">A &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Amin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Amax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">B &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Bmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Bmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">C &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Cmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Cmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">D &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Dmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Dmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">E &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Emin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Emax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">F &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Fmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Fmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">G &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Gmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Gmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">H &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time1Hmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time1Hmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                           
+                                </section>
+                                
                                 <div class="row">
                                     <span class="rowLabel">Priority: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="earlypriority" type="text" onkeypress="" name="priorityBox" value="1"/></span>
+                                    <span class="inputSpan"><input class="settingsBox priorityBox" id="time1priority" type="text" onkeypress="" name="priorityBox" value="1"/></span>
                                 </div>
-                                <div class="fontColor">
+                                <div class="row">
                                     <span class="rowLabel">Font Color: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="earlyfont" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
+                                    <span class="inputSpan"><input class="settingsBox fontBox" id="time1font" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
                                 </div>
-                                <div class="backgroundColor">
+                                <div class="row">
                                     <span class="rowLabel">Background Color: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="earlybgcolor" type="text" onkeypress="" name="backgroundBox" value="YELLOW"/></span>
+                                    <span class="inputSpan"><input class="settingsBox backgroundBox" id="time1bgcolor" type="text" onkeypress="" name="backgroundBox" value="YELLOW"/></span>
                                 </div>
                                 <button class="action add_remove_button" onclick="hideTimeEntry('time1');">Remove</button>
                             </div>
@@ -732,39 +385,84 @@
                             <div class="daySettingsTable" id="time2">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="mid" type="text" onkeypress="" name="timeBox" value="mid"/></span>
+                                    <span class="inputSpan"><input class="settingsBox timeBox" id="time2time" type="text" onkeypress="" name="timeBox" value="mid"/></span>
                                 </div>
                                 <div class="row">
-                                    <span class="rowLabel">Number of Tables: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midtables" type="text" onkeypress="" name="tableBox" value="19"/></span>
-                                </div>
-                                <div class="row">
-                                    <span class="rowLabel">Number of Students: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midstudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
+                                    <span class="rowLabel">Students Per Table: </span>
+                                    <span class="inputSpan"><input class="settingsBox studentsBox" id="time2students" type="text" onkeypress="" name="studentsBox" value="7"/></span>
                                 </div>
                                 <div class="row assigning">
                                     <span class="rowLabel">Assigning Rule </span>
                                     <span>
                                       <form>
-                                        <select class ="assigning" name="lunch2Assigning">
-                                          <option value="not" selected>Not Assigned</option>
+                                        <select class ="assigning" id="time2assigning" onchange="showAssigningRuleSettings(this)">
+                                          <option value="none" selected>Not Assigned</option>
                                           <option value="table">By Table</option>
                                           <option value="house">By House</option>
                                         </select>
                                     </form>
                                   </span>
                                 </div>
+                                
+                                <section id="day2tablerules">
+                                  <div class="row">
+                                    <span class="days-col1"><b>Day</b></span>
+                                    <span class="days-col2"><b>Min Tables</b></span>
+                                    <span class="days-col3"><b>Max Tables</b></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">A &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Amin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Amax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">B &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Bmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Bmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">C &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Cmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Cmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">D &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Dmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Dmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">E &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Emin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Emax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">F &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Fmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Fmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">G &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Gmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Gmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">H &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time2Hmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time2Hmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                </section>
+                                
                                 <div class="row">
                                     <span class="rowLabel">Priority: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midpriority" type="text" onkeypress="" name="priorityBox" value="3"/></span>
+                                    <span class="inputSpan"><input class="settingsBox priorityBox" id="time2priority" type="text" onkeypress="" name="priorityBox" value="3"/></span>
                                 </div>
-                                <div class="fontColor">
+                                <div class="row">
                                     <span class="rowLabel">Font Color: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midfont" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
+                                    <span class="inputSpan"><input class="settingsBox fontBox" id="time2font" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
                                 </div>
-                                <div class="backgroundColor">
+                                <div class="row">
                                     <span class="rowLabel">Background Color: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="midbgcolor" type="text" onkeypress="" name="backgroundBox" value="WHITE"/></span>
+                                    <span class="inputSpan"><input class="settingsBox backgroundBox" id="time2bgcolor" type="text" onkeypress="" name="backgroundBox" value="WHITE"/></span>
                                 </div>
                                 <button class="action add_remove_button" onclick="hideTimeEntry('time2');">Remove</button>
                             </div>
@@ -775,46 +473,91 @@
                             <div class="daySettingsTable" id="time3">
                                 <div class="row">
                                     <span class="rowLabel">Time: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="late" type="text" onkeypress="" name="timeBox" value="late"/></span>
+                                    <span class="inputSpan"><input class="settingsBox timeBox" id="time3time" type="text" name="timeBox" value="late"/></span>
                                 </div>
                                 <div class="row">
-                                    <span class="rowLabel">Number of Tables: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latetables" type="text" onkeypress="" name="tableBox" value="19"/></span>
-                                </div>
-                                <div class="row">
-                                    <span class="rowLabel">Number of Students: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latestudents" type="text" onkeypress="" name="studentsBox" value="133"/></span>
+                                    <span class="rowLabel">Students Per Table: </span>
+                                    <span class="inputSpan"><input class="settingsBox studentsBox" id="time3students" type="text" onkeypress="" name="studentsBox" value="7"/></span>
                                 </div>
                                 <div class="row assigning">
                                     <span class="rowLabel">Assigning Rule </span>
                                     <span>
                                       <form>
-                                        <select class ="assigning" name="lunch3Assigning">
-                                          <option value="not">Not Assigned</option>
+                                        <select class ="assigning" id="time3assigning" onchange="showAssigningRuleSettings(this)">
+                                          <option value="none">Not Assigned</option>
                                           <option value="table">By Table</option>
                                           <option value="house" selected>By House</option>
                                         </select>
                                     </form>
                                   </span>
                                 </div>
+                                
+                                <section id="day3tablerules">
+                                  <div class="row">
+                                    <span class="days-col1"><b>Day</b></span>
+                                    <span class="days-col2"><b>Min Tables</b></span>
+                                    <span class="days-col3"><b>Max Tables</b></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">A &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Amin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Amax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">B &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Bmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Bmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">C &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Cmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Cmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">D &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Dmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Dmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">E &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Emin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Emax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">F &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Fmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Fmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">G &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Gmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Gmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                   <div class="row">
+                                    <span class="days-col1">H &nbsp;</span>
+                                    <span class="days-col2"><input class="day-rules-settings-box minBox" id="time3Hmin" type="text" onkeypress="" name="minBox" value="19"/></span>
+                                    <span class="days-col3"><input class="day-rules-settings-box maxBox" id="time3Hmax" type="text" onkeypress="" name="maxBox" value="19"/></span>
+                                  </div>
+                                </section>
+                                
                                 <div class="row">
                                     <span class="rowLabel">Priority: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latepriority" type="text" onkeypress="" name="priorityBox" value="2"/></span>
+                                    <span class="inputSpan"><input class="settingsBox priorityBox" id="time3priority" type="text" onkeypress="" name="priorityBox" value="2"/></span>
                                 </div>
-                                <div class="fontColor">
+                                <div class="row">
                                     <span class="rowLabel">Font Color: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latefont" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
+                                    <span class="inputSpan"><input class="settingsBox fontBox" id="time3font" type="text" onkeypress="" name="fontBox" value="BLACK"/></span>
                                 </div>
-                                <div class="backgroundColor">
+                                <div class="row">
                                     <span class="rowLabel">Background Color: </span>
-                                    <span class="inputSpan"><input class="settingsBox" id="latebgcolor" type="text" onkeypress="" name="backgroundBox" value="#8db4e2"/></span>
+                                    <span class="inputSpan"><input class="settingsBox backgroundBox" id="time3bgcolor" type="text" onkeypress="" name="backgroundBox" value="#8db4e2"/></span>
                                 </div>
                                 <button class="action add_remove_button" onclick="hideTimeEntry('time3');">Remove</button>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                      <td><button class="action add_remove_button" onclick="addTimeEntry();">Add Lunch Time</button>
+                      <td><button class="action add_remove_button" id="addLunchTimeButton" onclick="addTimeEntry();">Add Lunch Time</button></td>
                     </tr>
                 </table>
             </td>
