@@ -46,10 +46,10 @@ function setLunchProperties() {
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
   
-  var houses = [{"name": "Monkey", "font": "BLUE", "background": "BLUE"},
-  {"name": "Squirrel", "font": "BLUE", "background": "BLUE"},
-  {"name": "Lion", "font": "#BLUE", "background": "#LIT"},
-  {"name": "Cat", "font": "Meow", "background": "#woof"}];
+  var houses = [{"name": "Arrow", "font": "#008000", "background": "WHITE"},
+  {"name": "Academy", "font": "#3366ff", "background": "WHITE"},
+  {"name": "Crest", "font": "#ff0000", "background": "WHITE"},
+  {"name": "Ledger", "font": "YELLOW", "background": "#660066"}];
   
   setLunchDays(lunchDays);
   setHouses(houses);
