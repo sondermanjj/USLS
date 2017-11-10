@@ -120,7 +120,7 @@ function assignStudentLunchDays() {
     for(i = 0; i < badLunches.length; i++){
       error += " - " + badLunches[i].day + ":" + badLunches[i].time + " ( " + badLunches[i].studentsOver + " ), "; 
     }
-    SpreadsheetApp.getUi().alert("Too many students in lunches " + error + " need to switch more classes(faculty) from that lunch. Number in () is number of students need to remove to meet standards");
+    SpreadsheetApp.getUi().alert("Too many students in lunches " + error + " need to switch more classes(faculty) from that lunch. Number in () is number of students over lunch limit.");
     return;
   }
   
