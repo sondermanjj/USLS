@@ -1,10 +1,7 @@
 function testting() {
   var properties = PropertiesService.getDocumentProperties().getProperties();
-  var days = JSON.parse(properties["lunchDays"]);
-//  for(var i = 0; i < days.length; i++) {
-//    Logger.log(days[i].letter);
-    Logger.log(days[0].block.toString().toLowerCase().concat(days[0].letter.toString().toLowerCase()));
-//  }
+  Logger.log(properties);
+
 }
 
 /*****************************************************************************************************************
@@ -33,26 +30,26 @@ function testting() {
  * @author - hendersonam
  */
 function setLunchProperties() {
-  var early = {"name": "early", "numStuPerTable": 7, "priority": 1, "font": "BLACK", "background": "YELLOW", "assignedBy": "table", "minTables": 19, "maxTables": 19};
-  var mid = {"name": "mid", "numStuPerTable": null, "priority": 3, "font": "BLACK", "background": "WHITE", "assignedBy": "none", "minTables": null, "maxTables": null};
-  var late = {"name": "late", "numStuPerTable": null, "priority": 2, "font": "BLACK", "background": "#8db4e2", "assignedBy": "house", "minTables": null, "maxTables": null};
+  var early = {"name": "early", "numStuPerTable": 7, "priority": 76, "font": "NO", "background": "Lemon", "assignedBy": "table", "minTables": 40, "maxTables": 40};
+  var mid = {"name": "mid", "numStuPerTable": null, "priority": 89, "font": "YES", "background": "bag", "assignedBy": "none", "minTables": 2, "maxTables": 2};
+  var late = {"name": "late", "numStuPerTable": null, "priority": 444, "font": "WHY", "background": "#WATER", "assignedBy": "house", "minTables": 15, "maxTables": 18};
   
-  var lunchDays = [{"letter": "A", "block": 3, "times": [early, mid, late ]},
-  {"letter": "B", "block": 7, "times": [early, mid, late ]},
-  {"letter": "C", "block": 4, "times": [early, mid, late ]},
-  {"letter": "D", "block": 8, "times": [early, mid, late ]},
-  {"letter": "E", "block": 1, "times": [early, mid, late ]},
-  {"letter": "F", "block": 5, "times": [early, mid, late ]},
-  {"letter": "G", "block": 2, "times": [early, mid, late ]},
-  {"letter": "H", "block": 6, "times": [early, mid, late ]}];
+  var lunchDays = [{"letter": "Z", "block": 3, "times": [early, mid, late]},
+  {"letter": "Y", "block": 7, "times": [early, mid, late]},
+  {"letter": "X", "block": 4, "times": [early, mid, late]},
+  {"letter": "X", "block": 8, "times": [early, mid, late]},
+  {"letter": "V", "block": 1, "times": [early, mid, late]},
+  {"letter": "R", "block": 5, "times": [early, mid, late]},
+  {"letter": "P", "block": 2, "times": [early, mid, late]},
+  {"letter": "M", "block": 6, "times": [early, mid, late]}];
   
    // New day assignments for fall 2017 :
    // 5:A, 6:B, 7:C, 8:D, 1:E, 2:F, 3:G, 4:H
   
-  var houses = [{"name": "Arrow", "font": "#008000", "background": "WHITE"},
-  {"name": "Academy", "font": "#3366ff", "background": "WHITE"},
-  {"name": "Crest", "font": "#ff0000", "background": "WHITE"},
-  {"name": "Ledger", "font": "YELLOW", "background": "#660066"}];
+  var houses = [{"name": "Monkey", "font": "BLUE", "background": "BLUE"},
+  {"name": "Squirrel", "font": "BLUE", "background": "BLUE"},
+  {"name": "Lion", "font": "#BLUE", "background": "#LIT"},
+  {"name": "Cat", "font": "Meow", "background": "#woof"}];
   
   setLunchDays(lunchDays);
   setHouses(houses);
@@ -93,18 +90,10 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
     SpreadsheetApp.getUi().alert("The Faculty Preferences Sheet cannot be a newly made sheet. It must contain the preferred lunch times for the faculty.");
     return;
   }
-  
-  var neededHeaders = ["First Name", "Last Name", "Lunch Day", "Lunch Assignment", "Table", "House"];
-  var valid = validateSheetHeaders(choicesSheetName, neededHeaders);
-  if(!valid) {
-    return;
-  }
-  
   if(dodSheet == null) {
     SpreadsheetApp.getUi().alert("The DOD List Sheet cannot be a newly made sheet. It must contain the list of DODs for the lunches.");
     return;
   }
-  
   if(teacherTableSheet == null) {
     ss.insertSheet(teacherSheetName);
     teacherTableSheet = ss.getSheetByName(teacherSheetName);
@@ -148,6 +137,29 @@ function getHeaderColumnNames() {
   return PropertiesService.getDocumentProperties().getProperty("headers");
 }
 
+function getLunchDaysProperty() {
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("lunchDays"));
+  return PropertiesService.getDocumentProperties().getProperty("lunchDays");
+}
+
+function getHousesProperty() {
+  return PropertiesService.getDocumentProperties().getProperty("houses");
+}
+
+function getFinalSheetProperty() {
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("studentData"));
+  return PropertiesService.getDocumentProperties().getProperty("studentData");
+}
+
+function getDODSheetProperty() {
+  return PropertiesService.getDocumentProperties().getProperty("DODList");
+}
+
+function getFacultyChoicesProperty() {
+  return PropertiesService.getDocumentProperties().getProperty("teacherChoices");
+}
+
+
 /**
  * @desc - Sets the document property for the letter days as a JSON.stringify value
  * @param - Array[] - the letters for each day
@@ -190,8 +202,13 @@ function setHouses(value) {
  * @author - hendersonam
  */
 function setStudentSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("studentData", value);
+  if(typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("studentData", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("studentData", value);
+  }
 }
 
 /**
@@ -200,8 +217,13 @@ function setStudentSheet(sheet) {
  * @author - hendersonam
  */
 function setTeacherChoicesSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("teacherChoices", value);
+  if( typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("teacherChoices", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("teacherChoices", value);
+  }
 }
 
 /**
@@ -210,8 +232,13 @@ function setTeacherChoicesSheet(sheet) {
  * @author - hendersonam
  */
 function setTeacherTableSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("teacherTables", value);
+  if( typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("teacherTables", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("teacherTables", value);
+  }
 }
 
 /**
@@ -220,8 +247,13 @@ function setTeacherTableSheet(sheet) {
  * @author - hendersonam
  */
 function setDODSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("DODList", value);
+  if( typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("DODList", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("DODList", value);
+  }
 }
 
 /**
