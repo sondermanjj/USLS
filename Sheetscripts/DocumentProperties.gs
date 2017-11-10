@@ -1,10 +1,7 @@
 function testting() {
   var properties = PropertiesService.getDocumentProperties().getProperties();
-  var days = JSON.parse(properties["lunchDays"]);
-//  for(var i = 0; i < days.length; i++) {
-//    Logger.log(days[i].letter);
-    Logger.log(days[0].block.toString().toLowerCase().concat(days[0].letter.toString().toLowerCase()));
-//  }
+  Logger.log(properties);
+
 }
 
 /*****************************************************************************************************************
@@ -28,6 +25,10 @@ function testting() {
  *     courses - A list of the courses with course name, the day it runs, and the lunch time
  *****************************************************************************************************************/
  
+function getFullDocumentProperties() {
+  return PropertiesService.getDocumentProperties().getProperties();
+}
+
  /**
  * @desc - Sets the document properties for the letter days, lunch times, number of tables, and school days
  * @author - hendersonam
@@ -104,7 +105,6 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
     SpreadsheetApp.getUi().alert("The DOD List Sheet cannot be a newly made sheet. It must contain the list of DODs for the lunches.");
     return;
   }
-  
   if(teacherTableSheet == null) {
     ss.insertSheet(teacherSheetName);
     teacherTableSheet = ss.getSheetByName(teacherSheetName);
@@ -148,6 +148,29 @@ function getHeaderColumnNames() {
   return PropertiesService.getDocumentProperties().getProperty("headers");
 }
 
+function getLunchDaysProperty() {
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("lunchDays"));
+  return PropertiesService.getDocumentProperties().getProperty("lunchDays");
+}
+
+function getHousesProperty() {
+  return PropertiesService.getDocumentProperties().getProperty("houses");
+}
+
+function getFinalSheetProperty() {
+  Logger.log(PropertiesService.getDocumentProperties().getProperty("studentData"));
+  return PropertiesService.getDocumentProperties().getProperty("studentData");
+}
+
+function getDODSheetProperty() {
+  return PropertiesService.getDocumentProperties().getProperty("DODList");
+}
+
+function getFacultyChoicesProperty() {
+  return PropertiesService.getDocumentProperties().getProperty("teacherChoices");
+}
+
+
 /**
  * @desc - Sets the document property for the letter days as a JSON.stringify value
  * @param - Array[] - the letters for each day
@@ -190,8 +213,13 @@ function setHouses(value) {
  * @author - hendersonam
  */
 function setStudentSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("studentData", value);
+  if(typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("studentData", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("studentData", value);
+  }
 }
 
 /**
@@ -200,8 +228,13 @@ function setStudentSheet(sheet) {
  * @author - hendersonam
  */
 function setTeacherChoicesSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("teacherChoices", value);
+  if( typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("teacherChoices", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("teacherChoices", value);
+  }
 }
 
 /**
@@ -210,8 +243,13 @@ function setTeacherChoicesSheet(sheet) {
  * @author - hendersonam
  */
 function setTeacherTableSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("teacherTables", value);
+  if( typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("teacherTables", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("teacherTables", value);
+  }
 }
 
 /**
@@ -220,8 +258,13 @@ function setTeacherTableSheet(sheet) {
  * @author - hendersonam
  */
 function setDODSheet(sheet) {
-  var value = sheet.getName();
-  PropertiesService.getDocumentProperties().setProperty("DODList", value);
+  if( typeof sheet === "string") {
+    PropertiesService.getDocumentProperties().setProperty("DODList", sheet);
+  }
+  else {
+    var value = sheet.getName();
+    PropertiesService.getDocumentProperties().setProperty("DODList", value);
+  }
 }
 
 /**

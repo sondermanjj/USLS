@@ -65,7 +65,7 @@ function assignStudentLunchDays() {
     SpreadsheetApp.getUi().alert(message);
     return;
   }
-
+  
   var assignedEachDay = [];
   var day;
   var time;
@@ -825,22 +825,6 @@ function shuffleArray(array) {
     array[j] = temp;
   }
 }
-
-///**
-//@desc Asks the user if they want to automatically re-assign the students whose lunches changed.
-//@funtional - updated
-//@author - dicksontc
-//*/
-//function promptForChanges(){
-//  var changesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Student Schedule Changes");
-//  var rows = changesSheet.getDataRange().getNumRows();
-//  if(rows >= 3 && /\S/.test(changesSheet.getDataRange().getValues()[2][0])){
-//    var response = Browser.msgBox("Auto-Reassign", "Do you want to automatically re-assign the students?", Browser.Buttons.YES_NO);
-//    if (response === "yes"){
-//      parseStudentChanges();
-//    }
-//  }
-//}
 
 /**
  * @desc Creates an array of all the students who have a free period

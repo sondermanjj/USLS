@@ -1,12 +1,168 @@
 <script>
 
+    $(window).on('load', function() {
+        updateSettingsWithProperties();
+        google.script.run.withSuccessHandler(activateButtons).getFullDocumentProperties();
+    });
+    
+    function saveAfterInitialAssign() {
+      activateButtons();
+      saveSheetNames();
+      return true;
+    }
+    
+    /**
+    * Activate assign and schedule change buttons after initial clean and assign
+    */
+    function activateButtons(properties) {
+      if(properties == null || properties == undefined) {
+        document.getElementById('assignButton').disabled = true;
+        document.getElementById('scheduleChangeButton').disabled = true;
+      }
+      else {
+        document.getElementById('assignButton').disabled = false;
+        document.getElementById('scheduleChangeButton').disabled = false;
+      }
+    }
+    
+    /**
+    *
+    *
+    */
+    function showAssigningRuleSettings(control) {
+      var elementId = control.id;
+      var value = control.value;
+      var rulesTable;
+      switch(elementId) {
+        case "time1assigning":
+          rulesTable = document.getElementById('day1tablerules');
+          if(value === "table") {
+            rulesTable.style.display = 'block';
+          }
+          else {
+            rulesTable.style.display = 'none';
+          }
+          break;
+        case "time2assigning":
+          rulesTable = document.getElementById('day2tablerules');
+          if(value === "table") {
+            rulesTable.style.display = 'block';
+          }
+          else {
+            rulesTable.style.display = 'none';
+          }
+          break;
+        case "time3assigning":
+          rulesTable = document.getElementById('day3tablerules');
+          if(value === "table") {
+            rulesTable.style.display = 'block';
+          }
+          else {
+            rulesTable.style.display = 'none';
+          }
+          break;
+      }
+    }
+    
+    /*
+    * @desc - pulls lunch time information from the text boxes in the settings page and saves them to the document properties
+    * @author - clemensam
+    * //TODO
+    */
+    function saveLunchTimes(){
+      var dayBoxes = document.getElementsByClassName('daySettingsBox');
+      var numBoxes = document.getElementsByClassName('dayNumberBox');
+      var lunchTimeBoxes = document.getElementsByClassName("timeBox");
+      var numStudentsBoxes = document.getElementsByClassName('studentsBox');
+      var minBoxes = document.getElementsByClassName('minBox');
+      var maxBoxes = document.getElementsByClassName('maxBox');
+      var priorityBoxes = document.getElementsByClassName('priorityBox');
+      var fontBoxes = document.getElementsByClassName('fontBox');
+      var backgroundBoxes = document.getElementsByClassName('backgroundBox');
+      var lunchtimes = [];
+      
+      
+      for (var i = 0; i < dayBoxes.length; i++) {
+        var lunchDayObj = {};
+        if(dayBoxes[i].value.trim() !== "" && numBoxes[i].value.trim() !== ""){
+          lunchDayObj.letter = dayBoxes[i].value;
+          lunchDayObj.block = numBoxes[i].value; 
+          var times = []; 
+          var minIndex = 0;
+          var maxIndex = 0;
+          for (var j = 0; j<lunchTimeBoxes.length; j++){
+            var timeObj = {};
+            var time = document.getElementById('time'+ (j+1).toString() + 'time').value;
+            timeObj.name = time;
+            var dropdown = document.getElementById('time' + (j+1).toString() + 'assigning');
+            var selected = dropdown.options[dropdown.selectedIndex].value;
+            timeObj.assignedBy = selected;
+            timeObj.numStuPerTable = numStudentsBoxes[j].value;
+            timeObj.priority = priorityBoxes[j].value;
+            timeObj.font = fontBoxes[j].value;
+            timeObj.background = backgroundBoxes[j].value;
+  
+            times.push(timeObj);
+  
+          } 
+          lunchDayObj.times = times;
+        }
+        
+        lunchtimes.push(lunchDayObj);
+        
+        }
+        for(var n=0; n<lunchTimeBoxes.length; n++) {
+          for(var t=0; t<dayBoxes.length; t++) {
+            var times = lunchtimes[t].times[n];       
+            
+            var minTables = minBoxes[minIndex].value;
+            var maxTables = maxBoxes[maxIndex].value;
+            times.minTables = minTables;
+            times.maxTables = maxTables;
+
+            minIndex++;
+            maxIndex++;
+        
+          }
+      }
+      google.script.run.setLunchDays(lunchtimes);
+    }
+    
+    /**
+    * @desc - sets the lunch time properties to the correct values
+    * @param - all - array of all lunch times
+    * //TODO maybe
+    */
+    function setLunchProperties(all){
+    }
+    
+    
+    /**
+    * @desc - saves houses settings to document properties
+    * @author - dicksontc
+    */
+    function saveHouses(){
+      var houseNames = document.getElementsByClassName("houseNameSettingsBox");
+      var houseFonts = document.getElementsByClassName("houseFontSettingsBox");
+      var houseBGs = document.getElementsByClassName("houseBGSettingsBox");
+      
+      var housesList = [];
+      
+      for(var j = 1; j < houseNames.length+1; j++) {
+        var name = document.getElementById('house' + j.toString() + "name").value;
+        var font = document.getElementById('house' + j.toString() + "font").value;
+        var bg = document.getElementById('house' + j.toString() + "bg").value;
+        housesList.push({"name": name, "font": font, "background": bg})
+      }
+      setHouses(housesList);
+    }
+    
     /**
       * @desc - Scans the data for statistics
       * @author - hendersonam
       */
     function scanData() {
      google.script.run.withSuccessHandler(scanStats).showDialog('sc');
-//     google.script.run.withSuccessHandler(displayDropdown).getDropdownList();  
     }
     
     /**
@@ -17,14 +173,6 @@
       google.script.run.withSuccessHandler(displayStats).getStatistics();
     }
     
-//    /**
-//      * @desc - Scans the schedule changes
-//      * @author - hendersonam
-//      */
-//    function scanChanges() {
-//      google.script.run.withSuccessHandler(displayScheduleChanges).getScheduleChanges();
-//    }
-    
     /**
       * @desc - Displays Lunch Statistics
       * @author - hendersonam
@@ -33,29 +181,6 @@
       var html = document.getElementById('stats');
       html.innerHTML = statistics;
     } 
-    
-//    /**
-//      * @desc - Displays Schedule Changes
-//      * @author - hendersonam
-//      */
-//    function displayScheduleChanges(changes) {
-//      var html = document.getElementById('changes');
-//      html.innerHTML = changes;    
-//    }
-    
-    /**
-     * @desc - If the enter key or search button is pressed, hideValues that do not contain the string in the text box
-     * @param - event - the button that is pressed
-     * @author - hendersonam
-     */
-    function mySearch(e) {
-      var key= e.keyCode || e.which;
-      if (key==13){
-        var filter = document.getElementById('filter').value.toLowerCase();
-        var column = document.getElementById('dropdownfilter').value;
-        google.script.run.withSuccessHandler(google.script.run.showDialog).getSearchParams(filter, column);
-      }
-    }
 
     /**
     * @desc - Shows the contents relating to sheet clean up
@@ -112,15 +237,6 @@
     }
     
     /*
-    * @desc - same as above method, but used on press instead up enter key press
-    */
-    function search(){
-      var filter = document.getElementById('filter').value.toLowerCase();
-      var column = document.getElementById('dropdownfilter').value;
-      google.script.run.withSuccessHandler(google.script.run.showDialog).getSearchParams(filter, column);
-    }
-    
-    /*
     * @desc - gets sort information from text box and calls method to create custom sort
     * @author - clemensam
     */
@@ -157,6 +273,71 @@
     }
     
     /**
+    * @desc - Shows the contents of the settings page
+    * @author - clemensam
+    */
+    function showSettingsPage(){
+      var x = document.getElementById('settingsPage');
+      x.style.display = 'block';
+    }
+    
+    /**
+    * @desc - Hides the clean page contents
+    * @author - clemensam
+    */
+    function hideCleanupPage(){
+      var x = document.getElementById('cleanPage');
+      x.style.display = 'none';
+    }
+    
+    /**
+    * @desc - Hides the statistics page contents
+    * @author - clemensam
+    */
+    function hideStatisticsPage(){
+      var x = document.getElementById('statsPage');
+      x.style.display = 'none';
+    }
+    
+    /**
+    * @desc - Hides the search page contents
+    * @author - clemensam
+    */
+    function hideSearchPage(){
+      var x = document.getElementById('searchPage');
+      x.style.display = 'none';
+    }
+    
+    /**
+    * @desc - Hides the settings page contents
+    * @author - clemensam
+    */
+    function hideSettingsPage(){
+      var x = document.getElementById('settingsPage');
+      x.style.display = 'none';
+    }
+    
+    function hideTimeEntry(id){
+      var x = document.getElementById(id);
+      x.style.display = 'none';
+    }
+    
+    function addTimeEntry(){
+      var time1 = document.getElementById('time1');
+      var time2 = document.getElementById('time2');
+      var time3 = document.getElementById('time3');
+      if(time1.style.display === 'none'){
+        time1.style.display = 'block';
+      }
+      else if(time2.style.display === 'none'){
+        time2.style.display = 'block';
+      }
+      else{
+        time3.style.display = 'block';
+      }
+    }
+    
+    /**
     * @desc - Changes tab class names in order to highlight the active tab
     * @author - clemensam
     */
@@ -177,7 +358,107 @@
           document.getElementById('statsTab').className = 'inactive';
           document.getElementById('searchTab').className = 'active';
           break;
+        case 'settings':
+          document.getElementById('cleanTab').className = 'inactive';
+          document.getElementById('statsTab').className = 'inactive';
+          document.getElementById('searchTab').className = 'inactive';
       }
-}
+   }
+   
+   /**
+    * @desc - saves all properties entered into the settings page
+    * @author - clemensam
+    */
+    function saveAll(){
+       saveLunchTimes();
+    }
+    
+     /**
+    * @desc - Updates the fields in settings tab with currently saved properties
+    * @author - clemensam
+    */
+    function updateSettingsWithProperties() {
+      google.script.run.withSuccessHandler(displayLunchProperties).getLunchDaysProperty();
+      google.script.run.withSuccessHandler(displayHouseProperties).getHousesProperty();
+    }
+    
+    /**
+    * Update the sidebar to display the correct lunch values that are saved in the properties
+    * @author - clemensam
+    */
+    function displayLunchProperties(properties) {
+      properties = JSON.parse(properties);
+      var minBoxes = document.getElementsByClassName('minBox');
+      var maxBoxes = document.getElementsByClassName('maxBox');
+      var minIndex = 0;
+      var maxIndex = 0;
+      for(var n=0; n<properties[0].times.length; n++) {
+        for(var t=0; t<properties.length; t++) {
+          var time = properties[t].times[n];
+          var minTables = time.minTables;
+          var maxTables = time.maxTables;
+          minBoxes[minIndex].value = minTables;
+          maxBoxes[maxIndex].value = maxTables;
+          minIndex++;
+          maxIndex++;
+        }
+      }
+      for(var i=0; i<properties.length; i++){
+        var currentDay = properties[i];
+        var elementLetter = i+1;
+        var letter = currentDay["letter"];
+        var blocknum = currentDay["block"];
+        var times = currentDay["times"];
+        for(var j=0; j<times.length; j++){
+          var time = times[j].name;
+          var assignedBy = times[j].assignedBy;
+          var bg = times[j].background;
+          var font = times[j].font;
+          var studentsPerTable = times[j].numStuPerTable;
+          var priority = times[j].priority;
+
+          
+          var timeTextBox = document.getElementById('time' + (j+1).toString() + 'time');
+          var numStuTextBox = document.getElementById('time' + (j+1).toString() + 'students');
+          var assigningTextBox = document.getElementById('time' + (j+1).toString() + 'assigning');
+          var priorityTextBox = document.getElementById('time' + (j+1).toString() + 'priority');
+          var fontTextBox = document.getElementById('time' + (j+1).toString() + 'font');
+          var bgColorTextBox = document.getElementById('time' + (j+1).toString() + 'bgcolor');  
+          
+          timeTextBox.value = time;
+          numStuTextBox.value = studentsPerTable;
+          assigningTextBox.value = assignedBy;
+          priorityTextBox.value = priority;
+          fontTextBox.value = font;
+          bgColorTextBox.value = bg;
+          minIndex++;
+          maxIndex++;
+        }
+        var letterTextBox = document.getElementById('day' + elementLetter);
+        var blockNumTextBox = document.getElementById('day' + elementLetter + 'num');
+        letterTextBox.value = letter;
+        blockNumTextBox.value = blocknum;
+      }
+    }
+    
+     /**
+    * Update the sidebar to display the correct house values that are saved in the properties
+    * @author - clemensam
+    */
+    function displayHouseProperties(houses) {
+      houses = JSON.parse(houses);
+      for(var i=0; i<houses.length; i++) {
+        var name = houses[i].name;
+        var font = houses[i].font;
+        var bg = houses[i].background;
+        var nameInput = document.getElementById('house' + (i+1).toString() + 'name');
+        var fontInput = document.getElementById('house' + (i+1).toString() + 'font');
+        var bgInput = document.getElementById('house' + (i+1).toString() + 'bg');
+        nameInput.value = name;
+        fontInput.value = font;
+        bgInput.value = bg;
+      }
+    }
+    
     
     </script>
