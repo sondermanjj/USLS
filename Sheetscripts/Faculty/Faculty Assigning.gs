@@ -98,6 +98,8 @@ function alternateSort(lunchTime) {
   
   var realTableNumbers = getRealTableNumberForLunches();
   
+  Logger.log(realTableNumbers);
+  
   var lunchCount = 0;
   var allTeachersLunch = teacherList.getRange(1, 1, teacherList.getLastRow(), teacherList.getLastColumn()).getValues();
   var adjustedTeachersLunch = allTeachersLunch;
@@ -212,19 +214,18 @@ function getRealTableNumberForLunches() {
   var sTableColumn = parseInt(properties["Student Lunch Table"]);
   var sDayColumn = parseInt(properties["Student Lunch Day"]);
 
-
   var lunchDays = JSON.parse(properties.lunchDays);
   var realTableLengths = [];
   
   for (var i = 0; i < lunchDays.length; i++) {
       realTableLengths.push(0);
   }
-  
+
   for (var i = 0; i < primary.length; i++) {
       var day = primary[i][sDayColumn];
       var time = primary[i][sLTimeColumn];
       var table = primary[i][sTableColumn];
-      
+      Logger.log("day: "+day+", time: "+table+", time: "+time);
       for (var k = 0; k < lunchDays.length; k++) {
         if (day == lunchDays[k]) {
           if (realTableLengths[k] < table) {

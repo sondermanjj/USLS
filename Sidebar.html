@@ -559,42 +559,9 @@
                 </table>
             </td>
         </tr>
-        <tr>
-            <th colspan=2>Sheet Names</th>
-        </tr>
-        <tr>
-            <td id="fullWidth"colspan=2>
-                <table class="table table-striped">
-                    <tr>
-                        <td>
-                            <div class="row">
-                                <span class="rowLabel">Final Student Data: </span>
-                                <span class="inputSpan"><input class="settingsBox" id="studentDataSheetName" type="text" onkeypress="" name="finalDataSheetName" value=""/></span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="row">
-                                <span class="rowLabel">Faculty Choices: </span>
-                                <span class="inputSpan"><input class="settingsBox" id="facultyChoicesSheetName" type="text" onkeypress="" name="facultyChoicesSheetName" value=""/></span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="row">
-                                <span class="rowLabel">DOD List: </span>
-                                <span class="inputSpan"><input class="settingsBox" id="dodSheetName" type="text" onkeypress="" name="dodSheetName" value=""/></span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
     </table>
 
-    <button class="action" onclick="saveAll();">Save</button>
+    <button class="action" onclick="saveAll(); google.script.run.setColumnProperties();">Save</button>
 
 </div>
 <br/>
