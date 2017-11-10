@@ -1007,7 +1007,7 @@ function getStudents(studentValues, numRows, teachersList, assignedLunches, nonA
     var table = studentValues[i][lunchTableCol];
     var teacherFName = studentValues[i][tFNameCol];
     var teacherLName = studentValues[i][tLNameCol];
-    var advisor = studentValues[i][advisorCol];
+    var advisor = studentValues[i][advisorCol].replace(/\s\s+/g, ' ');
     var code = studentValues[i][cCodeCol];
     var length = studentValues[i][cLengthCol];
     var cID = studentValues[i][cIDCol];
