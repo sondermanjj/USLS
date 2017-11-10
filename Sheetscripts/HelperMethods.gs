@@ -1,4 +1,3 @@
-//JSHint verified 11/10/2017 dicksontc
 var dropdownhtml;
 
 /**
@@ -44,6 +43,7 @@ function getListOfSheetNames() {
   for(var i = 0; i < sheets.length; i++) {
     list.push(sheets[i].getName());
   }
+  Logger.log(list);
   return list;
 }
 
@@ -83,7 +83,7 @@ function sortSheetBy(sheet, sorts) {
     SpreadsheetApp.getUi().alert("No sorts given!");
     return null;
   }
-  if (sheet === null) {
+  if (sheet == null) {
     SpreadsheetApp.getUi().alert("That sheet does not exist, cannot be sorted!");
     return null;
   }
@@ -102,6 +102,7 @@ function sortSheetBy(sheet, sorts) {
  * @author - clemensam
  */
 function searchSheet(filter, column, sheetName){
+  var properties = PropertiesService.getDocumentProperties();
   var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var index = 0;
 
@@ -118,8 +119,8 @@ function searchSheet(filter, column, sheetName){
  */
 function hideValues(filter, column, sheetName) {
 
+  var properties = PropertiesService.getDocumentProperties()
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  var map;
 
   if( column == "All") {
     map = searchAll(filter, sheetName);
@@ -137,6 +138,7 @@ function hideValues(filter, column, sheetName) {
  * @author - hendersonam
  */
 function searchAll(filter, sheetName) {
+  var properties = PropertiesService.getDocumentProperties();
   var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var count = 0;
   var index = 0;  
@@ -166,6 +168,7 @@ function searchAll(filter, sheetName) {
  * @author - hendersonam
  */
 function searchColumn(filter, column, sheetName) {
+  var properties = PropertiesService.getDocumentProperties();
   var values = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getDataRange().getValues();
   var columnIndex = getColumnIndex(getListOfColumns(values), column);
   var count = 0;
@@ -194,6 +197,7 @@ function searchColumn(filter, column, sheetName) {
  * @author - hendersonam
  */
 function showAllValues() {
+ var properties = PropertiesService.getDocumentProperties();
  var sheet = SpreadsheetApp.getActiveSheet();
  var values = sheet.getDataRange().getValues();
   
@@ -227,10 +231,10 @@ function getColumnIndex(values, name) {
  */
 function getListOfColumns(data) {
   var list = [];
-	var i, j;
+
   var row = -1;
-  for (i = 0; i < data.length; i++) {
-    for(j = 0; j < data[0].length; j++) {
+  for (var i = 0; i < data.length; i++) {
+    for( var j = 0; j < data[0].length; j++) {
       if(data[i][j] == 'First Name') {
         row = i;
         j = data[0].length;
@@ -242,7 +246,7 @@ function getListOfColumns(data) {
     SpreadsheetApp.getUi().alert("There is no 'First Name' column. Please make sure it is spelt exactly as shown.");
   }
 
-  for(j = 0; j < data[row].length; j++) {
+  for( j = 0; j < data[row].length; j++) {
     list.push(data[row][j].toString());
 
   }
@@ -261,10 +265,9 @@ function addColumnNames(values, names) {
   var numColumns = values[0].length;
   var exists = false;
   var headerRow;
-  var i, j;
   
-  for (i = 0; i < values.length; i++) {
-    for (j = 0; j < values[0].length; i++) {
+  for (var i = 0; i < values.length; i++) {
+    for ( var j = 0; j < values[0].length; i++) {
       if (values[i][j] == "First Name") {
         headerRow = i;
         i = values.length;
@@ -278,8 +281,8 @@ function addColumnNames(values, names) {
     return null;
   }
   
-  for (j = 0; j < names.length; j++) {
-    for (i = 0; i < numColumns; i++) {
+  for ( var j = 0; j < names.length; j++) {
+    for (var i = 0; i < numColumns; i++) {
       var column = values[headerRow][i];
       if (column == names[j]) {
         exists = true;
@@ -304,10 +307,10 @@ function deleteColumnNames(sheet, names) {
   var values = sheet.getDataRange().getValues();
   var numColumns = values[0].length;
   var headerRow;
-  var i, j;
   
-  for (i = 0; i < values.length; i++) {
-    for (j = 0; j < values[0].length; i++) {
+  
+  for (var i = 0; i < values.length; i++) {
+    for ( var j = 0; j < values[0].length; i++) {
       if (values[i][j] == "First Name") {
         headerRow = i;
         i = values.length;
@@ -320,18 +323,19 @@ function deleteColumnNames(sheet, names) {
     SpreadsheetApp.getUi().alert("Could not delete column because there is no 'First Name' column. Please make sure it is spelt exactly as shown.");
     return null;
   }
-  for (j = 0; j < names.length; j++) {
-    for (i = 0; i < numColumns; i++) {
+  for ( var j = 0; j < names.length; j++) {
+    for (var i = 0; i < numColumns; i++) {
       var column = values[headerRow][i];
       if (column == names[j]) {
+        Logger.log("Deleting "+ names[j] + "Column: " + (i+1));
         sheet.deleteColumn(i+1);
         numColumns -= 1;
-        values = sheet.getDataRange().getValues();
+        var values = sheet.getDataRange().getValues();
       }
     }
 
   }
-  values = sheet.getDataRange().getValues();
+  var values = sheet.getDataRange().getValues();
   return values;
 }
 
@@ -348,7 +352,7 @@ function compareByColumnIndex(index) {
     else {
         return (a[index] < b[index]) ? -1 : 1;
     }
-  };
+  }
 }
 
 /**
@@ -359,6 +363,7 @@ function compareByColumnIndex(index) {
 */
 function getSearchParams(filter, column) {
   var sheetName = SpreadsheetApp.getActiveSheet().getName();
-  var params = 'search, ' + filter + ', ' + column + ', ' + sheetName;
+  var params = 'search, ' + filter + ', ' + column + ', ' + sheetName
+  Logger.log(params);
   return params;
 }

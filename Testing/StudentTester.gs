@@ -9,19 +9,23 @@ as runs the tests.
 function studentTester(){
   
   assignStudentLunchDays();
-  
+
   var documentProperties = PropertiesService.getDocumentProperties();
   var properties = documentProperties.getProperties();
+  var sheet = SpreadsheetApp.getActiveSheet();
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
   var teacher = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
-  
+
   
   var primaryData = primary.getDataRange();
   var teacherData = teacher.getDataRange();
   
   var pValues = primaryData.getValues();
+  var tValues = teacherData.getValues();
   
   var pNumRows = primaryData.getNumRows();
+  var pNumColumns = primaryData.getNumColumns();
+  var tNumColumns = teacherData.getNumColumns();
   
   var pLunchTimeColumn = parseInt(properties["Student Lunch Time"]);
   var pLunchDayColumn = parseInt(properties["Student Lunch Day"]);
@@ -38,8 +42,8 @@ function studentTester(){
   var tLunchTimeColumn = parseInt(properties["Teacher Lunch Assignment"]);
   
   var students = [];
-  var lunches = [];
   
+  var students = [];
   for(var i = 1; i < pNumRows; i++){
     var day = pValues[i][pLunchDayColumn];
     var fname = pValues[i][pSFNameColumn];
@@ -90,6 +94,7 @@ Fails - Any background colors are incorrect
 */
 function testColorByTime(column, properties){
   return allTests(function(t) {
+    var sheet = SpreadsheetApp.getActiveSheet();
     var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
     var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
     var vals = range.getValues();
@@ -103,21 +108,21 @@ function testColorByTime(column, properties){
             t.errorSpot("Early Colors are not correct!", false);
             check++;
           } else {
-            t.errorSpot("Color is good", true); 
+           t.errorSpot("Color is good", true); 
           }
         }else if(vals[i][0] == "late"){
           if(backgrounds[i] != "#8db4e2"){
             t.errorSpot("Late Colors are not correct!", false);
             check++;
           } else {
-            t.errorSpot("Color is good", true); 
+           t.errorSpot("Color is good", true); 
           }
         }else{          
           if(backgrounds[i] != "#ffffff"){
             t.errorSpot("Blank Colors are not correct!", false);
             check++;
           } else {
-            t.errorSpot("Color is good", true); 
+           t.errorSpot("Color is good", true); 
           }
         }
       }
@@ -144,7 +149,8 @@ Fails - Any background or font colors are incorrect
 */
 function testColorByTable(column, properties){
   return allTests(function(t) {
-    var properties = PropertiesService.getDocumentProperties();
+     var properties = PropertiesService.getDocumentProperties();
+    var sheet = SpreadsheetApp.getActiveSheet();
     var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
     var range = primary.getRange(1, column + 1, primary.getDataRange().getNumRows());
     var vals = range.getValues();
@@ -162,12 +168,12 @@ function testColorByTable(column, properties){
           if(vals[i] == "Crest"){
             if(fonts[i] != "#ff0000"){
               t.errorSpot("Colors are not correct!", false);
-              check++;
+            check++;
             }
           }else if(vals[i] == "Arrow"){
             if(fonts[i] != "#008000"){
               t.errorSpot("Colors are not correct!", false);
-              check++;
+            check++;
             }
           }else if(vals[i] == "Academy"){
             if(fonts[i] != "#3366ff"){
@@ -300,7 +306,7 @@ function testAllStudentsHaveALunchForEachDay(students){
       var stu = students[n];
       if(stu.lunches.length == 8){
         t.errorSpot("Student " + stu.fName + " " + stu.lName + " has 8 lunches, as they should!", true);
-        
+ 
         var a = false;
         var b = false;
         var c = false;

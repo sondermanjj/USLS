@@ -154,7 +154,8 @@
         var bg = document.getElementById('house' + j.toString() + "bg").value;
         housesList.push({"name": name, "font": font, "background": bg})
       }
-      setHouses(housesList);
+      google.script.run.setHouses(housesList);
+
     }
     
     /**
@@ -371,6 +372,7 @@
     */
     function saveAll(){
        saveLunchTimes();
+       saveHouses();
     }
     
      /**

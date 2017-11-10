@@ -1,4 +1,4 @@
-//JSHint verified 11/10/2017 dicksontc
+//JSHint verified 4/3/2017 sondermanjj
 
 /**
  * @desc - runs all the possible tests, then checks for errors and collects all reports
@@ -38,6 +38,7 @@ function runTestingSuite() {
   for (i = 0; i < arrayLength; i++) {
     completeMessage = completeMessage + "\r\n" + testingMessages[i];
   }
+  Logger.log(completeMessage);
   MailApp.sendEmail("sondermanjj@msoe.edu", "[Build Report]", completeMessage);
   MailApp.sendEmail("hendersonam@msoe.edu", "[Build Report]", completeMessage);
   MailApp.sendEmail("clemensam@msoe.edu", "[Build Report]", completeMessage);
