@@ -32,20 +32,26 @@ function addTeachersToTableList() {
   var emptySlots;
   
   
-  //Finds which lunches are assigned by table, as those are the ones we care about.
-  for (var i = 0; i < lunchDays[0].times.length; i++) {
-    if (lunchDays[0].times[i].assignedBy == "table")
-      lunchList.push(lunchDays[0].times[i]);
-    if (lunchDays[0].times[i].maxTables == null) {
-      SpreadsheetApp.getUi().alert("The assignable lunch has no values for Max, unable to assign faculty");
-      return;
+  for (var k = 0; k < lunchDays.length; k++) {
+    for (var i = 0; i < lunchDays[0].times.length; i++) {
+      if (lunchDays[0].times[i].assignedBy == "table") {
+        if (lunchDays[0].times[i].maxTables == null) {
+          SpreadsheetApp.getUi().alert("The assignable lunch has no values for Max, unable to assign faculty");
+          return;
+        }
+      }
     }
   }
-    
+  
+  //Finds which lunches are assigned by table, as those are the ones we care about.
+  for (var i = 0; i < lunchDays[0].times.length; i++) {
+    if (lunchDays[0].times[i].assignedBy == "table") {
+      lunchList.push(lunchDays[0].times[i]);
+    }
+  }
+  
   tableList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherTables);
-  
-  populateTableList(lunchList);
-  
+    
   Logger.log("Adding teachers begun");
   
   teacherList = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.teacherChoices);
@@ -132,7 +138,7 @@ function alternateSort(lunchTime) {
   var startingTable = 1;
   if (startAtZero) {startingTable = 0;}
   
-  shuffle(adjustedTeachersLunch);
+  shuffleArray(adjustedTeachersLunch);
   // Sort the array by lunch assignment, then day, then by random number
   adjustedTeachersLunch.sort(function(a, b){
     var number = (a[tLAssignmentColumn]<b[tLAssignmentColumn]?-1:(a[tLAssignmentColumn]>b[tLAssignmentColumn]?1:0));  
@@ -192,4 +198,3 @@ function alternateSort(lunchTime) {
   return missingRows;
   
 }
-
