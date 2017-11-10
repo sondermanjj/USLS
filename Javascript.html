@@ -2,8 +2,28 @@
 
     $(window).on('load', function() {
         updateSettingsWithProperties();
-        console.log("updating");
+        google.script.run.withSuccessHandler(activateButtons).getFullDocumentProperties();
     });
+    
+    function saveAfterInitialAssign() {
+      activateButtons();
+      saveSheetNames();
+      return true;
+    }
+    
+    /**
+    * Activate assign and schedule change buttons after initial clean and assign
+    */
+    function activateButtons(properties) {
+      if(properties == null || properties == undefined) {
+        document.getElementById('assignButton').disabled = true;
+        document.getElementById('scheduleChangeButton').disabled = true;
+      }
+      else {
+        document.getElementById('assignButton').disabled = false;
+        document.getElementById('scheduleChangeButton').disabled = false;
+      }
+    }
     
     /**
     *
@@ -116,60 +136,6 @@
     function setLunchProperties(all){
     }
     
-    /**
-    * @desc - saves faculty choices and final student data sheet names from settings tab into properties
-    * @author - clemensam
-    */
-    function saveSheetNames(){
-      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
-      var studentDataSheet = document.getElementById('studentDataSheetName').value;
-      var dodSheet = document.getElementById('dodSheetName').value;
-      google.script.run.withSuccessHandler(saveTeacherSheet).sheetExists(teacherChoicesSheet);
-      google.script.run.withSuccessHandler(saveStudentSheet).sheetExists(studentDataSheet);
-      google.script.run.withSuccessHandler(saveDODSheet).sheetExists(dodSheet);
-    }
-    
-    /**
-    * @desc - saves faculty choices sheet name property
-    * @author - clemensam
-    */
-    function saveTeacherSheet(valid){
-      var teacherChoicesSheet = document.getElementById('facultyChoicesSheetName').value;
-      if(valid){
-        google.script.run.setTeacherChoicesSheet(teacherChoicesSheet);
-      }
-      else {
-        google.script.run.showMessage("Whoops! The Faculty Choices Sheet name that you entered does not exist. This setting could not be saved.");
-      }
-    }
-    
-    /**
-    * @desc - saves final student data sheet name property
-    * @author - clemensam
-    */
-    function saveStudentSheet(valid){
-      var studentDataSheet = document.getElementById('studentDataSheetName').value;
-      if(valid){
-        google.script.run.setStudentSheet(studentDataSheet);
-      }
-      else {
-        google.script.run.showMessage("Whoops! The Final Student Data Sheet name that you entered does not exist. This setting could not be saved.");
-      } 
-    }
-    
-    /**
-    * @desc - saves dod sheet name property
-    * @author - dicksontc
-    */
-    function saveDODSheet(valid){
-      var dodDataSheet = document.getElementById('dodSheetName').value;
-      if(valid){
-        google.script.run.setDODSheet(dodDataSheet);
-      }
-      else {
-        google.script.run.showMessage("Whoops! The DOD Sheet name that you entered does not exist. This setting could not be saved.");
-      } 
-    }
     
     /**
     * @desc - saves houses settings to document properties
@@ -405,7 +371,6 @@
     */
     function saveAll(){
        saveLunchTimes();
-       saveSheetNames();
     }
     
      /**
@@ -415,10 +380,6 @@
     function updateSettingsWithProperties() {
       google.script.run.withSuccessHandler(displayLunchProperties).getLunchDaysProperty();
       google.script.run.withSuccessHandler(displayHouseProperties).getHousesProperty();
-      google.script.run.withSuccessHandler(displayFinalSheetProperty).getFinalSheetProperty();
-      google.script.run.withSuccessHandler(displayFacultyChoicesSheetProperty).getFacultyChoicesProperty();
-      google.script.run.withSuccessHandler(displayDODSheetProperty).getDODSheetProperty();
-
     }
     
     /**
@@ -499,31 +460,5 @@
       }
     }
     
-     /**
-    * Update the sidebar to display the correct value for final sheet name
-    * @author - clemensam
-    */
-    function displayFinalSheetProperty(sheetName) {
-      var settingsBox = document.getElementById('studentDataSheetName');
-      settingsBox.value = sheetName;
-    }
-    
-    /**
-    * Update the sidebar to display the correct value for faculty choices sheet name
-    * @author - clemensam
-    */
-    function displayFacultyChoicesSheetProperty(sheetName) {
-      var settingsBox = document.getElementById('facultyChoicesSheetName');
-      settingsBox.value = sheetName;
-    }
-    
-    /**
-    * Update the sidebar to display the correct value for DOD sheet name
-    * @author - clemensam
-    */
-    function displayDODSheetProperty(sheetName) {
-      var settingsBox = document.getElementById('dodSheetName');
-      settingsBox.value = sheetName;
-    }
     
     </script>

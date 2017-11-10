@@ -25,6 +25,10 @@ function testting() {
  *     courses - A list of the courses with course name, the day it runs, and the lunch time
  *****************************************************************************************************************/
  
+function getFullDocumentProperties() {
+  return PropertiesService.getDocumentProperties().getProperties();
+}
+
  /**
  * @desc - Sets the document properties for the letter days, lunch times, number of tables, and school days
  * @author - hendersonam
