@@ -90,6 +90,13 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
     SpreadsheetApp.getUi().alert("The Faculty Preferences Sheet cannot be a newly made sheet. It must contain the preferred lunch times for the faculty.");
     return;
   }
+  
+  var neededHeaders = ["First Name", "Last Name", "Lunch Day", "Lunch Assignment", "Table", "House"];
+  var valid = validateSheetHeaders(choicesSheetName, neededHeaders);
+  if(!valid) {
+    return;
+  }
+  
   if(dodSheet == null) {
     SpreadsheetApp.getUi().alert("The DOD List Sheet cannot be a newly made sheet. It must contain the list of DODs for the lunches.");
     return;
@@ -97,12 +104,6 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   if(teacherTableSheet == null) {
     ss.insertSheet(teacherSheetName);
     teacherTableSheet = ss.getSheetByName(teacherSheetName);
-  }
-  
-  var neededHeaders = ["First Name", "Last Name", "Lunch Day", "Lunch Assignment", "Table", "House"];
-  var valid = validateSheetHeaders(choicesSheetName, neededHeaders);
-  if(!valid) {
-    return;
   }
   
   setStudentSheet(studentSheet);
