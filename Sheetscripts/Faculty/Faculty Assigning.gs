@@ -216,27 +216,25 @@ function getRealTableNumberForLunches() {
 
   var lunchDays = JSON.parse(properties.lunchDays);
   var realTableLengths = [];
+  Logger.log(lunchDays);
   
   for (var i = 0; i < lunchDays.length; i++) {
       realTableLengths.push(0);
   }
-
+  Logger.log("Primary Length: "+primary.length);
   for (var i = 0; i < primary.length; i++) {
       var day = primary[i][sDayColumn];
       var time = primary[i][sLTimeColumn];
       var table = primary[i][sTableColumn];
-      Logger.log("day: "+day+", time: "+table+", time: "+time);
       for (var k = 0; k < lunchDays.length; k++) {
-        if (day == lunchDays[k]) {
+        if (day == lunchDays[k].letter) {
           if (realTableLengths[k] < table) {
             realTableLengths[k] = table;
           }
         }
       }
-      
+    }
+    
   return realTableLengths;   
-      
-  }
-  
-
+        
 }
