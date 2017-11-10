@@ -31,7 +31,7 @@
       <span>
       <ul>
         <li class="active" id="searchTab" onclick="showSearchPage(); hideSettingsPage(); hideCleanupPage(); hideStatisticsPage(); changeID('search');">Data Tools</li>      
-        <li class="inactive" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Assign/Reschedule</li>
+        <li class="inactive" id="cleanTab" onclick="showCleanupPage(); hideSettingsPage(); hideStatisticsPage(); hideSearchPage(); changeID('clean');">Scheduling</li>
         <li class="inactive" id="statsTab" onclick="showStatisticsPage(); hideSettingsPage(); hideCleanupPage(); hideSearchPage(); changeID('stats');">Statistics</li>
      </ul>
      </span>
@@ -45,6 +45,7 @@
        <p>Use the options below for initial student assigning or making schedule changes.</p>
 
        <div class="button-div"><button id="cleanButton" class="action" onclick="google.script.run.showCleanUpPrompt();">Clean and Assign</button></div>
+       <div class="button-div"><button id="assignButton" class="action" onclick="doAssigning();">Reassign students</button></div>
        <div class="button-div"><button id="scheduleChangeButton" class="action" onclick="google.script.run.showScheduleChangesPrompt();">Make Schedule Change</button></div>
        
        <h3>Export to Website</h3>
@@ -110,10 +111,6 @@
     <h2> Settings</h2>
     
     <div id="currentDays"></div>
-    
-    <section id="lunchSettings">
-    <div></div>
-    </section>
 
     <table id="settingsTable">
         <tr>
