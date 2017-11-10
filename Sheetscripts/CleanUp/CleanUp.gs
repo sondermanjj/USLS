@@ -92,7 +92,11 @@ function validateSheetHeaders(sheetName, neededHeaders) {
 
 function getSettings() {
   var properties = PropertiesService.getDocumentProperties().getProperties();
-  var days = JSON.parse(properties["lunchDays"]);
+  var x = properties.lunchDays;
+  Logger.log(x);
+  if( x != null) {
+    var days = JSON.parse(x);
+  }
   return days;
 }
 
