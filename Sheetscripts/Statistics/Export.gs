@@ -12,7 +12,7 @@ function exportToWebsitePrompt() {
       var sheetName = "Website Info";
       var ss = SpreadsheetApp.getActiveSpreadsheet();
       var sheet = ss.getSheetByName(sheetName);
-      if(sheet == null) {
+      if(sheet === null) {
         ss.insertSheet(sheetName);
         sheet = ss.getSheetByName(sheetName);
       } else {
@@ -50,8 +50,9 @@ function exportInfoToWebsite(webSheet) {
                   .getSheetByName(properties.studentData)
                   .getDataRange()
                   .getValues();
+  var i;
   if (checkData(studentValues, "Student Data")) {
-    for (var i = 0; i < studentValues.length; i++) {
+    for (i = 0; i < studentValues.length; i++) {
       student = [];
       student.push(studentValues[i][pSFNameColumn]);
       student.push(studentValues[i][pSLNameColumn]);
@@ -78,7 +79,7 @@ function exportInfoToWebsite(webSheet) {
     var tLunchTimeColumn = parseInt(properties["Teacher Lunch Assignment"]);
     
     if (checkData(teacherValues, "Teacher Data")) {
-      for (var i = 0; i < teacherValues.length; i++) {
+      for (i = 0; i < teacherValues.length; i++) {
         if (teacherValues[i][tFNameColumn] != "First Name") {
           student = [];
           student.push(teacherValues[i][tFNameColumn]);
@@ -92,7 +93,6 @@ function exportInfoToWebsite(webSheet) {
         }
       }
       return finalData;
-      Logger.log("Website export complete."); 
     } else {
     return -1;
     }

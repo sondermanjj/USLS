@@ -1,7 +1,6 @@
-//JSHint verified 5/7/2017 by hendersonam
+//JSHint verified 11/13/2017 by dicksontc
 
   var changeshtml = "";
-  var updatedChanges = false;
   
   /*****************************************************************
       * @desc - Brings up the Schedule Change Prompt
@@ -99,7 +98,6 @@
     newCourses.sort(compareByColumnIndex(1));
     var numOfChangesToBeMade = newCourses.length;
     var numOfChangesMade = 0;
-    var studentChanges = [];
     var changes = [];
 
     for(var i = 0; i < values.length; i++) {
@@ -124,15 +122,16 @@
             //Get the lunch time for that particular course and day pair
             var newTime = courseTimes[courseAndDay];
             //Only if not null do we count this as a change
-            if(newTime != null) {
+            if(newTime !== null) {
               //Create the change object
-              
+              var teacherFirstName;
+              var teacherLastName;
               var teacherFound = false;
               for(var k = 0; k < values.length; k++) {
                 if(newCourseTitle.toString().toLowerCase() == values[k][courseTitleColumn].toString().toLowerCase()) {
                   if(lunchDay.toString().toLowerCase() == values[k][lunchDayColumn].toString().toLowerCase()) {
-                    var teacherFirstName = values[k][facultyFirstNameColumn]; 
-                    var teacherLastName = values[k][facultyLastNameColumn];
+                    teacherFirstName = values[k][facultyFirstNameColumn]; 
+                    teacherLastName = values[k][facultyLastNameColumn];
                     teacherFound = true;
                   }
                 }
@@ -174,7 +173,7 @@
     var sheet = ss.getSheetByName("Schedule Changes");
     
     
-    if( sheet == null ) {
+    if( sheet === null ) {
       ss.insertSheet("Schedule Changes");
       sheet = ss.getSheetByName("Schedule Changes");
       sheet.appendRow(["First Name", "Last Name", "Lunch Day", "Old Course", "New Course",
@@ -191,11 +190,11 @@
       for(var j = 0; j < values.length; j++) {
         if( changes[i][0] == values[j][0] && changes[i][1] == values[j][1]) {
           if(changes[i][2] == values[j][2]) {
-            sheet.deleteRow(j+1)
+            sheet.deleteRow(j+1);
           }
         }
       }
-      var values = [changes[i][0], changes[i][1], changes[i][2], changes[i][4],
+      values = [changes[i][0], changes[i][1], changes[i][2], changes[i][4],
                     changes[i][3], changes[i][5], changes[i][6], changes[i][8], date];
       sheet.appendRow(values);
     }

@@ -1,9 +1,3 @@
-function testting() {
-  var properties = PropertiesService.getDocumentProperties().getProperties();
-  Logger.log(properties);
-
-}
-
 /*****************************************************************************************************************
  * Properties:
  *   Sheets:
@@ -90,7 +84,7 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   var dodSheet = ss.getSheetByName(dodSheetName);
   var teacherTableSheet = ss.getSheetByName(teacherSheetName);
   
-  if(teacherChoicesSheet == null) {
+  if(teacherChoicesSheet === null) {
     SpreadsheetApp.getUi().alert("The Faculty Preferences Sheet cannot be a newly made sheet. It must contain the preferred lunch times for the faculty.");
     return;
   }
@@ -101,11 +95,11 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
     return;
   }
   
-  if(dodSheet == null) {
+  if(dodSheet === null) {
     SpreadsheetApp.getUi().alert("The DOD List Sheet cannot be a newly made sheet. It must contain the list of DODs for the lunches.");
     return;
   }
-  if(teacherTableSheet == null) {
+  if(teacherTableSheet === null) {
     ss.insertSheet(teacherSheetName);
     teacherTableSheet = ss.getSheetByName(teacherSheetName);
   }
@@ -116,7 +110,7 @@ function setSheetProperties(studentSheet, teacherSheetName, dodSheetName, choice
   setDODSheet(dodSheet);
   
   var docProperties = PropertiesService.getDocumentProperties();
-  var properties = docProperties.getProperties();
+  properties = docProperties.getProperties();
   
   //Needs to run after setting sheets
   var studentHeaders = getListOfColumns(
@@ -149,7 +143,6 @@ function getHeaderColumnNames() {
 }
 
 function getLunchDaysProperty() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperty("lunchDays"));
   return PropertiesService.getDocumentProperties().getProperty("lunchDays");
 }
 
@@ -158,7 +151,6 @@ function getHousesProperty() {
 }
 
 function getFinalSheetProperty() {
-  Logger.log(PropertiesService.getDocumentProperties().getProperty("studentData"));
   return PropertiesService.getDocumentProperties().getProperty("studentData");
 }
 
@@ -277,7 +269,7 @@ function setStudentColumnIndices(pHeaders){
   var properties = PropertiesService.getDocumentProperties();
   
   for(var i = 0; i < pHeaders.length; i++) {
-  if (pHeaders != "") {
+  if (pHeaders !== "") {
       properties.setProperty("Student " + pHeaders[i], i);
     }
   }
@@ -292,7 +284,7 @@ function setTeacherColumnIndices(tHeaders) {
   var properties = PropertiesService.getDocumentProperties();
   //Start of hendersan airtight 
   for(var i = 0; i < tHeaders.length; i++) {
-    if (tHeaders[i] != "") {
+    if (tHeaders[i] !== "") {
       properties.setProperty("Teacher " + tHeaders[i], i);
     }
   }

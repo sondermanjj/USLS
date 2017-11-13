@@ -129,13 +129,10 @@ function assignStudentLunchDays() {
     var ui = SpreadsheetApp.getUi();
     var result = ui.alert("Number of students moved from non-assigned lunches to assigned lunches: " + lengthCheck.numStu + "\nDo you want to assign students?", ui.ButtonSet.YES_NO);
     if(result == ui.Button.YES) {
-      Logger.log("Assigning");
       assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, primary, properties);
-      Logger.log("Done assigning");
       return true;
     } 
   }
-  Logger.log("Hello");
   return true;
 }
 
@@ -153,15 +150,12 @@ function assignStudentLunchDays() {
 function assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStudentsArray, sheet, properties){
   var i, j;
   if(lengthCheck.valid){
-  Logger.log("Valid Length Check");
     for(i = 0; i < assignedEachDay.length; i++){
       for(j = 0; j < assignedEachDay[i].length; j++){
         doRandomAssignment(assignedLunches, assignedEachDay[i][j], properties);
       }
     }
-    Logger.log("Preparing to print students to sheet");
     printStudentsToSheet(fullStudentsArray, sheet, properties);
-    Logger.log("Students Printed to Sheet");
   }else{
     var errorMessage = "Not enough students in these lunches:\n";
     var badStudents = lengthCheck.badStudents;
@@ -170,7 +164,6 @@ function assignAndPrint(lengthCheck, assignedLunches, assignedEachDay, fullStude
     }
     SpreadsheetApp.getUi().alert(errorMessage);
   }
-  Logger.log("Returning");
   return true;
 }
 
@@ -357,7 +350,6 @@ function pushCoursesToCourseSheet() {
   newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
   
   createNewSheet(newData, "Courses");
-  Logger.log("Course Sheet Created");
   return true;
 }
 
@@ -384,9 +376,8 @@ function pushCoursesToCourseSheet() {
    var headerRow = ["Course Title", "Lunch Day", "Lunch Time", "Faculty First Name", "Faculty Last Name"];
    var newData = [];
    var courses = [];
-   //newData.push(headerRow);
    var i; 
-   for(var i = 0; i < pNumRows; i++){
+   for(i = 0; i < pNumRows; i++){
      var courseTitle = pValues[i][courseTitleCol];
      var lunchDay = pValues[i][lunchDayCol];
      var lunchTime = pValues[i][lunchTimeCol];
@@ -406,7 +397,6 @@ function pushCoursesToCourseSheet() {
    newData = newData.slice(0, 1).concat(newData.slice(1, newData.length).sort());
    
    createNewSheet(newData, "Courses");
-   Logger.log("Course Sheet Created");
    return true;
  }
 
@@ -448,7 +438,7 @@ function pushCoursesToCourseSheet() {
   
    var updatedRow = [];
    var i; 
-   for(var i = 0; i < pNumRows; i++){
+   for(i = 0; i < pNumRows; i++){
      var firstName = pValues[i][firstNameCol];
      var lastName = pValues[i][lastNameCol];
      var gradeLevel = pValues[i][gradeLevelCol];
@@ -972,9 +962,7 @@ function printStudentsToSheet(students, primary, properties){
   var sheetRange = primary.getRange(1, 1, count, 19);
   sheetRange.setValues(finalArray);
   colorBackgrounds(lunchTimeCol, properties);
-  Logger.log("Lunch Times Colored");
   colorBackgrounds(lunchTableCol, properties);
-  Logger.log("Lunch Tables Colored");
   return true;
 }
 
@@ -1023,7 +1011,13 @@ function getStudents(studentValues, numRows, teachersList, assignedLunches, nonA
     var table = studentValues[i][lunchTableCol];
     var teacherFName = studentValues[i][tFNameCol];
     var teacherLName = studentValues[i][tLNameCol];
-    var advisor = studentValues[i][advisorCol];
+    var advisor = studentValues[i][advisorCol].replace(/\s\s+/g, " ").trim();
+    if(advisor.indexOf(",") > -1){
+      var advisorArray = advisor.split(",");
+      if(advisorArray.length === 2){
+        advisor = "" + advisorArray[1].trim() + " " + advisorArray[0].trim();
+      }
+    }
     var code = studentValues[i][cCodeCol];
     var length = studentValues[i][cLengthCol];
     var cID = studentValues[i][cIDCol];
@@ -1300,7 +1294,6 @@ function colorBackgrounds(column, properties){
   var check;
   var lunchDays = JSON.parse(properties.lunchDays);
   
-  Logger.log("First For Loop");
   for(i = 0; i < rangeValues.length; i++){
     if(rangeValues[i][0] === "Lunch Time"){
       for(j = 0; j < lunchDays[0].times.length; j++){
@@ -1308,14 +1301,10 @@ function colorBackgrounds(column, properties){
       }
       i = rangeValues.length;
     }else if (rangeValues[i][0] === "Lunch Table"){
-      Logger.log("Lunch Table Gotten");
-      Logger.log("House Properties: " + properties.houses);
       values = JSON.parse(properties.houses);
-      Logger.log("Parsed houses");
       i = rangeValues.length;
     }
   }
-  Logger.log("Second For Loop");  
   for(i = 0; i < ro; i++){
     rowColors[i] = [];
     fonts[i] = [];
@@ -1333,7 +1322,6 @@ function colorBackgrounds(column, properties){
       fonts[i].push("BLACK");
     }
   }
-  Logger.log("Setting Colors & Backgrounds");
   range.setFontColors(fonts);
   range.setBackgrounds(rowColors);
   return true;

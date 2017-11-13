@@ -184,9 +184,9 @@ function statistics(time, day, values, students, properties) {
       }
       
       if (!isNaN(lunchDay) && !isNaN(lunchTime)) { 
-        stats[lunchDay][lunchTime] += 1;        
+        stats[lunchDay][lunchTime] += 1;
         if (count == time.length) break;
-      }
+      }     
     
   }
   
