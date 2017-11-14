@@ -1,63 +1,118 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-    
-    <div id="rawFilePrompt">
-     <label>Raw Student Data Sheet:</label>
-     <br/>
-      <select class="listOfSheets">
-      </select>
-      <br/>
-      <input class="action" type="button" onClick="addRawSheet()" value="Next" />
+    <div id="rawFilePrompt" class="prompt">
+    <table class="prompt_tables">
+      <tr>
+        <td class="small_table_piece"><label>Raw Student Data Sheet:</label></td>
+        <td class="small_table_piece" id="sheetRawCell"><select class="listOfSheets" id="rawSheet"></select></td>
+        <td class="large_table_piece"><img id="descriptionButton" onClick="toggleDescriptions()" src="https://sites.google.com/site/usmlunch/tinyQuestionMark.png?revision=1"></td>        
+      </tr>
+      </table>
+      <table width="100%">
+      <tr>
+        <td align="center"><input class="action" type="button" onClick="showDiv('studentDataPrompt', this)" text-align="center" value="Next" /></td>
+      </tr>
+    </table>
+      <table width="100%">  
+      <tr class="descriptionText">
+        <td align="center"><label>This sheet should hold the raw data of the students. It already exists. It will be used as the source for all the Final Student Data, and should be extracted (copied and pasted) from the excel sheet.</label></td>
+      </tr>
+    </table>
     </div>
     
-    <div id="studentDataPrompt">
-     <label>Final Student Data Sheet:</label>
-     <br/>
-      <select class="listOfSheets">
-      </select>
-      <br/>
-      <input type="button" onClick="showDiv('rawFilePrompt', this)" value="Back"/>
-      <input class="action" type="button" onClick="addStudentDataSheet()" value="Next" />
+    <div id="studentDataPrompt" class="prompt">
+    <table class="prompt_tables">
+      <tr>
+        <td class="small_table_piece"><label>Final Student Data Sheet:</label></td>
+        <td class="small_table_piece" id="sheetStudentDataCell"><select class="listOfSheets" id="studentDataSheet"></select></td>
+        <td class="large_table_piece"><img id="descriptionButton" onClick="toggleDescriptions()" src="https://sites.google.com/site/usmlunch/tinyQuestionMark.png?revision=1"></td>        
+      </tr>
+    </table>
+      <table width="100%">
+      <tr>
+        <td align="center"><input type="button" onClick="showDiv('rawFilePrompt', this)()" value="back" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Next" /></td>
+      </tr>
+    </table>
+      <table width="100%">  
+      <tr class="descriptionText">
+        <td align="center"><label>This sheet will contain the final student data, after having been organized, sorted, and cleaned of extraneous data. It will be created. It will be the main sheet that will be sorted.</label></td>
+      </tr>
+    </table>
     </div>
     
-    <div id="facultyDataPrompt">
-     <label>Faculty Table Sheet:</label>
-     <br/>
-      <select class="listOfSheets">
-      </select>
-      <br/>
-      <input type="button" onClick="showDiv('studentDataPrompt', this)" value="Back"/>
-      <input class="action" type="button" onClick="addFacultyDataSheet()" value="Next" />
+    <div id="facultyDataPrompt" class="prompt">
+    <table class="prompt_tables">
+      <tr class>
+        <td class="small_table_piece"><label>Faculty Data Sheet:</label></td>
+        <td class="small_table_piece" id="sheetFacultyDataCell"><select class="listOfSheets" id="facultyDataSheet"></select></td>
+        <td class="large_table_piece"><img id="descriptionButton" onClick="toggleDescriptions()" src="https://sites.google.com/site/usmlunch/tinyQuestionMark.png?revision=1"></td>        
+      </tr>
+      </table>
+      <table width="100%">
+      <tr>
+        <td align="center"><input type="button" onClick="showDiv('studentDataPrompt', this)()" value="back" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Next" /></td>
+      </tr>
+    </table>
+      <table width="100%">
+      <tr class="descriptionText">
+        <td align="center"><label>This sheet will contain all the faculty table assignments. It will be created. It will list any tables that still need reassignment and all the teacher </label></td>
+      </tr>
+    </table>
     </div>
     
-    <div id="dodSheetPrompt">
-     <label>DOD List Sheet:</label>
-     <br/>
-      <select class="listOfSheets">
-      </select>
-      <br/>
-      <input type="button" onClick="showDiv('facultyDataPrompt', this)" value="Back"/>
-      <input class="action" type="button" onClick="addDODSheet()" value="Next" />
+    <div id="dodSheetPrompt" class="prompt">
+    <table class="prompt_tables">
+      <tr>
+        <td class="small_table_piece"><label>DOD List Sheet:</label></td>
+        <td class="small_table_piece" id="sheetDODSheetCell"><select class="listOfSheets" id="dodSheet"></select></td>
+        <td class="large_table_piece"><img id="descriptionButton" onClick="toggleDescriptions()" src="https://sites.google.com/site/usmlunch/tinyQuestionMark.png?revision=1"></td>        
+      </tr>
+      </table>
+      <table width="100%">
+      <tr>
+        <td align="center"><input type="button" onClick="showDiv('studentDataPrompt', this)()" value="back" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="Next" /></td>
+      </tr>
+    </table>
+      <table width="100%">      
+      <tr class="descriptionText">
+        <td align="center"><label>This sheet should already list all the Director of Dinings. It should already exist. It should be in the normal order as taken from the excel sheet.</label></td>
+      </tr>
+    </table>
     </div>
     
-    <div id="facultyChoicesPrompt">
-     <label>Faculty Preferences Sheet:</label>
-     <br/>
-      <select class="listOfSheets">
-      </select>
-      <br/>
-      <input id="finalBackButton" type="button" onClick="showDiv('dodSheetPrompt', this)" value="Back"/>
-      <input id="doneButton" class="action" type="button" onClick="addFacultyChoicesSheet()" value="Done" />
+    <div id="facultyChoicesPrompt" class="prompt">
+    <table class="prompt_tables">
+      <tr>
+        <td class="small_table_piece"><label>Faculty Table Assignment Sheet:</label></td>
+        <td class="small_table_piece" id="sheetFacultyChoiceCell"><select class="listOfSheets" id="facultyChoicesSheet"></select></td>
+        <td class="large_table_piece"><img id="descriptionButton" onClick="toggleDescriptions()" src="https://sites.google.com/site/usmlunch/tinyQuestionMark.png?revision=1"></td>        
+      </tr>
+      </table>
+      <table width="100%">
+      <tr>
+        <td align="center"><input type="button"  onClick="showDiv('dodSheetPrompt', this)"  value="back" /></td>
+        <td align="center"><input class="action" type="button" onClick="showDiv('settingsPrompt', this)" value="Next" /></td>
+      </tr>
+    </table>
+      <table width="100%">
+      <tr class="descriptionText">
+        <td align="center"><label>This is the sheet that should already contain all the faculty assignments. It should already exist. It will behave as the raw data for the faculty and will then list the faculty table assignments after this initialization</label></td>
+      </tr>
+    </table>
     </div>
+      
+      <div id="settingsPrompt" class="prompt">
+      <table id="currentSettings">
+      </table>
+      <input id="finalBackButton" type="button" onClick="showDiv('facultyChoicesPrompt', this)" value="back"/>
+      <input id="doneButton" class="action" type="button" onClick="finish()" value="Done" />
+      </div>
     
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <?!= include('Sheetscripts/CleanUp/Javascript'); ?>
     <?!= include('Sheetscripts/CleanUp/Stylesheet'); ?>
-  </body>
 </html>
-
 

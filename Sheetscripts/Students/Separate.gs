@@ -1,4 +1,4 @@
-//JSHint verified 4/3/2017 sondermanjj
+//JSHint verified 11/13/2017 sondermanjj
 
 /**
 @desc Retrieves the information from Final Student Data to place students
@@ -7,32 +7,21 @@ into separate sheets based on house.
 @author - dicksontc
 */
 function splitIntoNewSheets(){
-
+  
   var docProperties = PropertiesService.getDocumentProperties();
   var properties = docProperties.getProperties();
   
-  var sheet = SpreadsheetApp.getActiveSheet();
   var primary = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(properties.studentData);
-
+  
   
   var primaryData = primary.getDataRange();
   
   var pValues = primaryData.getValues();
   
   var pNumRows = primaryData.getNumRows();
-  var pNumColumns = primaryData.getNumColumns();
-  
-  var lunchTimeColumn = parseInt(properties["Student Lunch Time"]);
-  var lunchTableColumn = parseInt(properties["Student Lunch Table"]);
-  var fNameColumn = parseInt(properties["Student First Name"]);
-  var lNameColumn = parseInt(properties["Student Last Name"]);
-  var houseColumn = parseInt(properties["Student House"]);
-  var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
-  var gradeColumn = parseInt(properties["Student Grade Level"]);
   
   doHouseSheets(pValues,pNumRows, properties);
   doTableSheets(pValues,pNumRows, properties);
-  
 }
 
 /**
@@ -139,8 +128,8 @@ function doTableSheets(pValues, pNumRows, properties){
   var houseColumn = parseInt(properties["Student House"]);
   var lunchDayColumn = parseInt(properties["Student Lunch Day"]);
   var gradeColumn = parseInt(properties["Student Grade Level"]);
-
-
+  
+  
   var tables = [];
   var rowZero = ["First Name", "Last Name", "Grade", "Lunch Day", "EML", "Table", "House"];
   for(var k = 0; k < 19; k++){

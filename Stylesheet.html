@@ -10,7 +10,7 @@
       top: 3px;
     }
   
-  .col-contain {
+    .col-contain {
       overflow: hidden;
     }
 
@@ -38,6 +38,23 @@
       width: 50px;
     }
     
+    .days-col1, .days-col2, .days-col3 {
+      padding: 0px 4px;
+      width: 70px;
+    }
+    
+    .day-rules-settings-box {
+      width: 70px;
+    }
+    
+    #day1tablerules {
+      padding: 10px 0;
+    }
+    
+    #day2tablerules, #day3tablerules {
+      display: none;
+    }
+    
     .rowLabel{
       text-align: left;
       float: left;
@@ -48,10 +65,12 @@
     }
     
     .row {
-      overflow: hidden;
-      width: inherit;
-      margin-right: 0px;
+      /*overflow: hidden;*/
+      width: 90%;
       margin-left: 0px;
+      margin-right: 0px;
+      padding-left: 15px;
+
     }
     
     .row.assigning select {
@@ -148,12 +167,14 @@
       text-align: left;
       font-weight: bold;
       margin-top: 10px;
+      padding: 8px 16px !important;
       background-color: #0d47a1;
-      color: #fff;;
+      color: #fff;
     }
     
     #settingsTable {
       width: 90%;
+      margin-left: 5px;
     }
     
   #sortButtons td, #customSort td {

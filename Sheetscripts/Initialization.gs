@@ -5,29 +5,26 @@
  */
 function initialization(sheetNames) {
 
-  Logger.log(sheetNames);
-  PropertiesService.getDocumentProperties().deleteAllProperties();
-  setLunchProperties();
-
+  setRawSheetProperty(sheetNames.raw);
   var cleanedSheet = cleanUp(sheetNames.raw, sheetNames.student);
   
   if (cleanedSheet) {
   
     var oldData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Scanned Data");
-    if (oldData != null ) {
+    if (oldData !== null ) {
       SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldData);
     }
     var oldChanges = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Schedule Changes");
-    if (oldChanges != null ) {
+    if (oldChanges !== null ) {
       SpreadsheetApp.getActiveSpreadsheet().deleteSheet(oldChanges);
     }
     
     setSheetProperties(cleanedSheet, sheetNames.faculty, sheetNames.dod, sheetNames.choices);
     setFacultyCourses();
+    
     assignStudentLunchDays();
     pushCoursesToCourseSheet();
     addFacultyTables();
-  
   } else {
     return;
   }

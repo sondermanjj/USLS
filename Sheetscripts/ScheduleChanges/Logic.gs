@@ -1,7 +1,6 @@
-//JSHint verified 5/7/2017 by hendersonam
+//JSHint verified 11/13/2017 by dicksontc
 
   var changeshtml = "";
-  var updatedChanges = false;
   
   /*****************************************************************
       * @desc - Brings up the Schedule Change Prompt
@@ -99,7 +98,6 @@
     newCourses.sort(compareByColumnIndex(1));
     var numOfChangesToBeMade = newCourses.length;
     var numOfChangesMade = 0;
-    var studentChanges = [];
     var changes = [];
 
     for(var i = 0; i < values.length; i++) {
@@ -124,15 +122,16 @@
             //Get the lunch time for that particular course and day pair
             var newTime = courseTimes[courseAndDay];
             //Only if not null do we count this as a change
-            if(newTime != null) {
+            if(newTime !== null) {
               //Create the change object
-              
+              var teacherFirstName;
+              var teacherLastName;
               var teacherFound = false;
               for(var k = 0; k < values.length; k++) {
                 if(newCourseTitle.toString().toLowerCase() == values[k][courseTitleColumn].toString().toLowerCase()) {
                   if(lunchDay.toString().toLowerCase() == values[k][lunchDayColumn].toString().toLowerCase()) {
-                    var teacherFirstName = values[k][facultyFirstNameColumn]; 
-                    var teacherLastName = values[k][facultyLastNameColumn];
+                    teacherFirstName = values[k][facultyFirstNameColumn]; 
+                    teacherLastName = values[k][facultyLastNameColumn];
                     teacherFound = true;
                   }
                 }
@@ -174,7 +173,7 @@
     var sheet = ss.getSheetByName("Schedule Changes");
     
     
-    if( sheet == null ) {
+    if( sheet === null ) {
       ss.insertSheet("Schedule Changes");
       sheet = ss.getSheetByName("Schedule Changes");
       sheet.appendRow(["First Name", "Last Name", "Lunch Day", "Old Course", "New Course",
@@ -210,25 +209,6 @@
     }
     
       
-  }
-  
-  /*****************************************************************
-      * @desc - Deletes any schedule changes that are a month old
-      * @param - sheet - Sheet - Sheet with schedule changes on it
-      * @author - hendersonam
-  *******************************************************************/
-  function cleanTimedOutScheduleChanges(sheet) {
-    var values = sheet.getDataRange().getValues();
-    var columnIndex = getColumnIndex(values, "Timestamp");
-    
-    var date = new Date();
-    var unixTime = date.now().getUnixTime();
-    
-    for(var i = 0; i < values.length; i++) {
-      if(howLong(date, values[i][columnIndex]) > 30) {
-        sheet.deleteRow(i);
-      }
-    }
   }
   
   /*****************************************************************
