@@ -906,6 +906,7 @@ function printStudentsToSheet(students, primary, properties){
   var cTitleCol = parseInt(properties["Student Course Title"]);
   var lunchTimeCol = parseInt(properties["Student Lunch Time"]);
   var genderCol = parseInt(properties["Student Gender"]);
+  var numRows = primary.getDataRange().getNumColumns();
   
   for(var post = 0; post < students.length; post++){
     var fin = students[post];
@@ -921,7 +922,7 @@ function printStudentsToSheet(students, primary, properties){
       var lunch = fin.lunches[lun];
       var title = lunch.title;
       
-      pushArray = new Array(19);
+      pushArray = new Array(numRows);
       
       pushArray[sFNameCol] = fin.fName;
       pushArray[sLNameCol] = fin.lName;
@@ -954,12 +955,16 @@ function printStudentsToSheet(students, primary, properties){
         pushArray[blockCol] = lunch.block;
         pushArray[tableHeadCol] = lunch.tableHead;
       }
+      for(var i = 0; i < pushArray.length; i++){
+        if(pushArray[i] === null || pushArray[i] === undefined){
+          pushArray[i] = "";
+        }
+      }
       finalArray.push(pushArray);
     }
   }
-  
   primary.clear();
-  var sheetRange = primary.getRange(1, 1, count, 19);
+  var sheetRange = primary.getRange(1, 1, count, numRows);
   sheetRange.setValues(finalArray);
   colorBackgrounds(lunchTimeCol, properties);
   colorBackgrounds(lunchTableCol, properties);
