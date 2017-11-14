@@ -14,6 +14,7 @@ Our goal is to create a website dedicated to lunchroom management of University 
 - [ ] Lunch Table Check-In
 - [ ] On Cleanup, remove unnecessary columns
 - [ ] Validate correct faculty names in all places
+- [ ] Create Advisor column from Course column on Cleanup
 
 
 :honeybee::candy::honeybee::honeybee::moyai::shipit::shipit::interrobang::neckbeard::fire:
