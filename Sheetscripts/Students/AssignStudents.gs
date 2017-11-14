@@ -586,7 +586,8 @@ function parseStudentChanges(listOfChanges){
                   var zScoreStudents = getzScoreStudents(students, day, newTimeObj.name, false);
                   
                   if(zScoreStudents.length === 0){
-                    return;
+                    var unableToChange ={"badChanges": [change.fName, change.lName, lunch.day, change.newCourseName, change.oldCourseName, oldtime, newtime]};
+                    return unableToChange;
                   }
                   affectedLunch = zScoreStudents[0].lunchIndex;
                   affectedStu = zScoreStudents[0].stuIndex;

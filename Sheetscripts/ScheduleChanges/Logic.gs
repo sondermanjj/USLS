@@ -182,22 +182,32 @@
     }
     var values = sheet.getDataRange().getValues();
     
+    // Check if changes are able to be made; if not, display message
+    if(changes.badChanges !== null && changes.badChanges !== undefined) {
+      //display error pop up
+      Logger.log("schedule change not made");
+    }   
+    
     //TODO
     //cleanTimedOutScheduleChanges(sheet);
     
-    var date = Date.now();
-    for(var i = 0; i < changes.length; i++) {
-      for(var j = 0; j < values.length; j++) {
-        if( changes[i][0] == values[j][0] && changes[i][1] == values[j][1]) {
-          if(changes[i][2] == values[j][2]) {
-            sheet.deleteRow(j+1);
+    else {
+      var date = Date.now();
+      Logger.log(date);
+      for(var i = 0; i < changes.length; i++) {
+        for(var j = 0; j < values.length; j++) {
+          if( changes[i][0] == values[j][0] && changes[i][1] == values[j][1]) {
+            if(changes[i][2] == values[j][2]) {
+              sheet.deleteRow(j+1)
+            }
           }
         }
+        var values = [changes[i][0], changes[i][1], changes[i][2], changes[i][4],
+                      changes[i][3], changes[i][5], changes[i][6], changes[i][8], date];
+        sheet.appendRow(values);
       }
-      values = [changes[i][0], changes[i][1], changes[i][2], changes[i][4],
-                    changes[i][3], changes[i][5], changes[i][6], changes[i][8], date];
-      sheet.appendRow(values);
     }
+    
       
   }
   
