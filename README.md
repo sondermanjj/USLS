@@ -10,6 +10,12 @@ Our goal is to create a website dedicated to lunchroom management of University 
 ## Website:
   https://sites.google.com/site/usmlunch/home
   
+  Access required to make changes to site scripts.
+  
+## Sheets:
+  Sheets containing code exist within a shared Google Drive folder
+   
+  
 ## Potential Future Tasks
 - [ ] Lunch Table Check-In
 - [ ] On Cleanup, remove unnecessary columns
