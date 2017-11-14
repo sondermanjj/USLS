@@ -10,12 +10,10 @@ Our goal is to create a website dedicated to lunchroom management of University 
 ## Website:
   https://sites.google.com/site/usmlunch/home
   
-## Tasks
-- [x] Code Cleanup
-- [x] Assign Students
-- [x] Create new Website
+## Potential Future Tasks
 - [ ] Lunch Table Check-In
-- [x] Search Function on Website
+- [ ] On Cleanup, remove unnecessary columns
+- [ ] Validate correct faculty names in all places
 
 
 :honeybee::candy::honeybee::honeybee::moyai::shipit::shipit::interrobang::neckbeard::fire:
